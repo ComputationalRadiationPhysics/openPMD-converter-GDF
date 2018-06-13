@@ -80,6 +80,9 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         start_time = time.time()
         last_running_time = 0
 
+        major = struct.unpack('B', f.read(1))[0]
+        minor = struct.unpack('B', f.read(1))[0]
+        hdf_f.attrs['destination_version'] = str(major) + '.' + str(minor)
 
         f.seek(2, 1)  # skip to next block
 
