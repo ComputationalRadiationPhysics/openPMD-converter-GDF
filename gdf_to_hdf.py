@@ -99,6 +99,13 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
 
             # Get name
             name = name.split()[0]
+
+            # Get block type
+            dir = int(typee & t_dir > 0)
+            edir = int(typee & t_edir > 0)
+            sval = int(typee & t_sval > 0)
+            arr = int(typee & t_arr > 0)
+
     f.close()
     hdf_f.close()
     print ('Converting .gdf to .hdf file with hierical layout... Complete.')
