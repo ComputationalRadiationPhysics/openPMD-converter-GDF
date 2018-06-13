@@ -17,6 +17,17 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
 
     with open(gdf_file_directory, 'rb') as f:
         
+    # Block types
+    t_dir = 256  # Directory entry start
+    t_edir = 512  # Directory entry end
+    t_sval = 1024  # Single valued
+    t_arr = 2048  # Array
+
+    t_ascii = int('0001', 16)  # ASCII character
+    t_s32 = int('0002', 16)  # Signed long
+    t_dbl = int('0003', 16)  # Double
+    t_null = int('0010', 16)  # No data
+    with open(gdf_file_directory, 'rb') as f:  # Important to open in binary mode 'b' to work cross platform
         gdf_id_check = struct.unpack('i', f.read(4))[0]
         if gdf_id_check != GDFID:
             raise RuntimeWarning('File directory is not a .gdf file')
