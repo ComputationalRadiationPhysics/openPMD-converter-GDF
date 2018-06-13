@@ -96,6 +96,9 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
             typee = struct.unpack('i', f.read(4))[0]
 
             size = struct.unpack('i', f.read(4))[0]
+
+            # Get name
+            name = name.split()[0]
     f.close()
     hdf_f.close()
     print ('Converting .gdf to .hdf file with hierical layout... Complete.')
