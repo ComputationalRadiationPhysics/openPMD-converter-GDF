@@ -1,9 +1,10 @@
-
+from __future__ import division
+from pylab import *
 import h5py
+import time
 import struct
 import os
 import sys
-import time
 
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     print ('Converting .gdf to .hdf file with hierical layout.')       
@@ -15,8 +16,6 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     GDFID  = 94325877;
     GDFNAMELEN = 16;
 
-    with open(gdf_file_directory, 'rb') as f:
-        
     # Block types
     t_dir = 256  # Directory entry start
     t_edir = 512  # Directory entry end
@@ -28,17 +27,44 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     t_dbl = int('0003', 16)  # Double
     t_null = int('0010', 16)  # No data
     with open(gdf_file_directory, 'rb') as f:  # Important to open in binary mode 'b' to work cross platform
+
+        # Read the GDF main header
+
         gdf_id_check = struct.unpack('i', f.read(4))[0]
         if gdf_id_check != GDFID:
             raise RuntimeWarning('File directory is not a .gdf file')
+
         time_created = struct.unpack('i', f.read(4))[0]
         hdf_f.attrs['time_created'] = str(time_created) + ': ' + str(time.ctime(int(time_created)))
 
-        # get creator name and use string part upto zero-character
-        creator = list(f.read(GDFNAMELEN))
-        print(type(f.read(GDFNAMELEN)))
-        dest = f.read(GDFNAMELEN)
 
+        creator = list(f.read(GDFNAMELEN))
+        new_creator = []
+        for element in creator:
+            new_creator.append(element)
+        creator_name = []
+        for element in new_creator:
+            if element is 0:
+                break
+            else:
+                creator_name.append(chr(element))
+        hdf_f.attrs['creator_name'] = ''.join(creator_name)
+
+
+        dest = f.read(GDFNAMELEN)
+        new_dest = []
+        for element in dest:
+            new_dest.append(element)
+
+        destination = []
+        for element in new_dest:
+            if element is 0:
+                break
+            else:
+                destination.append(chr(element))
+        hdf_f.attrs['destination'] = ''.join(destination)
+
+        # get other metadata about the GDF file
         major = struct.unpack('B', f.read(1))[0]
         minor = struct.unpack('B', f.read(1))[0]
         hdf_f.attrs['gdf_version'] = str(major) + '.' + str(minor)
