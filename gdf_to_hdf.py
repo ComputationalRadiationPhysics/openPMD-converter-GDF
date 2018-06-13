@@ -86,6 +86,16 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
 
         f.seek(2, 1)  # skip to next block
 
+        while True:
+            if f.read(1) == '':
+                break
+            f.seek(-1, 1)
+
+            # Read GDF block header
+            name = f.read(16)
+            typee = struct.unpack('i', f.read(4))[0]
+
+            size = struct.unpack('i', f.read(4))[0]
     f.close()
     hdf_f.close()
     print ('Converting .gdf to .hdf file with hierical layout... Complete.')
