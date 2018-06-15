@@ -119,6 +119,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
             if sval:
                 if dattype == t_dbl:
                     value = struct.unpack('d', f.read(8))[0]
+                    particles_group.create_dataset(name, data=value)
                 elif dattype == t_null:
                     pass
                 elif dattype == t_ascii:
@@ -136,7 +137,16 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
                     print('type=', typee)
                     print('size=', size)
                     value = f.read(size)
+            if arr:
+                if dattype == t_dbl:
+                    value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+                else:
+                    print('unknown datatype of value!!!')
+                    print('name=', name)
+                    print('type=', typee)
                     print('size=', size)
+                    value = f.read(size)
+            lastarr = arr;
     f.close()
     hdf_f.close()
     print ('Converting .gdf to .hdf file with hierical layout... Complete.')
