@@ -73,19 +73,22 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         minor = struct.unpack('B', f.read(1))[0]
         hdf_f.attrs['creator_version'] = str(major) + '.' + str(minor)
 
-        data_group = hdf_f.create_group('data')
-
-        # Initialise values to print progress to terminal
-        file_size = os.stat(gdf_file_directory)[6]
-        start_time = time.time()
-        last_running_time = 0
-
         major = struct.unpack('B', f.read(1))[0]
         minor = struct.unpack('B', f.read(1))[0]
         hdf_f.attrs['destination_version'] = str(major) + '.' + str(minor)
 
         f.seek(2, 1)  # skip to next block
 
+
+        iteration_number = 0
+        data_group = hdf_f.create_group('data')
+        iteration_number_group = data_group.create_group(str(iteration_number))
+        iteration_number_group.attrs['grab_number'] = iteration_number
+        fields_group = iteration_number_group.create_group('fields')
+        particles_group = iteration_number_group.create_group('particles')
+
+        # Read GDF data blocks
+        lastarr = False
         while True:
             if f.read(1) == '':
                 break
@@ -106,6 +109,13 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
             sval = int(typee & t_sval > 0)
             arr = int(typee & t_arr > 0)
 
+            dattype = typee & 255
+            if lastarr and not arr:
+                iteration_number += 1
+                iteration_number_group = data_group.create_group(str(iteration_number))
+                iteration_number_group.attrs['number'] = iteration_number
+                fields_group = iteration_number_group.create_group('fields')
+                particles_group = iteration_number_group.create_group('particles')
             if sval:
                 if dattype == t_dbl:
                     value = struct.unpack('d', f.read(8))[0]
@@ -131,6 +141,9 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     hdf_f.close()
     print ('Converting .gdf to .hdf file with hierical layout... Complete.')
     
+    print('Converting .gdf to .hdf file with hierical layout... Complete.')
+
+
 def terminal_call(terminal_args):
     hierical_suffix = '_hierical'
     
