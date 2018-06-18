@@ -6,6 +6,27 @@ import struct
 import os
 import sys
 
+import re
+
+
+def name_to_group(name, particles, size, f):
+    dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
+                      'ID': ['none', 'none']}
+
+    if dict_particles.get(name) != None:
+        if dict_particles.get(name)[0] == 'none':
+            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+            particles.create_dataset(name, data=value)
+
+        else:
+            sub_name = str(dict_particles.get(name)[0])
+            sub_group = particles.require_group(sub_name)
+            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+            sub_group.create_dataset(dict_particles.get(name)[1], data=value)
+    else:
+        value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+
+
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     print ('Converting .gdf to .hdf file with hierical layout.')       
     if os.path.exists(hdf_file_directory):
@@ -138,7 +159,10 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
                     print('size=', size)
                     value = f.read(size)
             if arr:
-                if dattype == t_dbl:
+                decode_name = name.decode('ascii', errors='ignore')
+                correct_name = re.sub(r'\W+', '', decode_name)
+                name_to_group(correct_name, particles_group, size, f)
+            if dattype == t_dbl:
                     value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
                 else:
                     print('unknown datatype of value!!!')
