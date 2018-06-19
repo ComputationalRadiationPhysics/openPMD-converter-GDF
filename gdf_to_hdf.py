@@ -113,7 +113,6 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         iteration_number = 0
         data_group = hdf_f.create_group('data')
         iteration_number_group = data_group.create_group(str(iteration_number))
-        iteration_number_group.attrs['grab_number'] = iteration_number
         fields_group = iteration_number_group.create_group('fields')
         particles_group = iteration_number_group.create_group('particles')
 
@@ -143,13 +142,11 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
             if lastarr and not arr:
                 iteration_number += 1
                 iteration_number_group = data_group.create_group(str(iteration_number))
-                iteration_number_group.attrs['number'] = iteration_number
                 fields_group = iteration_number_group.create_group('fields')
                 particles_group = iteration_number_group.create_group('particles')
             if sval:
                 if dattype == t_dbl:
                     value = struct.unpack('d', f.read(8))[0]
-                    particles_group.create_dataset(name, data=value)
                 elif dattype == t_null:
                     pass
                 elif dattype == t_ascii:
