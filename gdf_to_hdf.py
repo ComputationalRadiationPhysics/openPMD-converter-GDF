@@ -5,6 +5,7 @@ import time
 import struct
 import os
 import sys
+import datetime
 
 import re
 
@@ -56,7 +57,9 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
             raise RuntimeWarning('File directory is not a .gdf file')
 
         time_created = struct.unpack('i', f.read(4))[0]
-        hdf_f.attrs['time_created'] = str(time_created) + ': ' + str(time.ctime(int(time_created)))
+        format_time = datetime.datetime.fromtimestamp(time_created)
+        format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+        hdf_f.attrs['date'] = format_time
 
 
         creator = list(f.read(GDFNAMELEN))
