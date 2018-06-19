@@ -147,6 +147,11 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
             if sval:
                 if dattype == t_dbl:
                     value = struct.unpack('d', f.read(8))[0]
+                    decode_name = name.decode('ascii', errors='ignore')
+                    correct_name = re.sub(r'\W+', '', decode_name)
+
+                    if correct_name == 'time':
+                        iteration_number_group.attrs[correct_name] = value
                 elif dattype == t_null:
                     pass
                 elif dattype == t_ascii:
