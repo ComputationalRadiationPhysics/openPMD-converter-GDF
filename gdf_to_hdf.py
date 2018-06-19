@@ -72,7 +72,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
                 break
             else:
                 creator_name.append(chr(element))
-        hdf_f.attrs['creator_name'] = ''.join(creator_name)
+        hdf_f.attrs['software'] = ''.join(creator_name)
 
 
         dest = f.read(GDFNAMELEN)
@@ -95,7 +95,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
 
         major = struct.unpack('B', f.read(1))[0]
         minor = struct.unpack('B', f.read(1))[0]
-        hdf_f.attrs['creator_version'] = str(major) + '.' + str(minor)
+        hdf_f.attrs['software version'] = str(major) + '.' + str(minor)
 
         major = struct.unpack('B', f.read(1))[0]
         minor = struct.unpack('B', f.read(1))[0]
