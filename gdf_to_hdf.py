@@ -10,6 +10,56 @@ import datetime
 import re
 
 
+def add_root_attributes(hdf_f, f, GDFNAMELEN):
+    time_created = struct.unpack('i', f.read(4))[0]
+    format_time = datetime.datetime.fromtimestamp(time_created)
+    format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+    hdf_f.attrs['date'] = format_time
+
+    creator = list(f.read(GDFNAMELEN))
+    new_creator = []
+    for element in creator:
+        new_creator.append(element)
+    creator_name = []
+    for element in new_creator:
+        if element is 0:
+            break
+        else:
+            creator_name.append(chr(element))
+    hdf_f.attrs['software'] = ''.join(creator_name)
+
+    dest = f.read(GDFNAMELEN)
+    new_dest = []
+    for element in dest:
+        new_dest.append(element)
+
+    destination = []
+    for element in new_dest:
+        if element is 0:
+            break
+        else:
+            destination.append(chr(element))
+    hdf_f.attrs['destination'] = ''.join(destination)
+
+    # get other metadata about the GDF file
+    major = struct.unpack('B', f.read(1))[0]
+    minor = struct.unpack('B', f.read(1))[0]
+    hdf_f.attrs['gdf_version'] = str(major) + '.' + str(minor)
+
+    major = struct.unpack('B', f.read(1))[0]
+    minor = struct.unpack('B', f.read(1))[0]
+    hdf_f.attrs['software version'] = str(major) + '.' + str(minor)
+
+    major = struct.unpack('B', f.read(1))[0]
+    minor = struct.unpack('B', f.read(1))[0]
+    hdf_f.attrs['destination_version'] = str(major) + '.' + str(minor)
+    hdf_f.attrs['iterationEncoding'] = 'groupBased'
+    hdf_f.attrs['iterationFormat'] = 'test_hierical_%T.h5'
+    hdf_f.attrs['particlesPath'] = 'particles/'
+    hdf_f.attrs['openPMD'] = '1.1.0'
+    hdf_f.attrs['openPMDextension'] = '1'
+    hdf_f.attrs['basePath'] = '/data/%T/'
+
 def name_to_group(name, particles, size, f):
     dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
                       'ID': ['none', 'none']}
@@ -56,56 +106,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         if gdf_id_check != GDFID:
             raise RuntimeWarning('File directory is not a .gdf file')
 
-        time_created = struct.unpack('i', f.read(4))[0]
-        format_time = datetime.datetime.fromtimestamp(time_created)
-        format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-        hdf_f.attrs['date'] = format_time
-
-
-        creator = list(f.read(GDFNAMELEN))
-        new_creator = []
-        for element in creator:
-            new_creator.append(element)
-        creator_name = []
-        for element in new_creator:
-            if element is 0:
-                break
-            else:
-                creator_name.append(chr(element))
-        hdf_f.attrs['software'] = ''.join(creator_name)
-
-
-        dest = f.read(GDFNAMELEN)
-        new_dest = []
-        for element in dest:
-            new_dest.append(element)
-
-        destination = []
-        for element in new_dest:
-            if element is 0:
-                break
-            else:
-                destination.append(chr(element))
-        hdf_f.attrs['destination'] = ''.join(destination)
-
-        # get other metadata about the GDF file
-        major = struct.unpack('B', f.read(1))[0]
-        minor = struct.unpack('B', f.read(1))[0]
-        hdf_f.attrs['gdf_version'] = str(major) + '.' + str(minor)
-
-        major = struct.unpack('B', f.read(1))[0]
-        minor = struct.unpack('B', f.read(1))[0]
-        hdf_f.attrs['software version'] = str(major) + '.' + str(minor)
-
-        major = struct.unpack('B', f.read(1))[0]
-        minor = struct.unpack('B', f.read(1))[0]
-        hdf_f.attrs['destination_version'] = str(major) + '.' + str(minor)
-        hdf_f.attrs['iterationEncoding'] = 'groupBased'
-        hdf_f.attrs['iterationFormat'] = 'test_hierical_%T.h5'
-        hdf_f.attrs['particlesPath'] = 'particles/'
-        hdf_f.attrs['openPMD'] = '1.1.0'
-        hdf_f.attrs['openPMDextension'] = '1'
-        hdf_f.attrs['basePath'] = '/data/%T/'
+        add_root_attributes(hdf_f, f, GDFNAMELEN)
 
         f.seek(2, 1)  # skip to next block
 
