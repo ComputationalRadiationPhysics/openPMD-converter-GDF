@@ -100,6 +100,12 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         major = struct.unpack('B', f.read(1))[0]
         minor = struct.unpack('B', f.read(1))[0]
         hdf_f.attrs['destination_version'] = str(major) + '.' + str(minor)
+        hdf_f.attrs['iterationEncoding'] = 'groupBased'
+        hdf_f.attrs['iterationFormat'] = 'test_hierical_%T.h5'
+        hdf_f.attrs['particlesPath'] = 'particles/'
+        hdf_f.attrs['openPMD'] = '1.1.0'
+        hdf_f.attrs['openPMDextension'] = '1'
+        hdf_f.attrs['basePath'] = '/data/%T/'
 
         f.seek(2, 1)  # skip to next block
 
