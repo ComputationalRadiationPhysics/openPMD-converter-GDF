@@ -159,11 +159,10 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
                     print('size=', size)
                     value = f.read(size)
             if arr:
-                decode_name = name.decode('ascii', errors='ignore')
-                correct_name = re.sub(r'\W+', '', decode_name)
-                name_to_group(correct_name, particles_group, size, f)
-            if dattype == t_dbl:
-                    value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+                if dattype == t_dbl:
+                    decode_name = name.decode('ascii', errors='ignore')
+                    correct_name = re.sub(r'\W+', '', decode_name)
+                    name_to_group(correct_name, particles_group, size, f)
                 else:
                     print('unknown datatype of value!!!')
                     print('name=', name)
