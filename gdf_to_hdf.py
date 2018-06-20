@@ -162,10 +162,6 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
                 elif dattype == t_ascii:
                     value = str(f.read(size))
                     value = value.strip(' \t\r\n\0')
-                    try:
-                        particles_group.create_dataset(name, data=value)
-                    except RuntimeError:
-                        del particles_group[name]
                 elif dattype == t_s32:
                     value = struct.unpack('i', f.read(4))[0]
                 else:
