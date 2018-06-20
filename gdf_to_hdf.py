@@ -62,12 +62,16 @@ def add_root_attributes(hdf_f, f, GDFNAMELEN):
 
 def name_to_group(name, particles, size, f):
     dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
-                      'ID': ['none', 'none']}
+                      'IDC': ['ID', 'none']}
 
+  #  print(name)
     if dict_particles.get(name) != None:
         if dict_particles.get(name)[0] == 'none':
             value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
             particles.create_dataset(name, data=value)
+        elif dict_particles.get(name)[0] == 'ID':
+            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+            particles.create_dataset('id', data=value, dtype=dtype('int'))
 
         else:
             sub_name = str(dict_particles.get(name)[0])
