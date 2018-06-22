@@ -60,7 +60,7 @@ def add_root_attributes(hdf_f, f, GDFNAMELEN):
     hdf_f.attrs['openPMDextension'] = '1'
     hdf_f.attrs['basePath'] = '/data/%T/'
 
-def name_to_group(name, particles, size, f):
+def name_to_group(name, particles, size, gdf_file):
     dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
                       'IDC': ['ID', 'none']}
                       'IDC': ['ID', 'none'], 'mz': ['mass', ' none']}
@@ -68,23 +68,22 @@ def name_to_group(name, particles, size, f):
   #  print(name)
     if dict_particles.get(name) != None:
         if dict_particles.get(name)[0] == 'none':
-            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             particles.create_dataset(name, data=value)
         elif dict_particles.get(name)[0] == 'ID':
-            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
-            particles.create_dataset('id', data=value, dtype=dtype('int'))
-
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+          #  particles.create_dataset('id', data=value, dtype=dtype('int'))
         elif dict_particles.get(name)[0] == 'mz':
-            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             mass_group = particles.create_group('mass')
             mass_group.create_dataset('mass', data=value)
         else:
             sub_name = str(dict_particles.get(name)[0])
             sub_group = particles.require_group(sub_name)
-            value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
-            sub_group.create_dataset(dict_particles.get(name)[1], data=value)
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+         #   sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
-        value = fromfile(f, dtype=dtype('f8'), count=int(size / 8))
+        value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
 class Block_types:
     t_dir = 256  # Directory entry start
@@ -102,100 +101,99 @@ class Constants:
     GDFNAMELEN = 16
 
 
-def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
-    print ('Converting .gdf to .hdf file with hierical layout.')       
-    if os.path.exists(hdf_file_directory):
-        os.remove(hdf_file_directory)
-    hdf_f = h5py.File(hdf_file_directory, 'a')
+def gdf_file_to_hdf_file(gdf_file, hdf_file):
 	
 	#Constants
 
     block_types = Block_types()
 
-    with open(gdf_file_directory, 'rb') as f:  # Important to open in binary mode 'b' to work cross platform
 
-        # Read the GDF main header
+    # Read the GDF main header
 
-        gdf_id_check = struct.unpack('i', f.read(4))[0]
-        if gdf_id_check != Constants.GDFID:
-            raise RuntimeWarning('File directory is not a .gdf file')
+    gdf_id_check = struct.unpack('i', gdf_file.read(4))[0]
+    if gdf_id_check != Constants.GDFID:
+        raise RuntimeWarning('File directory is not a .gdf file')
 
-        add_root_attributes(hdf_f, f, Constants.GDFNAMELEN)
+    add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
 
-        f.seek(2, 1)  # skip to next block
+    gdf_file.seek(2, 1)  # skip to next block
+
+    iteration_number = 0
+    data_group = hdf_file.create_group('data')
+    iteration_number_group = data_group.create_group(str(iteration_number))
+    fields_group = iteration_number_group.create_group('fields')
+    particles_group = iteration_number_group.create_group('particles')
+
+    # Read GDF data blocks
+    lastarr = False
+    while True:
+        if gdf_file.read(1) == '':
+            break
+        gdf_file.seek(-1, 1)
+
+        # Read GDF block header
+        name = gdf_file.read(16)
+        typee = struct.unpack('i', gdf_file.read(4))[0]
+        size = struct.unpack('i', gdf_file.read(4))[0]
+        # Get name
+        name = name.split()[0]
+
+        # Get block type
+        dir = int(typee & block_types.t_dir > 0)
+        edir = int(typee & block_types.t_edir > 0)
+        sval = int(typee & block_types.t_sval > 0)
+        arr = int(typee & block_types.t_arr > 0)
+
+        dattype = typee & 255
+        if lastarr and not arr:
+            iteration_number += 1
+            iteration_number_group = data_group.create_group(str(iteration_number))
+            fields_group = iteration_number_group.create_group('fields')
+            particles_group = iteration_number_group.create_group('particles')
+        if sval:
+            if dattype == block_types.t_dbl:
+                value = struct.unpack('d', gdf_file.read(8))[0]
+                decode_name = name.decode('ascii', errors='ignore')
+                correct_name = re.sub(r'\W+', '', decode_name)
+                if correct_name == 'time':
+                    iteration_number_group.attrs[correct_name] = value
+            elif dattype == Block_types.t_null:
+                pass
+            elif dattype == Block_types.t_ascii:
+                value = str(gdf_file.read(size))
+                value = value.strip(' \t\r\n\0')
+            elif dattype == Block_types.t_s32:
+                value = struct.unpack('i', gdf_file.read(4))[0]
+            else:
+                print('unknown datatype of value!!!')
+                print('name=', name)
+                print('type=', typee)
+                print('size=', size)
+                value = gdf_file.read(size)
+        if arr:
+            if dattype == Block_types.t_dbl:
+                decode_name = name.decode('ascii', errors='ignore')
+                correct_name = re.sub(r'\W+', '', decode_name)
+                name_to_group(correct_name, particles_group, size, gdf_file)
+            else:
+                print('unknown datatype of value!!!')
+                print('name=', name)
+                print('type=', typee)
+                print('size=', size)
+                value = gdf_file.read(size)
+        lastarr = arr;
 
 
-        iteration_number = 0
-        data_group = hdf_f.create_group('data')
-        iteration_number_group = data_group.create_group(str(iteration_number))
-        fields_group = iteration_number_group.create_group('fields')
-        particles_group = iteration_number_group.create_group('particles')
+def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
+    print('Converting .gdf to .hdf file with hierical layout.')
+    if os.path.exists(hdf_file_directory):
+        os.remove(hdf_file_directory)
+    hdf_file = h5py.File(hdf_file_directory, 'a')
+    with open(gdf_file_directory, 'rb') as gdf_file:
+        gdf_file_to_hdf_file(gdf_file, hdf_file)
 
-        # Read GDF data blocks
-        lastarr = False
-        while True:
-            if f.read(1) == '':
-                break
-            f.seek(-1, 1)
-
-            # Read GDF block header
-            name = f.read(16)
-            typee = struct.unpack('i', f.read(4))[0]
-
-            size = struct.unpack('i', f.read(4))[0]
-
-            # Get name
-            name = name.split()[0]
-
-            # Get block type
-            dir = int(typee & block_types.t_dir > 0)
-            edir = int(typee & block_types.t_edir > 0)
-            sval = int(typee & block_types.t_sval > 0)
-            arr = int(typee & block_types.t_arr > 0)
-
-            dattype = typee & 255
-            if lastarr and not arr:
-                iteration_number += 1
-                iteration_number_group = data_group.create_group(str(iteration_number))
-                fields_group = iteration_number_group.create_group('fields')
-                particles_group = iteration_number_group.create_group('particles')
-            if sval:
-                if dattype == block_types.t_dbl:
-                    value = struct.unpack('d', f.read(8))[0]
-                    decode_name = name.decode('ascii', errors='ignore')
-                    correct_name = re.sub(r'\W+', '', decode_name)
-
-                    if correct_name == 'time':
-                        iteration_number_group.attrs[correct_name] = value
-                elif dattype == Block_types.t_null:
-                    pass
-                elif dattype == Block_types.t_ascii:
-                    value = str(f.read(size))
-                    value = value.strip(' \t\r\n\0')
-                elif dattype == Block_types.t_s32:
-                    value = struct.unpack('i', f.read(4))[0]
-                else:
-                    print('unknown datatype of value!!!')
-                    print('name=', name)
-                    print('type=', typee)
-                    print('size=', size)
-                    value = f.read(size)
-            if arr:
-                if dattype == Block_types.t_dbl:
-                    decode_name = name.decode('ascii', errors='ignore')
-                    correct_name = re.sub(r'\W+', '', decode_name)
-                    name_to_group(correct_name, particles_group, size, f)
-                else:
-                    print('unknown datatype of value!!!')
-                    print('name=', name)
-                    print('type=', typee)
-                    print('size=', size)
-                    value = f.read(size)
-            lastarr = arr;
-    f.close()
-    hdf_f.close()
-    print ('Converting .gdf to .hdf file with hierical layout... Complete.')
-    
+    gdf_file.close()
+    hdf_file.close()
     print('Converting .gdf to .hdf file with hierical layout... Complete.')
 
 
