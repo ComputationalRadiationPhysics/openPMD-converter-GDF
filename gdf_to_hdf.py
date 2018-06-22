@@ -131,6 +131,16 @@ def print_warning_unknown_type(gdf_file, name, typee, size):
     value = gdf_file.read(size)
     print('value=' + value)
 
+
+def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
+    if dattype == Block_types.t_dbl:
+        decode_name = name.decode('ascii', errors='ignore')
+        correct_name = re.sub(r'\W+', '', decode_name)
+        name_to_group(correct_name, particles_group, size, gdf_file)
+    else:
+        print_warning_unknown_type(gdf_file, name, typee, size)
+
+
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     block_types = Block_types()
@@ -180,12 +190,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             else:
                 print_warning_unknown_type(gdf_file, name, typee, size)
         if arr:
-            if dattype == Block_types.t_dbl:
-                decode_name = name.decode('ascii', errors='ignore')
-                correct_name = re.sub(r'\W+', '', decode_name)
-                name_to_group(correct_name, particles_group, size, gdf_file)
-            else:
-                print_warning_unknown_type(gdf_file, name, typee, size)
+            read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
         lastarr = arr;
 
 
