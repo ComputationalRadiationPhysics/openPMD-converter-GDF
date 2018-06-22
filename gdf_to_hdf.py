@@ -96,6 +96,12 @@ class Block_types:
     t_dbl = int('0003', 16)  # Double
     t_null = int('0010', 16)  # No data
 
+
+class Constants:
+    GDFID  = 94325877
+    GDFNAMELEN = 16
+
+
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     print ('Converting .gdf to .hdf file with hierical layout.')       
     if os.path.exists(hdf_file_directory):
@@ -103,8 +109,6 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     hdf_f = h5py.File(hdf_file_directory, 'a')
 	
 	#Constants
-    GDFID  = 94325877;
-    GDFNAMELEN = 16;
 
     block_types = Block_types()
 
@@ -113,10 +117,10 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         # Read the GDF main header
 
         gdf_id_check = struct.unpack('i', f.read(4))[0]
-        if gdf_id_check != GDFID:
+        if gdf_id_check != Constants.GDFID:
             raise RuntimeWarning('File directory is not a .gdf file')
 
-        add_root_attributes(hdf_f, f, GDFNAMELEN)
+        add_root_attributes(hdf_f, f, Constants.GDFNAMELEN)
 
         f.seek(2, 1)  # skip to next block
 
