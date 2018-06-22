@@ -194,34 +194,35 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     print('Converting .gdf to .hdf file with hierical layout... Complete.')
 
 
-def terminal_call(terminal_args):
-    hierical_suffix = '_hierical'
-    
-    gdf_arg = False
-    hdf_arg = False
-
-    #
-    for arg in terminal_args:
+def files_from_args(file_names):
+    gdf_file = ''
+    hdf_file = ''
+    for arg in file_names:
         if arg[-4:] == '.gdf':
-            gdf_file_directory = arg
-            gdf_arg = True
+            gdf_file = arg
         elif arg[-4:] == '.hdf':
-            hdf_file_directory = arg
-            hdf_arg = True
+            hdf_file = arg
+    return gdf_file, hdf_file
 
-    if gdf_arg:
-        if os.path.exists(gdf_file_directory):
-            if not hdf_arg:
-                hdf_slab_file_directory = gdf_file_directory[:-4] + '.hdf'
-                hdf_file_directory = gdf_file_directory[:-4] + hierical_suffix + '.hdf'
-                print ('Destination .hdf directory not specified. Defaulting to ' + hdf_slab_file_directory)
+
+def run_converter_according_files(gdf_file, hdf_file):
+    if gdf_file != '':
+        if os.path.exists(gdf_file):
+            if hdf_file == '':
+                hdf_file = gdf_file[:-4] + '.hdf'
+                print('Destination .hdf directory not specified. Defaulting to ' + hdf_file)
             else:
-                hdf_slab_file_directory = hdf_file_directory
-                hdf_file_directory = hdf_slab_file_directory[:-4] + hierical_suffix + '.hdf'
-            gdf_to_hdf(gdf_file_directory, hdf_file_directory)
+                hdf_file = hdf_file[:-4] + '.hdf'
+            gdf_to_hdf(gdf_file, hdf_file)
         else:
-            print ('The .gdf file does not exist to convert to .hdf')
+            print('The .gdf file does not exist to convert to .hdf')
+
+
+def main(file_names):
+    gdf_file, hdf_file = files_from_args(file_names)
+    run_converter_according_files(gdf_file, hdf_file)
+
 
 if __name__ == "__main__":
-    terminal_args = sys.argv
-    terminal_call(terminal_args)
+    file_names = sys.argv
+    main(file_names)
