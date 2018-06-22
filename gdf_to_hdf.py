@@ -105,6 +105,16 @@ def check_gdf_file(gdf_file):
     gdf_id_check = struct.unpack('i', gdf_file.read(4))[0]
     if gdf_id_check != Constants.GDFID:
         raise RuntimeWarning('File directory is not a .gdf file')
+
+
+def read_gdf_block_header(gdf_file):
+    name = gdf_file.read(16)
+    namesplit = name.split()[0]
+    typee = struct.unpack('i', gdf_file.read(4))[0]
+    size = struct.unpack('i', gdf_file.read(4))[0]
+    return namesplit, typee, size
+
+
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 	
 	#Constants
@@ -133,12 +143,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             break
         gdf_file.seek(-1, 1)
 
-        # Read GDF block header
-        name = gdf_file.read(16)
-        typee = struct.unpack('i', gdf_file.read(4))[0]
-        size = struct.unpack('i', gdf_file.read(4))[0]
-        # Get name
-        name = name.split()[0]
+        name, typee, size = read_gdf_block_header(gdf_file)
 
         # Get block type
         dir = int(typee & block_types.t_dir > 0)
