@@ -121,6 +121,13 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     block_types = Block_types()
 
+def print_warning_unknown_type(gdf_file, name, typee, size):
+    print('unknown datatype of value!!!')
+    print('name=', name)
+    print('type=', typee)
+    print('size=', size)
+    value = gdf_file.read(size)
+    print('value=' + value)
 
     # Read the GDF main header
 
@@ -172,22 +179,14 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             elif dattype == Block_types.t_s32:
                 value = struct.unpack('i', gdf_file.read(4))[0]
             else:
-                print('unknown datatype of value!!!')
-                print('name=', name)
-                print('type=', typee)
-                print('size=', size)
-                value = gdf_file.read(size)
+                print_warning_unknown_type(gdf_file, name, typee, size)
         if arr:
             if dattype == Block_types.t_dbl:
                 decode_name = name.decode('ascii', errors='ignore')
                 correct_name = re.sub(r'\W+', '', decode_name)
                 name_to_group(correct_name, particles_group, size, gdf_file)
             else:
-                print('unknown datatype of value!!!')
-                print('name=', name)
-                print('type=', typee)
-                print('size=', size)
-                value = gdf_file.read(size)
+                print_warning_unknown_type(gdf_file, name, typee, size)
         lastarr = arr;
 
 
