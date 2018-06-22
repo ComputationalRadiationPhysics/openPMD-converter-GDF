@@ -141,6 +141,25 @@ def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
         print_warning_unknown_type(gdf_file, name, typee, size)
 
 
+def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name):
+    if data_type == block_types.t_dbl:
+        value = struct.unpack('d', gdf_file.read(8))[0]
+        decode_name = name.decode('ascii', errors='ignore')
+        correct_name = re.sub(r'\W+', '', decode_name)
+        if correct_name == 'time':
+            iteration_number_group.attrs[correct_name] = value
+    elif data_type == Block_types.t_null:
+        pass
+    elif data_type == Block_types.t_ascii:
+        value = str(gdf_file.read(size))
+        value = value.strip(' \t\r\n\0')
+    elif data_type == Block_types.t_s32:
+        value = struct.unpack('i', gdf_file.read(4))[0]
+    else:
+        print_warning_unknown_type(gdf_file, name, primitive_type, size)
+
+
+
 def create_iteration_sub_groups(iteration_number, data_group):
     iteration_number += 1
     iteration_number_group = data_group.create_group(str(iteration_number))
@@ -176,21 +195,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             iteration_number_group, fields_group, particles_group, iteration_number\
                 = create_iteration_sub_groups(iteration_number, data_group)
         if sval:
-            if data_type == block_types.t_dbl:
-                value = struct.unpack('d', gdf_file.read(8))[0]
-                decode_name = name.decode('ascii', errors='ignore')
-                correct_name = re.sub(r'\W+', '', decode_name)
-                if correct_name == 'time':
-                    iteration_number_group.attrs[correct_name] = value
-            elif data_type == Block_types.t_null:
-                pass
-            elif data_type == Block_types.t_ascii:
-                value = str(gdf_file.read(size))
-                value = value.strip(' \t\r\n\0')
-            elif data_type == Block_types.t_s32:
-                value = struct.unpack('i', gdf_file.read(4))[0]
-            else:
-                print_warning_unknown_type(gdf_file, name, primitive_type, size)
+            read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name)
         if arr:
             read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
         lastarr = arr;
