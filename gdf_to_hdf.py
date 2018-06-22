@@ -141,6 +141,14 @@ def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
         print_warning_unknown_type(gdf_file, name, typee, size)
 
 
+def create_iteration_sub_groups(iteration_number, data_group):
+    iteration_number += 1
+    iteration_number_group = data_group.create_group(str(iteration_number))
+    fields_group = iteration_number_group.create_group('fields')
+    particles_group = iteration_number_group.create_group('particles')
+    return fields_group, iteration_number_group, particles_group, iteration_number
+
+
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     block_types = Block_types()
@@ -149,11 +157,10 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     gdf_file.seek(2, 1)  # skip to next block
 
-    iteration_number = 0
+    iteration_number = -1
     data_group = hdf_file.create_group('data')
-    iteration_number_group = data_group.create_group(str(iteration_number))
-    fields_group = iteration_number_group.create_group('fields')
-    particles_group = iteration_number_group.create_group('particles')
+    fields_group, iteration_number_group, particles_group, iteration_number\
+        = create_iteration_sub_groups(iteration_number, data_group)
 
     # Read GDF data blocks
     lastarr = False
@@ -169,10 +176,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
         dattype = typee & 255
         if lastarr and not arr:
-            iteration_number += 1
-            iteration_number_group = data_group.create_group(str(iteration_number))
-            fields_group = iteration_number_group.create_group('fields')
-            particles_group = iteration_number_group.create_group('particles')
+            iteration_number_group, fields_group, particles_group, iteration_number\
+                = create_iteration_sub_groups(iteration_number, data_group)
         if sval:
             if dattype == block_types.t_dbl:
                 value = struct.unpack('d', gdf_file.read(8))[0]
