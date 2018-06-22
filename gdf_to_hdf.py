@@ -101,6 +101,10 @@ class Constants:
     GDFNAMELEN = 16
 
 
+def check_gdf_file(gdf_file):
+    gdf_id_check = struct.unpack('i', gdf_file.read(4))[0]
+    if gdf_id_check != Constants.GDFID:
+        raise RuntimeWarning('File directory is not a .gdf file')
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 	
 	#Constants
@@ -110,9 +114,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     # Read the GDF main header
 
-    gdf_id_check = struct.unpack('i', gdf_file.read(4))[0]
-    if gdf_id_check != Constants.GDFID:
-        raise RuntimeWarning('File directory is not a .gdf file')
+    check_gdf_file(gdf_file)
 
     add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
 
