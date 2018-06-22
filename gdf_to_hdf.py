@@ -115,11 +115,13 @@ def read_gdf_block_header(gdf_file):
     return namesplit, typee, size
 
 
-def gdf_file_to_hdf_file(gdf_file, hdf_file):
-	
-	#Constants
+def get_block_type(typee, block_types):
+    dir = int(typee & block_types.t_dir > 0)
+    edir = int(typee & block_types.t_edir > 0)
+    sval = int(typee & block_types.t_sval > 0)
+    arr = int(typee & block_types.t_arr > 0)
+    return dir, edir, sval, arr
 
-    block_types = Block_types()
 
 def print_warning_unknown_type(gdf_file, name, typee, size):
     print('unknown datatype of value!!!')
@@ -129,10 +131,10 @@ def print_warning_unknown_type(gdf_file, name, typee, size):
     value = gdf_file.read(size)
     print('value=' + value)
 
-    # Read the GDF main header
+def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
+    block_types = Block_types()
     check_gdf_file(gdf_file)
-
     add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
 
     gdf_file.seek(2, 1)  # skip to next block
@@ -153,10 +155,7 @@ def print_warning_unknown_type(gdf_file, name, typee, size):
         name, typee, size = read_gdf_block_header(gdf_file)
 
         # Get block type
-        dir = int(typee & block_types.t_dir > 0)
-        edir = int(typee & block_types.t_edir > 0)
-        sval = int(typee & block_types.t_sval > 0)
-        arr = int(typee & block_types.t_arr > 0)
+        dir, edir, sval, arr = get_block_type(typee, block_types)
 
         dattype = typee & 255
         if lastarr and not arr:
