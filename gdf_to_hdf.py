@@ -10,12 +10,7 @@ import datetime
 import re
 
 
-def add_root_attributes(hdf_f, f, GDFNAMELEN):
-    time_created = struct.unpack('i', f.read(4))[0]
-    format_time = datetime.datetime.fromtimestamp(time_created)
-    format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-    hdf_f.attrs['date'] = format_time
-
+def add_creator_name(hdf_f, GDFNAMELEN):
     creator = list(f.read(GDFNAMELEN))
     new_creator = []
     for element in creator:
@@ -27,6 +22,14 @@ def add_root_attributes(hdf_f, f, GDFNAMELEN):
         else:
             creator_name.append(chr(element))
     hdf_f.attrs['software'] = ''.join(creator_name)
+
+def add_root_attributes(hdf_f, f, GDFNAMELEN):
+    time_created = struct.unpack('i', f.read(4))[0]
+    format_time = datetime.datetime.fromtimestamp(time_created)
+    format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+    hdf_f.attrs['date'] = format_time
+
+    add_creator_name(hdf_f, GDFNAMELEN)
 
     dest = f.read(GDFNAMELEN)
     new_dest = []
