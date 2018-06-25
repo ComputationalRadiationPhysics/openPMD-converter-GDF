@@ -10,7 +10,7 @@ import datetime
 import re
 
 
-def add_creator_name(hdf_f, GDFNAMELEN):
+def add_creator_name(f, hdf_f, GDFNAMELEN):
     creator = list(f.read(GDFNAMELEN))
     new_creator = []
     for element in creator:
@@ -24,8 +24,7 @@ def add_creator_name(hdf_f, GDFNAMELEN):
     hdf_f.attrs['software'] = ''.join(creator_name)
 
 
-    add_creator_name(hdf_f, GDFNAMELEN)
-
+def add_dest_name(f, hdf_f, GDFNAMELEN):
     dest = f.read(GDFNAMELEN)
     new_dest = []
     for element in dest:
@@ -49,6 +48,10 @@ def add_creation_time(f, hdf_f):
 
 def add_root_attributes(hdf_f, f, GDFNAMELEN):
     add_creation_time(f, hdf_f)
+
+    add_creator_name(f, hdf_f, GDFNAMELEN)
+    add_dest_name(f, hdf_f, GDFNAMELEN)
+
     # get other metadata about the GDF file
     major = struct.unpack('B', f.read(1))[0]
     minor = struct.unpack('B', f.read(1))[0]
@@ -67,6 +70,7 @@ def add_root_attributes(hdf_f, f, GDFNAMELEN):
     hdf_f.attrs['openPMD'] = '1.1.0'
     hdf_f.attrs['openPMDextension'] = '1'
     hdf_f.attrs['basePath'] = '/data/%T/'
+
 
 def name_to_group(name, particles, size, gdf_file):
     dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
@@ -92,6 +96,7 @@ def name_to_group(name, particles, size, gdf_file):
          #   sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+
 
 class Block_types:
     t_dir = 256  # Directory entry start
