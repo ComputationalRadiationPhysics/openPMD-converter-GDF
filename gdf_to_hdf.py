@@ -23,11 +23,6 @@ def add_creator_name(hdf_f, GDFNAMELEN):
             creator_name.append(chr(element))
     hdf_f.attrs['software'] = ''.join(creator_name)
 
-def add_root_attributes(hdf_f, f, GDFNAMELEN):
-    time_created = struct.unpack('i', f.read(4))[0]
-    format_time = datetime.datetime.fromtimestamp(time_created)
-    format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-    hdf_f.attrs['date'] = format_time
 
     add_creator_name(hdf_f, GDFNAMELEN)
 
@@ -44,6 +39,16 @@ def add_root_attributes(hdf_f, f, GDFNAMELEN):
             destination.append(chr(element))
     hdf_f.attrs['destination'] = ''.join(destination)
 
+
+def add_creation_time(f, hdf_f):
+    time_created = struct.unpack('i', f.read(4))[0]
+    format_time = datetime.datetime.fromtimestamp(time_created)
+    format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+    hdf_f.attrs['date'] = format_time
+
+
+def add_root_attributes(hdf_f, f, GDFNAMELEN):
+    add_creation_time(f, hdf_f)
     # get other metadata about the GDF file
     major = struct.unpack('B', f.read(1))[0]
     minor = struct.unpack('B', f.read(1))[0]
