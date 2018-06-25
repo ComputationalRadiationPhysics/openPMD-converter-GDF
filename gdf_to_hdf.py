@@ -84,7 +84,7 @@ def name_to_group(name, particles, size, gdf_file):
             particles.create_dataset(name, data=value)
         elif dict_particles.get(name)[0] == 'ID':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-          #  particles.create_dataset('id', data=value, dtype=dtype('int'))
+            particles.create_dataset('id', data=value, dtype=dtype('int'))
         elif dict_particles.get(name)[0] == 'mz':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             mass_group = particles.create_group('mass')
@@ -93,7 +93,7 @@ def name_to_group(name, particles, size, gdf_file):
             sub_name = str(dict_particles.get(name)[0])
             sub_group = particles.require_group(sub_name)
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-         #   sub_group.create_dataset(dict_particles.get(name)[1], data=value)
+            sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
@@ -154,13 +154,17 @@ def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
         print_warning_unknown_type(gdf_file, name, typee, size)
 
 
-def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name):
+def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name,
+                           last_iteration_time):
     if data_type == block_types.t_dbl:
         value = struct.unpack('d', gdf_file.read(8))[0]
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
         if correct_name == 'time':
             iteration_number_group.attrs[correct_name] = value
+            iteration_number_group.attrs['timeUnitSI'] = '1E-3'
+            iteration_number_group.attrs['dt'] = str(value - last_iteration_time)
+            last_iteration_time.__add__(value)
     elif data_type == Block_types.t_null:
         pass
     elif data_type == Block_types.t_ascii:
@@ -178,7 +182,7 @@ def create_iteration_sub_groups(iteration_number, data_group):
     iteration_number_group = data_group.create_group(str(iteration_number))
     fields_group = iteration_number_group.create_group('fields')
     particles_group = iteration_number_group.create_group('particles')
-    return fields_group, iteration_number_group, particles_group, iteration_number
+    return iteration_number_group, fields_group, particles_group, iteration_number
 
 
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
@@ -189,12 +193,14 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     gdf_file.seek(2, 1)  # skip to next block
 
-    iteration_number = -1
+    iteration_number = 0
     data_group = hdf_file.create_group('data')
-    fields_group, iteration_number_group, particles_group, iteration_number\
-        = create_iteration_sub_groups(iteration_number, data_group)
 
-    # Read GDF data blocks
+    iteration_number_group, fields_group, particles_group, iteration_number\
+        = create_iteration_sub_groups(iteration_number, data_group)
+    last_iteration_time = 0
+
+
     lastarr = False
     while True:
         if gdf_file.read(1) == '':
@@ -208,7 +214,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             iteration_number_group, fields_group, particles_group, iteration_number\
                 = create_iteration_sub_groups(iteration_number, data_group)
         if sval:
-            read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name)
+            read_single_value_type(gdf_file, data_type,
+                                   iteration_number_group, primitive_type, block_types, size, name, last_iteration_time)
         if arr:
             read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
         lastarr = arr;
