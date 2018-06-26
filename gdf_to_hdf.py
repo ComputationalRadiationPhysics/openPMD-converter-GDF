@@ -1,17 +1,25 @@
+"""This file convert gpt file to openPMD format"""
+
+
 from __future__ import division
 from pylab import *
 import h5py
-import time
 import struct
 import os
 import sys
 import datetime
-
 import re
 
 
-def add_creator_name(f, hdf_f, GDFNAMELEN):
-    creator = list(f.read(GDFNAMELEN))
+def add_creator_name(gdf_file, hdf_file, GDFNAMELEN):
+    """Function check that input file is correct GPT file
+        Args:
+           gdf_file - input file
+        Returns:
+            raise RuntimeWarning - if input file is not correct GPT file
+        if input file is correct GPT file, it return nothing
+        """
+    creator = list(gdf_file.read(GDFNAMELEN))
     new_creator = []
     for element in creator:
         new_creator.append(element)
@@ -21,11 +29,17 @@ def add_creator_name(f, hdf_f, GDFNAMELEN):
             break
         else:
             creator_name.append(chr(element))
-    hdf_f.attrs['software'] = ''.join(creator_name)
+    hdf_file.attrs['software'] = ''.join(creator_name)
 
 
-def add_dest_name(f, hdf_f, GDFNAMELEN):
-    dest = f.read(GDFNAMELEN)
+def add_dest_name(gdf_file, hdf_file, GDFNAMELEN):
+    """Function add destination name to root directory
+        Args:
+           gdf_file - input file GPT
+           hdf_file - output file openPMD
+           GDFNAMELEN - size of GPT names
+        """
+    dest = gdf_file.read(GDFNAMELEN)
     new_dest = []
     for element in dest:
         new_dest.append(element)
@@ -36,48 +50,68 @@ def add_dest_name(f, hdf_f, GDFNAMELEN):
             break
         else:
             destination.append(chr(element))
-    hdf_f.attrs['destination'] = ''.join(destination)
+    hdf_file.attrs['destination'] = ''.join(destination)
 
 
-def add_creation_time(f, hdf_f):
-    time_created = struct.unpack('i', f.read(4))[0]
+def add_creation_time(gdf_file, hdf_file):
+    """Function add when the gdf file file was created to root directory
+    of openPMD file.
+    We use next time and data format: YYYY-MM-DD HH:mm:ss tz
+        Args:
+           gdf_file - input gpt file
+           hdf_file - output openPMD file
+        """
+    time_created = struct.unpack('i', gdf_file.read(4))[0]
     format_time = datetime.datetime.fromtimestamp(time_created)
     format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-    hdf_f.attrs['date'] = format_time
+    hdf_file.attrs['date'] = format_time
 
 
-def add_root_attributes(hdf_f, f, GDFNAMELEN):
-    add_creation_time(f, hdf_f)
-
-    add_creator_name(f, hdf_f, GDFNAMELEN)
-    add_dest_name(f, hdf_f, GDFNAMELEN)
+def add_root_attributes(hdf_file, gdf_file, GDFNAMELEN):
+    """Function add root attributes to result hdf_file
+         Args:
+           gdf_file - input file GPT
+           hdf_file - output file openPMD
+           GDFNAMELEN - size of GPT names
+        """
+    add_creation_time(gdf_file, hdf_file)
+    add_creator_name(gdf_file, hdf_file, GDFNAMELEN)
+    add_dest_name(gdf_file, hdf_file, GDFNAMELEN)
 
     # get other metadata about the GDF file
-    major = struct.unpack('B', f.read(1))[0]
-    minor = struct.unpack('B', f.read(1))[0]
-    hdf_f.attrs['gdf_version'] = str(major) + '.' + str(minor)
+    major = struct.unpack('B', gdf_file.read(1))[0]
+    minor = struct.unpack('B', gdf_file.read(1))[0]
+    hdf_file.attrs['gdf_version'] = str(major) + '.' + str(minor)
 
-    major = struct.unpack('B', f.read(1))[0]
-    minor = struct.unpack('B', f.read(1))[0]
-    hdf_f.attrs['software version'] = str(major) + '.' + str(minor)
+    major = struct.unpack('B', gdf_file.read(1))[0]
+    minor = struct.unpack('B', gdf_file.read(1))[0]
+    hdf_file.attrs['software version'] = str(major) + '.' + str(minor)
 
-    major = struct.unpack('B', f.read(1))[0]
-    minor = struct.unpack('B', f.read(1))[0]
-    hdf_f.attrs['destination_version'] = str(major) + '.' + str(minor)
-    hdf_f.attrs['iterationEncoding'] = 'groupBased'
-    hdf_f.attrs['iterationFormat'] = 'test_hierical_%T.h5'
-    hdf_f.attrs['particlesPath'] = 'particles/'
-    hdf_f.attrs['openPMD'] = '1.1.0'
-    hdf_f.attrs['openPMDextension'] = '1'
-    hdf_f.attrs['basePath'] = '/data/%T/'
+    major = struct.unpack('B', gdf_file.read(1))[0]
+    minor = struct.unpack('B', gdf_file.read(1))[0]
+    hdf_file.attrs['destination_version'] = str(major) + '.' + str(minor)
+    hdf_file.attrs['iterationEncoding'] = 'groupBased'
+    hdf_file.attrs['iterationFormat'] = 'test_hierical_%T.h5'
+    hdf_file.attrs['particlesPath'] = 'particles/'
+    hdf_file.attrs['openPMD'] = '1.1.0'
+    hdf_file.attrs['openPMDextension'] = '1'
+    hdf_file.attrs['basePath'] = '/data/%T/'
 
 
 def name_to_group(name, particles, size, gdf_file):
+    """Function add dataset to correct group:
+        particles or fields
+        Args:
+            particles - particles group
+            name - name of dataset in gdf_file
+            size - size of dataset in gdf_file
+            gdf_file - input file GPT
+           """
+
     dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
-                      'IDC': ['ID', 'none']}
                       'IDC': ['ID', 'none'], 'mz': ['mass', ' none']}
 
-  #  print(name)
+   # print(name)
     if dict_particles.get(name) != None:
         if dict_particles.get(name)[0] == 'none':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
@@ -115,20 +149,36 @@ class Constants:
 
 
 def check_gdf_file(gdf_file):
+    """Fuction check that input file is correct GPT file
+        Args:
+           gdf_file - input file
+        Returns:
+            raise RuntimeWarning - if input file is not correct GPT file
+        """
     gdf_id_check = struct.unpack('i', gdf_file.read(4))[0]
     if gdf_id_check != Constants.GDFID:
         raise RuntimeWarning('File directory is not a .gdf file')
 
 
 def read_gdf_block_header(gdf_file):
+    """ Function read block header of gdf file
+        Args:
+           gdf_file - input gpt file
+        """
     name = gdf_file.read(16)
     namesplit = name.split()[0]
-    typee = struct.unpack('i', gdf_file.read(4))[0]
+    primitive_type = struct.unpack('i', gdf_file.read(4))[0]
     size = struct.unpack('i', gdf_file.read(4))[0]
-    return namesplit, typee, size
+    return namesplit, primitive_type, size
 
 
 def get_block_type(typee, block_types):
+    """Function return type of curent block
+        Args:
+          typee - input type from GPT file
+          block_types - all types block in GDF file
+           """
+
     dir = int(typee & block_types.t_dir > 0)
     edir = int(typee & block_types.t_edir > 0)
     sval = int(typee & block_types.t_sval > 0)
@@ -137,6 +187,13 @@ def get_block_type(typee, block_types):
 
 
 def print_warning_unknown_type(gdf_file, name, typee, size):
+    """Function print warning if type of GDF file are unknown
+        Args:
+           gdf_file - input file
+           name  - name of block
+           typee - type of block
+           size - size of block
+        """
     print('unknown datatype of value!!!')
     print('name=', name)
     print('type=', typee)
@@ -146,6 +203,14 @@ def print_warning_unknown_type(gdf_file, name, typee, size):
 
 
 def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
+    """Function read array type from GDF file
+        Args:
+           gdf_file - input file
+           dattype - type of array block
+           particles_group - group of particles in result openPMD file
+           typee - type of block
+           size - size of block
+        """
     if dattype == Block_types.t_dbl:
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
@@ -161,6 +226,8 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
         if correct_name == 'time':
+            print('TIME')
+            print(iteration_number_group.name)
             iteration_number_group.attrs[correct_name] = value
             iteration_number_group.attrs['timeUnitSI'] = '1E-3'
             iteration_number_group.attrs['dt'] = str(value - last_iteration_time)
@@ -176,9 +243,19 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
 
-
 def create_iteration_sub_groups(iteration_number, data_group):
+    """Function create subgroup according iteration
+        Args:
+         iteration_number - number of current iteration
+         data_group - base group
+        Returns:
+          iteration_number_group - group for current iteration
+          fields - group for fields in result openPMD file
+          particles_group - group for particles in result openPMD file
+          iteration_number - result number of iteration
+        """
     iteration_number += 1
+    print(iteration_number)
     iteration_number_group = data_group.create_group(str(iteration_number))
     fields_group = iteration_number_group.create_group('fields')
     particles_group = iteration_number_group.create_group('particles')
@@ -199,9 +276,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
     iteration_number_group, fields_group, particles_group, iteration_number\
         = create_iteration_sub_groups(iteration_number, data_group)
     last_iteration_time = 0
-
-
     lastarr = False
+
     while True:
         if gdf_file.read(1) == '':
             break
@@ -213,15 +289,24 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         if lastarr and not arr:
             iteration_number_group, fields_group, particles_group, iteration_number\
                 = create_iteration_sub_groups(iteration_number, data_group)
+        #    print('iteration number cgroup' + str(iteration_number))
         if sval:
             read_single_value_type(gdf_file, data_type,
                                    iteration_number_group, primitive_type, block_types, size, name, last_iteration_time)
         if arr:
             read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
+
         lastarr = arr;
 
 
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
+    """Function find GDF file in gdf_file_directory,
+       and convert to hdf file openPMD standart,
+       write to hdf_file_directory
+        Args:
+         gdf_file_directory - path to GDF file
+         hdf_file_directory - path where the hdf  file is created
+        """
     print('Converting .gdf to .hdf file with hierical layout.')
     if os.path.exists(hdf_file_directory):
         os.remove(hdf_file_directory)
