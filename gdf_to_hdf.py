@@ -111,7 +111,17 @@ def name_to_group(name, particles, size, gdf_file):
     dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
                       'IDC': ['ID', 'none'], 'mz': ['mass', ' none']}
 
-   # print(name)
+    dict_demantions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'Bx': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'By': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'Bz': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'G': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'fEx': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
+                       'fEy': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
+                       'fEz': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0)}
+
+    print(name)
     if dict_particles.get(name) != None:
         if dict_particles.get(name)[0] == 'none':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
@@ -126,6 +136,7 @@ def name_to_group(name, particles, size, gdf_file):
         else:
             sub_name = str(dict_particles.get(name)[0])
             sub_group = particles.require_group(sub_name)
+            sub_group.attrs['unitDimension'] = str(dict_demantions.get(dict_particles.get(name)[0]))
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
