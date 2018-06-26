@@ -137,6 +137,7 @@ def name_to_group(name, particles, size, gdf_file):
             sub_name = str(dict_particles.get(name)[0])
             sub_group = particles.require_group(sub_name)
             sub_group.attrs['unitDimension'] = str(dict_demantions.get(dict_particles.get(name)[0]))
+            sub_group.attrs['timeOffset'] = '0.0'
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
