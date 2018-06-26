@@ -145,10 +145,10 @@ def name_to_group(name, particles, size, gdf_file):
 
 
 class Block_types:
-    t_dir = 256  # Directory entry start
-    t_edir = 512  # Directory entry end
-    t_sval = 1024  # Single valued
-    t_arr = 2048  # Array
+    dir = 256  # Directory entry start
+    edir = 512  # Directory entry end
+    sval = 1024  # Single valued
+    arr = 2048  # Array
     t_ascii = int('0001', 16)  # ASCII character
     t_s32 = int('0002', 16)  # Signed long
     t_dbl = int('0003', 16)  # Double
@@ -191,10 +191,10 @@ def get_block_type(typee, block_types):
           block_types - all types block in GDF file
            """
 
-    dir = int(typee & block_types.t_dir > 0)
-    edir = int(typee & block_types.t_edir > 0)
-    sval = int(typee & block_types.t_sval > 0)
-    arr = int(typee & block_types.t_arr > 0)
+    dir = int(typee & block_types.dir > 0)
+    edir = int(typee & block_types.edir > 0)
+    sval = int(typee & block_types.sval > 0)
+    arr = int(typee & block_types.arr > 0)
     return dir, edir, sval, arr
 
 
