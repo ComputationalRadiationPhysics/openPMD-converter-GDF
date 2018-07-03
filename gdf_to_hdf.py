@@ -314,16 +314,14 @@ def create_iteration_sub_groups(iteration_number, data_group):
          data_group - base group
         Returns:
           iteration_number_group - group for current iteration
-          fields - group for fields in result openPMD file
           particles_group - group for particles in result openPMD file
           iteration_number - result number of iteration
         """
     iteration_number += 1
     print(iteration_number)
     iteration_number_group = data_group.create_group(str(iteration_number))
-    fields_group = iteration_number_group.create_group('fields')
     particles_group = iteration_number_group.create_group('particles')
-    return iteration_number_group, fields_group, particles_group, iteration_number
+    return iteration_number_group, particles_group, iteration_number
 
 
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
@@ -337,7 +335,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
     iteration_number = 0
     data_group = hdf_file.create_group('data')
 
-    iteration_number_group, fields_group, particles_group, iteration_number\
+    iteration_number_group, particles_group, iteration_number\
         = create_iteration_sub_groups(iteration_number, data_group)
     last_iteration_time = 0
     lastarr = False
@@ -351,7 +349,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         data_type = primitive_type & 255
         
         if lastarr and not arr:
-            iteration_number_group, fields_group, particles_group, iteration_number\
+            iteration_number_group, particles_group, iteration_number\
                 = create_iteration_sub_groups(iteration_number, data_group)
         #    print('iteration number cgroup' + str(iteration_number))
         if sval:
