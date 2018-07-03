@@ -98,6 +98,46 @@ def add_root_attributes(hdf_file, gdf_file, GDFNAMELEN):
     hdf_file.attrs['basePath'] = '/data/%T/'
 
 
+def find_one_symbol_attribute(name):
+    dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
+                       'G': ['none', 'G']}
+    return dict_one_symbol.get(name[0])
+
+
+def find_two_symbols_attribute(name):
+    dict_two_symbols = {'Bx': ['B', 'x'], 'By': ['B', 'y'], 'Bz': ['B', 'z']}
+    if len(name) < 2:
+        return None
+    current_name = name[0] + name[1]
+    return dict_two_symbols.get(current_name)
+
+
+def find_three_symbols_attribute(name):
+    dict_three_symbols = {'fBx': ['fB', 'x'], 'fBy': ['fB', 'y'], 'fBz': ['fB', 'z'],
+                          'fEx': ['fE', 'x'], 'fEy': ['fE', 'y'], 'fEz': ['fE', 'z'],
+                          'rxy': ['none', 'rxy']}
+    if len(name) < 3:
+        return None
+    current_name = name[0] + name[1] + name[2]
+    return dict_three_symbols.get(current_name)
+
+
+def find_multiple_symbols_attribute(name):
+    dict_three_symbols = {'stdx': ['std', 'x'], 'stdy': ['std', 'y'], 'stdz': ['std', 'z'],
+                          'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z']}
+    return dict_three_symbols.get(name)
+
+def find_attribute(name):
+    if find_one_symbol_attribute(name) != None:
+        return find_one_symbol_attribute(name)
+    elif find_two_symbols_attribute(name) != None:
+        return find_two_symbols_attribute(name)
+    elif find_three_symbols_attribute(name) != None:
+        return find_three_symbols_attribute(name)
+    else:
+        return None
+
+
 def name_to_group(name, particles, size, gdf_file):
     """Function add dataset to correct group:
         particles or fields
@@ -108,38 +148,50 @@ def name_to_group(name, particles, size, gdf_file):
             gdf_file - input file GPT
            """
 
-    dict_particles = {'x': ['position', 'x'], 'y': ['position', 'y'], 'zDD': ['position', 'z'],
-                      'IDC': ['ID', 'none'], 'mz': ['mass', ' none']}
+    dict_particles = {'IDC': ['ID', 'none']}
 
     dict_demantions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
                        'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'Bx': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'By': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'Bz': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'B': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
                        'G': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'fEx': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
-                       'fEy': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
-                       'fEz': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0)}
+                       'fE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
+                       'fB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0),
+                       'std': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)}
 
     print(name)
-    if dict_particles.get(name) != None:
+    if find_attribute(name) != None:
+        name_atribute = find_attribute(name)
+        if name_atribute[0] == 'none':
+            print('non - group  ' + name_atribute[1])
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+            particles.create_dataset(name_atribute[1], data=value)
+        else:
+            sub_group = particles.require_group(name_atribute[0])
+            sub_group.attrs['unitDimension'] = str(dict_demantions.get(name_atribute[0]))
+            sub_group.attrs['timeOffset'] = '0.0'
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+            sub_group.create_dataset(name_atribute[1], data=value)
+    elif dict_particles.get(name) != None:
         if dict_particles.get(name)[0] == 'none':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            particles.create_dataset(name, data=value)
+           # particles.create_dataset(name, data=value)
         elif dict_particles.get(name)[0] == 'ID':
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size /
+                                                                    8))
             particles.create_dataset('id', data=value, dtype=dtype('int'))
-        elif dict_particles.get(name)[0] == 'mz':
+        elif dict_particles.get(name)[0] == 'mass':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             mass_group = particles.create_group('mass')
-            mass_group.create_dataset('mass', data=value)
+            mass_group.attrs['value'] = str(value[1])
+           # mass_group.create_dataset('mass', data=value)
         else:
+            #print(name)
             sub_name = str(dict_particles.get(name)[0])
             sub_group = particles.require_group(sub_name)
             sub_group.attrs['unitDimension'] = str(dict_demantions.get(dict_particles.get(name)[0]))
             sub_group.attrs['timeOffset'] = '0.0'
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            sub_group.create_dataset(dict_particles.get(name)[1], data=value)
+          #  sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
