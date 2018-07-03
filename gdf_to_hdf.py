@@ -100,7 +100,7 @@ def add_root_attributes(hdf_file, gdf_file, GDFNAMELEN):
 
 def find_one_symbol_attribute(name):
     dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
-                       'G': ['none', 'G']}
+                       'G': ['none', 'G'], 'q': ['none', 'charge'], 'm': ['none', 'mass']}
     return dict_one_symbol.get(name[0])
 
 
@@ -124,8 +124,17 @@ def find_three_symbols_attribute(name):
 
 def find_multiple_symbols_attribute(name):
     dict_three_symbols = {'stdx': ['std', 'x'], 'stdy': ['std', 'y'], 'stdz': ['std', 'z'],
-                          'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z']}
+                          'avgx': ['avg', 'x'], 'avgy': ['avg', 'y'], 'avgz': ['avg', 'z'],
+                          'avgBx': ['avgB', 'x'], 'avgBy': ['avgB', 'y'], 'avgBz': ['avgB', 'z'],
+                          'avgFEx': ['avgFE', 'x'], 'avgFEy': ['avgFE', 'y'], 'avgFEz': ['avgFE', 'z'],
+                          'avgFBx': ['avgFB', 'x'], 'avgFBy': ['avgFB', 'y'], 'avgFBz': ['avgFB', 'z'],
+                          'avgr': ['none', 'avgr'], 'avgG': ['none', 'avgG'],
+                          'stdt': ['none', 'stdt'], 'stdG': ['none', 'stdG'],
+                          'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
+                          'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt']
+                          }
     return dict_three_symbols.get(name)
+
 
 def find_attribute(name):
     if find_one_symbol_attribute(name) != None:
@@ -134,6 +143,8 @@ def find_attribute(name):
         return find_two_symbols_attribute(name)
     elif find_three_symbols_attribute(name) != None:
         return find_three_symbols_attribute(name)
+    elif find_multiple_symbols_attribute(name) != None:
+        return find_multiple_symbols_attribute(name)
     else:
         return None
 
@@ -154,15 +165,26 @@ def name_to_group(name, particles, size, gdf_file):
                        'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
                        'B': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
                        'G': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'charge': (0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0),
                        'fE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
                        'fB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0),
-                       'std': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)}
+                       'std': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'stdB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'stdt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+                       'rmacro': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'nmacro': (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'avg': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'avgB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'avgr': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                       'avgG': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
+                       'avgt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+                       'avgFE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
+                       'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
 
-    print(name)
+
     if find_attribute(name) != None:
         name_atribute = find_attribute(name)
         if name_atribute[0] == 'none':
-            print('non - group  ' + name_atribute[1])
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             particles.create_dataset(name_atribute[1], data=value)
         else:
@@ -172,26 +194,9 @@ def name_to_group(name, particles, size, gdf_file):
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             sub_group.create_dataset(name_atribute[1], data=value)
     elif dict_particles.get(name) != None:
-        if dict_particles.get(name)[0] == 'none':
+        if dict_particles.get(name)[0] == 'ID':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-           # particles.create_dataset(name, data=value)
-        elif dict_particles.get(name)[0] == 'ID':
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size /
-                                                                    8))
             particles.create_dataset('id', data=value, dtype=dtype('int'))
-        elif dict_particles.get(name)[0] == 'mass':
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            mass_group = particles.create_group('mass')
-            mass_group.attrs['value'] = str(value[1])
-           # mass_group.create_dataset('mass', data=value)
-        else:
-            #print(name)
-            sub_name = str(dict_particles.get(name)[0])
-            sub_group = particles.require_group(sub_name)
-            sub_group.attrs['unitDimension'] = str(dict_demantions.get(dict_particles.get(name)[0]))
-            sub_group.attrs['timeOffset'] = '0.0'
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-          #  sub_group.create_dataset(dict_particles.get(name)[1], data=value)
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
@@ -290,8 +295,6 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
         if correct_name == 'time':
-            print('TIME')
-            print(iteration_number_group.name)
             iteration_number_group.attrs[correct_name] = value
             iteration_number_group.attrs['timeUnitSI'] = '1E-3'
             iteration_number_group.attrs['dt'] = str(value - last_iteration_time)
@@ -351,7 +354,6 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         if lastarr and not arr:
             iteration_number_group, particles_group, iteration_number\
                 = create_iteration_sub_groups(iteration_number, data_group)
-        #    print('iteration number cgroup' + str(iteration_number))
         if sval:
             read_single_value_type(gdf_file, data_type,
                                    iteration_number_group, primitive_type, block_types, size, name, last_iteration_time)
