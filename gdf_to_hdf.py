@@ -131,8 +131,7 @@ def find_multiple_symbols_attribute(name):
                           'avgr': ['none', 'avgr'], 'avgG': ['none', 'avgG'],
                           'stdt': ['none', 'stdt'], 'stdG': ['none', 'stdG'],
                           'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
-                          'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt']
-                          }
+                          'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt']}
     return dict_three_symbols.get(name)
 
 
