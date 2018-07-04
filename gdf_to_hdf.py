@@ -381,7 +381,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
          gdf_file_directory - path to GDF file
          hdf_file_directory - path where the hdf  file is created
         """
-    print('Converting .gdf to .hdf file with hierical layout.')
+    print('Converting .gdf to .hdf file')
     if os.path.exists(hdf_file_directory):
         os.remove(hdf_file_directory)
     hdf_file = h5py.File(hdf_file_directory, 'a')
@@ -390,7 +390,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
 
     gdf_file.close()
     hdf_file.close()
-    print('Converting .gdf to .hdf file with hierical layout... Complete.')
+    print('Converting .gdf to .hdf file... Complete.')
 
 
 def files_from_args(file_names):
