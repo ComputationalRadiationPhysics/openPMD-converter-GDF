@@ -187,6 +187,9 @@ def name_to_group(name, particles, size, gdf_file):
         if name_atribute[0] == 'none':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             particles.create_dataset(name_atribute[1], data=value)
+            particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['timeOffset'] = '0.0'
+            particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension']\
+                = str(dict_demantions.get(name_atribute[1]))
         else:
             sub_group = particles.require_group(name_atribute[0])
             sub_group.attrs['unitDimension'] = str(dict_demantions.get(name_atribute[0]))
