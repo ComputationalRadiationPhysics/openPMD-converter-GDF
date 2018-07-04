@@ -238,7 +238,13 @@ def read_gdf_block_header(gdf_file):
            gdf_file - input gpt file
         """
     name = gdf_file.read(16)
+    primitive_type = ''
+    namesplit = ''
+    size = ''
+    if len(name) < 15:
+        return namesplit, primitive_type, size;
     namesplit = name.split()[0]
+
     primitive_type = struct.unpack('i', gdf_file.read(4))[0]
     size = struct.unpack('i', gdf_file.read(4))[0]
     return namesplit, primitive_type, size
@@ -351,6 +357,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             break
         gdf_file.seek(-1, 1)
         name, primitive_type, size = read_gdf_block_header(gdf_file)
+        if size == '':
+            break
         dir, edir, sval, arr = get_block_type(primitive_type, block_types)
         data_type = primitive_type & 255
         
