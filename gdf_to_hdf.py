@@ -144,6 +144,7 @@ def find_attribute(name):
         return None
 
 
+class Elements:
     dict_particles = {'IDC': ['ID', 'none']}
 
     dict_demantions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
@@ -167,6 +168,9 @@ def find_attribute(name):
                        'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
 
 
+    #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension'] \
+       # = str(Elements.dict_dimensions.get(name_atribute[1]))
+    sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
 def name_to_group(name, particles, size, gdf_file):
     """Add dataset to correct group in particles group
         Args:
@@ -186,12 +190,11 @@ def name_to_group(name, particles, size, gdf_file):
                 = str(dict_demantions.get(name_atribute[1]))
         else:
             sub_group = particles.require_group(name_atribute[0])
-            sub_group.attrs['unitDimension'] = str(dict_demantions.get(name_atribute[0]))
             sub_group.attrs['timeOffset'] = '0.0'
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             sub_group.create_dataset(name_atribute[1], data=value)
-    elif dict_particles.get(name) != None:
-        if dict_particles.get(name)[0] == 'ID':
+    elif Elements.dict_particles.get(name) != None:
+        if Elements.dict_particles.get(name)[0] == 'ID':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             particles.create_dataset('id', data=value, dtype=dtype('int'))
     else:
