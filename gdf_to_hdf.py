@@ -24,7 +24,8 @@ def add_creator_name(gdf_file, hdf_file, size_gdf_name):
             break
         else:
             creator_name.append(chr(element))
-    hdf_file.attrs['software'] = ''.join(creator_name)
+    software = ''.join(creator_name)
+    hdf_file.attrs.create('software', software, None, dtype='<S10')
 
 
 def add_dest_name(gdf_file, hdf_file, size_gdf_name):
