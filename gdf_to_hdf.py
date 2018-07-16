@@ -176,12 +176,13 @@ class Elements:
 
 def add_dataset_attributes(gdf_file, particles, name_atribute, size):
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-   #type2 = value.astype(int)
-  #  print(type(type2))
-   # particles.create_dataset(name_atribute[1], data=dist, dtype='uint32')
-    #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['timeOffset'] = '0.0'
-    #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension'] \
-       # = str(Elements.dict_dimensions.get(name_atribute[1]))
+    particles.create_dataset(name_atribute[1], data=value)
+    particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+        ('unitSI', 1.0, None, dtype=np.dtype('float'))
+    particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+        ('timeOffset', 0.0, None, dtype=np.dtype('float'))
+    particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+        ('unitDimension', Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
 
 
 def add_group_attributes(gdf_file, particles, name_atribute, size):
