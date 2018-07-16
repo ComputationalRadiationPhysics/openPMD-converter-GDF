@@ -55,6 +55,7 @@ def add_creation_time(gdf_file, hdf_file):
     add_dest_name(gdf_file, hdf_file, GDFNAMELEN)
 
     # get other metadata about the GDF file
+def add_gdf_version(gdf_file, hdf_file):
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['gdf_version'] = str(major) + '.' + str(minor)
@@ -82,6 +83,7 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
         base path
        """
 
+    add_gdf_version(gdf_file, hdf_file)
 
 def find_one_symbol_attribute(name):
     dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
