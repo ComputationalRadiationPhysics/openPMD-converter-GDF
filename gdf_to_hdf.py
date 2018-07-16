@@ -111,7 +111,7 @@ def find_two_symbols_attribute(name):
     dict_two_symbols = {'Bx': ['B', 'x'], 'By': ['B', 'y'], 'Bz': ['B', 'z']}
     if len(name) < 2:
         return None
-    current_name = name[0:1]
+    current_name = name[0:2]
     return dict_two_symbols.get(current_name)
 
 
@@ -121,7 +121,7 @@ def find_three_symbols_attribute(name):
                           'rxy': ['none', 'rxy']}
     if len(name) < 3:
         return None
-    current_name = name[0:2]
+    current_name = name[0:4]
     return dict_three_symbols.get(current_name)
 
 
