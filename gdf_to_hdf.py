@@ -247,17 +247,17 @@ def read_gdf_block_header(gdf_file):
     return namesplit, primitive_type, size
 
 
-def get_block_type(typee, block_types):
+def get_block_type(primitive_type):
     """Function return type of curent block
         Args:
           typee - input type from GPT file
           block_types - all types block in GDF file
            """
 
-    dir = int(typee & block_types.dir > 0)
-    edir = int(typee & block_types.edir > 0)
-    sval = int(typee & block_types.sval > 0)
-    arr = int(typee & block_types.arr > 0)
+    dir = int(primitive_type & Block_types.dir > 0)
+    edir = int(primitive_type & Block_types.edir > 0)
+    sval = int(primitive_type & Block_types.sval > 0)
+    arr = int(primitive_type & Block_types.arr > 0)
     return dir, edir, sval, arr
 
 
