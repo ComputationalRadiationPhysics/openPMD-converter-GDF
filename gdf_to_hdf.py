@@ -402,7 +402,7 @@ def files_from_args(file_names):
     return gdf_file, hdf_file
 
 
-def run_converter_according_files(gdf_file, hdf_file):
+def converter(gdf_file, hdf_file):
     if gdf_file != '':
         if os.path.exists(gdf_file):
             if hdf_file == '':
