@@ -1,4 +1,4 @@
-"""This file convert gpt file to openPMD format"""
+"""Converter from GPT format to openPMD"""
 
 
 from __future__ import division
@@ -11,15 +11,10 @@ import datetime
 import re
 
 
-def add_creator_name(gdf_file, hdf_file, GDFNAMELEN):
-    """Function check that input file is correct GPT file
-        Args:
-           gdf_file - input file
-        Returns:
-            raise RuntimeWarning - if input file is not correct GPT file
-        if input file is correct GPT file, it return nothing
-        """
-    creator = list(gdf_file.read(GDFNAMELEN))
+def add_creator_name(gdf_file, hdf_file, size_gdf_name):
+    """ Add name of creator to root structure"""
+
+    creator = list(gdf_file.read(size_gdf_name))
     new_creator = []
     for element in creator:
         new_creator.append(element)
@@ -32,17 +27,8 @@ def add_creator_name(gdf_file, hdf_file, GDFNAMELEN):
     hdf_file.attrs['software'] = ''.join(creator_name)
 
 
-def add_dest_name(gdf_file, hdf_file, GDFNAMELEN):
-    """Function add destination name to root directory
-        Args:
-           gdf_file - input file GPT
-           hdf_file - output file openPMD
-           GDFNAMELEN - size of GPT names
-        """
-    dest = gdf_file.read(GDFNAMELEN)
-    new_dest = []
-    for element in dest:
-        new_dest.append(element)
+def add_dest_name(gdf_file, hdf_file, size_gdf_name):
+    """Add destination name to root directory """
 
     destination = []
     for element in new_dest:
@@ -54,12 +40,9 @@ def add_dest_name(gdf_file, hdf_file, GDFNAMELEN):
 
 
 def add_creation_time(gdf_file, hdf_file):
-    """Function add when the gdf file file was created to root directory
+    """Add when the gdf file file was created to root directory
     of openPMD file.
     We use next time and data format: YYYY-MM-DD HH:mm:ss tz
-        Args:
-           gdf_file - input gpt file
-           hdf_file - output openPMD file
         """
     time_created = struct.unpack('i', gdf_file.read(4))[0]
     format_time = datetime.datetime.fromtimestamp(time_created)
@@ -67,13 +50,6 @@ def add_creation_time(gdf_file, hdf_file):
     hdf_file.attrs['date'] = format_time
 
 
-def add_root_attributes(hdf_file, gdf_file, GDFNAMELEN):
-    """Function add root attributes to result hdf_file
-         Args:
-           gdf_file - input file GPT
-           hdf_file - output file openPMD
-           GDFNAMELEN - size of GPT names
-        """
     add_creation_time(gdf_file, hdf_file)
     add_creator_name(gdf_file, hdf_file, GDFNAMELEN)
     add_dest_name(gdf_file, hdf_file, GDFNAMELEN)
@@ -96,6 +72,15 @@ def add_root_attributes(hdf_file, gdf_file, GDFNAMELEN):
     hdf_file.attrs['openPMD'] = '1.1.0'
     hdf_file.attrs['openPMDextension'] = '1'
     hdf_file.attrs['basePath'] = '/data/%T/'
+
+
+def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
+    """Add root attributes to result hdf_file
+    Attributes:
+        gdf_version, software version, destination_version, iterationEncoding,
+        iterationFormat, particlesPath openPMD version, openPMDextension,
+        base path
+       """
 
 
 def find_one_symbol_attribute(name):
@@ -148,16 +133,6 @@ def find_attribute(name):
         return None
 
 
-def name_to_group(name, particles, size, gdf_file):
-    """Function add dataset to correct group:
-        particles or fields
-        Args:
-            particles - particles group
-            name - name of dataset in gdf_file
-            size - size of dataset in gdf_file
-            gdf_file - input file GPT
-           """
-
     dict_particles = {'IDC': ['ID', 'none']}
 
     dict_demantions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
@@ -180,6 +155,15 @@ def name_to_group(name, particles, size, gdf_file):
                        'avgFE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
                        'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
 
+
+def name_to_group(name, particles, size, gdf_file):
+    """Add dataset to correct group in particles group
+        Args:
+            particles - particles group
+            name - name of dataset in gdf_file
+            size - size of dataset in gdf_file
+            gdf_file - input file GPT
+           """
 
     if find_attribute(name) != None:
         name_atribute = find_attribute(name)
