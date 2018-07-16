@@ -311,9 +311,9 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
 
-def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name,
+def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, size, name,
                            last_iteration_time):
-    if data_type == block_types.t_dbl:
+    if data_type == Block_types.t_dbl:
         value = struct.unpack('d', gdf_file.read(8))[0]
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
@@ -348,7 +348,8 @@ def create_iteration_sub_groups(iteration_number, data_group):
     print(iteration_number)
     iteration_number_group = data_group.create_group(str(iteration_number))
     particles_group = iteration_number_group.create_group('particles')
-    return iteration_number_group, particles_group, iteration_number
+    electorns_group = particles_group.create_group('electorns')
+    return iteration_number_group, electorns_group, iteration_number
 
 
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
