@@ -170,7 +170,17 @@ class Elements:
 
     #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension'] \
        # = str(Elements.dict_dimensions.get(name_atribute[1]))
+def add_group_attributes(gdf_file, particles, name_atribute, size):
+    sub_group = particles.require_group(name_atribute[0])
     sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
+    sub_group.attrs.create('timeOffset', 0.0, None,
+                           dtype=np.dtype('float'))
+    value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+    sub_group.create_dataset(name_atribute[1], data=value)
+    sub_group.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create\
+        ('unitSI', 1.0, None, dtype=np.dtype('float'))
+
+
 def name_to_group(name, particles, size, gdf_file):
     """Add dataset to correct group in particles group
         Args:
@@ -183,11 +193,7 @@ def name_to_group(name, particles, size, gdf_file):
     if find_attribute(name) != None:
         name_atribute = find_attribute(name)
         if name_atribute[0] == 'none':
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            particles.create_dataset(name_atribute[1], data=value)
-            particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['timeOffset'] = '0.0'
-            particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension']\
-                = str(dict_demantions.get(name_atribute[1]))
+            add_dataset_attributes(gdf_file, particles, name_atribute, size)
         else:
             sub_group = particles.require_group(name_atribute[0])
             sub_group.attrs['timeOffset'] = '0.0'
