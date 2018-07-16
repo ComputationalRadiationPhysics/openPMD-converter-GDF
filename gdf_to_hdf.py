@@ -318,9 +318,10 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
         if correct_name == 'time':
-            iteration_number_group.attrs[correct_name] = value
-            iteration_number_group.attrs['timeUnitSI'] = '1E-3'
-            iteration_number_group.attrs['dt'] = str(value - last_iteration_time)
+            iteration_number_group.attrs.create(correct_name, value)
+            iteration_number_group.attrs.create('timeUnitSI', 1E-3)
+            dt = value - last_iteration_time
+            iteration_number_group.attrs.create('dt', dt)
             last_iteration_time.__add__(value)
     elif data_type == Block_types.t_null:
         pass
