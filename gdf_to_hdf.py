@@ -53,9 +53,6 @@ def add_creation_time(gdf_file, hdf_file):
     hdf_file.attrs.create('openPMD', format_time, None, dtype='<S11')
 
 
-    add_creation_time(gdf_file, hdf_file)
-    add_creator_name(gdf_file, hdf_file, GDFNAMELEN)
-    add_dest_name(gdf_file, hdf_file, GDFNAMELEN)
 
     # get other metadata about the GDF file
 def add_gdf_version(gdf_file, hdf_file):
@@ -80,6 +77,9 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
         base path
        """
 
+    add_creation_time(gdf_file, hdf_file)
+    add_creator_name(gdf_file, hdf_file, size_gdf_name)
+    add_dest_name(gdf_file, hdf_file, size_gdf_name)
     add_gdf_version(gdf_file, hdf_file)
     str1 =  "test_hierical_%T.h5"
     hdf_file.attrs['iterationFormat'] = str1
