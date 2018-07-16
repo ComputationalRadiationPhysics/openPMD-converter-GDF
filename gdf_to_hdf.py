@@ -70,12 +70,6 @@ def add_gdf_version(gdf_file, hdf_file):
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['destination_version'] = str(major) + '.' + str(minor)
-    hdf_file.attrs['iterationEncoding'] = 'groupBased'
-    hdf_file.attrs['iterationFormat'] = 'test_hierical_%T.h5'
-    hdf_file.attrs['particlesPath'] = 'particles/'
-    hdf_file.attrs['openPMD'] = '1.1.0'
-    hdf_file.attrs['openPMDextension'] = '1'
-    hdf_file.attrs['basePath'] = '/data/%T/'
 
 
 def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
@@ -87,6 +81,18 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
        """
 
     add_gdf_version(gdf_file, hdf_file)
+    str1 =  "test_hierical_%T.h5"
+    hdf_file.attrs['iterationFormat'] = str1
+    hdf_file.attrs.create('iterationEncoding', 'fileBased', None, dtype='<S9')
+    hdf_file.attrs.create('iterationFormat', 'particles/', None, dtype='<S10')
+    hdf_file.attrs.create('particlesPath', 'particles/', None, dtype='<S10')
+
+    hdf_file.attrs.create('openPMD', '1.1.0', None, dtype='<S5')
+    hdf_file.attrs.create('iterationFormat', 'data%T.h5', None, dtype='<S9')
+    #wdata = np.zeros((7, 4), dtype=np.int64)
+    hdf_file.attrs.create('openPMDextension', 1, None, dtype=np.dtype('uint32'))
+    hdf_file.attrs.create('basePath', '/data/%T/', None, dtype='<S9')
+
 
 def find_one_symbol_attribute(name):
     dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
