@@ -261,8 +261,8 @@ def get_block_type(primitive_type):
     return dir, edir, sval, arr
 
 
-def print_warning_unknown_type(gdf_file, name, typee, size):
-    """Function print warning if type of GDF file are unknown
+def print_warning_unknown_type(gdf_file, name, primitive_type, size):
+    """Print warning if type of GDF file are unknown
         Args:
            gdf_file - input file
            name  - name of block
@@ -271,7 +271,7 @@ def print_warning_unknown_type(gdf_file, name, typee, size):
         """
     print('unknown datatype of value!!!')
     print('name=', name)
-    print('type=', typee)
+    print('type=', primitive_type)
     print('size=', size)
     value = gdf_file.read(size)
     print('value=' + value)
