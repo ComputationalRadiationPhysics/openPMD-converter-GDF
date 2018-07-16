@@ -340,7 +340,6 @@ def create_iteration_sub_groups(iteration_number, data_group):
 
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
-    block_types = Block_types()
     check_gdf_file(gdf_file)
     add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
 
@@ -361,15 +360,15 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         name, primitive_type, size = read_gdf_block_header(gdf_file)
         if size == '':
             break
-        dir, edir, sval, arr = get_block_type(primitive_type, block_types)
+        dir, edir, sval, arr = get_block_type(primitive_type)
         data_type = primitive_type & 255
-        
+
         if lastarr and not arr:
-            iteration_number_group, particles_group, iteration_number\
+            iteration_number_group, particles_group, iteration_number \
                 = create_iteration_sub_groups(iteration_number, data_group)
         if sval:
             read_single_value_type(gdf_file, data_type,
-                                   iteration_number_group, primitive_type, block_types, size, name, last_iteration_time)
+                                   iteration_number_group, primitive_type, size, name, last_iteration_time)
         if arr:
             read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
 
