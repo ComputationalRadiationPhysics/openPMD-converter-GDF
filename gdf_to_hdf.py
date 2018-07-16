@@ -60,10 +60,14 @@ def add_gdf_version(gdf_file, hdf_file):
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['gdf_version'] = str(major) + '.' + str(minor)
 
+
+def add_software_version(gdf_file, hdf_file):
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['software version'] = str(major) + '.' + str(minor)
 
+
+def add_destination_version(gdf_file, hdf_file):
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['destination_version'] = str(major) + '.' + str(minor)
@@ -81,6 +85,9 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
     add_creator_name(gdf_file, hdf_file, size_gdf_name)
     add_dest_name(gdf_file, hdf_file, size_gdf_name)
     add_gdf_version(gdf_file, hdf_file)
+    add_software_version(gdf_file, hdf_file)
+    add_destination_version(gdf_file, hdf_file)
+
     str1 =  "test_hierical_%T.h5"
     hdf_file.attrs['iterationFormat'] = str1
     hdf_file.attrs.create('iterationEncoding', 'fileBased', None, dtype='<S9')
@@ -175,6 +182,7 @@ def add_dataset_attributes(gdf_file, particles, name_atribute, size):
     #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['timeOffset'] = '0.0'
     #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension'] \
        # = str(Elements.dict_dimensions.get(name_atribute[1]))
+
 
 def add_group_attributes(gdf_file, particles, name_atribute, size):
     sub_group = particles.require_group(name_atribute[0])
