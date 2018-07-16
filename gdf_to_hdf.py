@@ -100,7 +100,7 @@ def add_root_attributes(hdf_file, gdf_file, GDFNAMELEN):
 
 def find_one_symbol_attribute(name):
     dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
-                       'G': ['none', 'G'], 'q': ['none', 'charge'], 'm': ['none', 'mass']}
+                       'G': ['none', 'G'], 'q': ['charge', 'charge'], 'm': ['mass', 'mass']}
     return dict_one_symbol.get(name[0])
 
 
@@ -108,7 +108,7 @@ def find_two_symbols_attribute(name):
     dict_two_symbols = {'Bx': ['B', 'x'], 'By': ['B', 'y'], 'Bz': ['B', 'z']}
     if len(name) < 2:
         return None
-    current_name = name[0] + name[1]
+    current_name = name[0:1]
     return dict_two_symbols.get(current_name)
 
 
@@ -118,7 +118,7 @@ def find_three_symbols_attribute(name):
                           'rxy': ['none', 'rxy']}
     if len(name) < 3:
         return None
-    current_name = name[0] + name[1] + name[2]
+    current_name = name[0:2]
     return dict_three_symbols.get(current_name)
 
 
