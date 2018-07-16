@@ -385,8 +385,11 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
                                    iteration_number_group, primitive_type, size, name, last_iteration_time)
         if arr:
             read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
+        lastarr = arr
+    if particles_group.keys().__len__() == 0:
+        data_group.__delitem__(str(iteration_number_group.name))
 
-        lastarr = arr;
+
 
 
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
