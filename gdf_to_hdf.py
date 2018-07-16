@@ -413,8 +413,8 @@ def run_converter_according_files(gdf_file, hdf_file):
 
 
 def main(file_names):
-    gdf_file, hdf_file = files_from_args(file_names)
-    run_converter_according_files(gdf_file, hdf_file)
+    gdf_path, hdf_path = files_from_args(file_names)
+    converter(gdf_path, hdf_path)
 
 
 if __name__ == "__main__":
