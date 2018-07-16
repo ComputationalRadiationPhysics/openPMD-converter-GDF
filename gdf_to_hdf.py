@@ -277,7 +277,7 @@ def print_warning_unknown_type(gdf_file, name, primitive_type, size):
     print('value=' + value)
 
 
-def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
+def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, size):
     """Function read array type from GDF file
         Args:
            gdf_file - input file
@@ -291,7 +291,7 @@ def read_array_type(gdf_file, dattype, particles_group, name, typee, size):
         correct_name = re.sub(r'\W+', '', decode_name)
         name_to_group(correct_name, particles_group, size, gdf_file)
     else:
-        print_warning_unknown_type(gdf_file, name, typee, size)
+        print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
 
 def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, block_types, size, name,
