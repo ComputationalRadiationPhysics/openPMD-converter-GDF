@@ -173,6 +173,8 @@ class Elements:
                        'avgFE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
                        'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
 
+    dict_weightingPower = {'position': 0., 'mass': 1., 'charge': 1., 'momentum': 1.,
+                           'G': 1., 'rmacro': 0., 'nmacro': 0., 'fE': 1, 'fB': 1}
 
 def add_dataset_attributes(gdf_file, particles, name_atribute, size):
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
@@ -183,13 +185,20 @@ def add_dataset_attributes(gdf_file, particles, name_atribute, size):
         ('timeOffset', 0.0, None, dtype=np.dtype('float'))
     particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
         ('unitDimension', Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
+    if Elements.dict_weightingPower.get(name_atribute[1]) != None:
+        particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+            ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
 
 
 def add_group_attributes(gdf_file, particles, name_atribute, size):
     sub_group = particles.require_group(name_atribute[0])
     sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
-    sub_group.attrs.create('timeOffset', 0.0, None,
-                           dtype=np.dtype('float'))
+    sub_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
+
+    if Elements.dict_weightingPower.get(name_atribute[0]) != None:
+        sub_group.attrs.create('weightingPower', Elements.dict_weightingPower.get(name_atribute[0]),
+                               None, dtype=np.dtype('float'))
+
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     sub_group.create_dataset(name_atribute[1], data=value)
     sub_group.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create\
