@@ -167,8 +167,15 @@ class Elements:
                        'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
 
 
+def add_dataset_attributes(gdf_file, particles, name_atribute, size):
+    value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+   #type2 = value.astype(int)
+  #  print(type(type2))
+   # particles.create_dataset(name_atribute[1], data=dist, dtype='uint32')
+    #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['timeOffset'] = '0.0'
     #particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs['unitDimension'] \
        # = str(Elements.dict_dimensions.get(name_atribute[1]))
+
 def add_group_attributes(gdf_file, particles, name_atribute, size):
     sub_group = particles.require_group(name_atribute[0])
     sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
@@ -194,10 +201,7 @@ def name_to_group(name, particles, size, gdf_file):
         if name_atribute[0] == 'none':
             add_dataset_attributes(gdf_file, particles, name_atribute, size)
         else:
-            sub_group = particles.require_group(name_atribute[0])
-            sub_group.attrs['timeOffset'] = '0.0'
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            sub_group.create_dataset(name_atribute[1], data=value)
+            add_group_attributes(gdf_file, particles, name_atribute, size)
     elif Elements.dict_particles.get(name) != None:
         if Elements.dict_particles.get(name)[0] == 'ID':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
