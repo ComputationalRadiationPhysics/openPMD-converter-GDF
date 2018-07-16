@@ -31,12 +31,14 @@ def add_creator_name(gdf_file, hdf_file, size_gdf_name):
 def add_dest_name(gdf_file, hdf_file, size_gdf_name):
     """Add destination name to root directory """
 
+    dest = gdf_file.read(size_gdf_name)
     destination = []
-    for element in new_dest:
+    for element in dest:
         if element is 0:
             break
         else:
             destination.append(chr(element))
+
     hdf_file.attrs['destination'] = ''.join(destination)
 
 
