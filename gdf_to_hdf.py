@@ -54,18 +54,21 @@ def add_creation_time(gdf_file, hdf_file):
 
 
 def add_gdf_version(gdf_file, hdf_file):
+    """Add gdf version to root directory """
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['gdf_version'] = str(major) + '.' + str(minor)
 
 
 def add_software_version(gdf_file, hdf_file):
+    """Add software version to root directory """
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['software version'] = str(major) + '.' + str(minor)
 
 
 def add_destination_version(gdf_file, hdf_file):
+    """Add destination version to root directory """
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
     hdf_file.attrs['destination_version'] = str(major) + '.' + str(minor)
