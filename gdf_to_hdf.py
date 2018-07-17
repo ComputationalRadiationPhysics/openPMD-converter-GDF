@@ -383,6 +383,26 @@ def create_iteration_sub_groups(iteration_number, data_group):
     return iteration_number_group, electorns_group, iteration_number
 
 
+def add_positionOffset(particles_group, size):
+    positionOffset_group = particles_group.require_group('positionOffset')
+    positionOffset_group.attrs.create('unitDimension', (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), None,
+                           dtype=np.dtype('float'))
+    positionOffset_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
+
+    shape = [int(size / 8)]
+    x_positionOffset_group = positionOffset_group.require_group('x')
+    x_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
+    x_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
+    x_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    y_positionOffset_group = positionOffset_group.require_group('y')
+    y_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
+    y_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    y_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
+    z_positionOffset_group = positionOffset_group.require_group('z')
+    z_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
+    z_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    z_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
+
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     check_gdf_file(gdf_file)
@@ -416,6 +436,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
                                    iteration_number_group, primitive_type, size, name, last_iteration_time)
         if arr:
             read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
+            add_positionOffset(particles_group, size)
+
         lastarr = arr
     if particles_group.keys().__len__() == 0:
         data_group.__delitem__(str(iteration_number_group.name))
