@@ -89,10 +89,8 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
     add_software_version(gdf_file, hdf_file)
     add_destination_version(gdf_file, hdf_file)
 
-    str1 =  "test_hierical_%T.h5"
-    hdf_file.attrs['iterationFormat'] = str1
     hdf_file.attrs.create('iterationEncoding', 'fileBased', None, dtype='<S9')
-    hdf_file.attrs.create('iterationFormat', 'particles/', None, dtype='<S10')
+    hdf_file.attrs.create('iterationFormat', 'test_hierical_%T.h5', None, dtype='<S10')
     hdf_file.attrs.create('particlesPath', 'particles/', None, dtype='<S10')
 
     hdf_file.attrs.create('openPMD', '1.1.0', None, dtype='<S5')
