@@ -181,18 +181,17 @@ class Elements:
 def add_dataset_attributes(gdf_file, particles, name_atribute, size):
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     particles.create_dataset(name_atribute[1], data=value)
-    particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
-        ('unitSI', 1.0, None, dtype=np.dtype('float'))
-    particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
-        ('timeOffset', 0.0, None, dtype=np.dtype('float'))
-    particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
-        ('unitDimension', Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
+    attribute_dataset = particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8'))
+    attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
+    attribute_dataset.attrs.create('unitDimension',
+                                 Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
     if Elements.dict_weightingPower.get(name_atribute[1]) != None:
-        particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+        attribute_dataset.attrs.create \
             ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
 
     if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
-        particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+        attribute_dataset.attrs.create \
             ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
 
 
