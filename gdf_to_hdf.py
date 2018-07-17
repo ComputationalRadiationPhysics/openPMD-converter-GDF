@@ -193,9 +193,9 @@ def add_dataset_attributes(gdf_file, particles, name_atribute, size):
         particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
             ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
 
-        if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
-            particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
-                ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
+    if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
+        particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+            ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
 
 
 def add_group_attributes(gdf_file, particles, name_atribute, size):
