@@ -96,8 +96,7 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
 
     hdf_file.attrs.create('openPMD', '1.1.0', None, dtype='<S5')
     hdf_file.attrs.create('iterationFormat', 'data%T.h5', None, dtype='<S9')
-    #wdata = np.zeros((7, 4), dtype=np.int64)
-    hdf_file.attrs.create('openPMDextension', 1, None, dtype=np.dtype('uint32'))
+    hdf_file.attrs.create('openPMDextension', 0, None, dtype=np.dtype('uint32'))
     hdf_file.attrs.create('basePath', '/data/%T/', None, dtype='<S9')
 
 
