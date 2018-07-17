@@ -355,6 +355,14 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
 
+def add_electrons_attribute(electorns_group):
+    electorns_group.attrs.create('particleShape', 0.0, None, dtype=np.dtype('float'))
+    electorns_group.attrs.create('particleSmoothing', 'none', None, dtype=np.dtype('<S4'))
+    electorns_group.attrs.create('particlePush', 'Vay', None, dtype=np.dtype('<S3'))
+    electorns_group.attrs.create('currentDeposition', 'Esirkepov', None, dtype=np.dtype('<S9'))
+    electorns_group.attrs.create('particleInterpolation', 'momentumConserving', None, dtype=np.dtype('<S18'))
+
+
 def create_iteration_sub_groups(iteration_number, data_group):
     """Function create subgroup according iteration
         Args:
@@ -370,6 +378,8 @@ def create_iteration_sub_groups(iteration_number, data_group):
     iteration_number_group = data_group.create_group(str(iteration_number))
     particles_group = iteration_number_group.create_group('particles')
     electorns_group = particles_group.create_group('electorns')
+    add_electrons_attribute(electorns_group)
+
     return iteration_number_group, electorns_group, iteration_number
 
 
