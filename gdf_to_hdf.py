@@ -108,7 +108,7 @@ def find_one_symbol_attribute(name):
 
 
 def find_two_symbols_attribute(name):
-    dict_two_symbols = {'Bx': ['B', 'x'], 'By': ['B', 'y'], 'Bz': ['B', 'z']}
+    dict_two_symbols = {'Bx': ['momentum', 'x'], 'By': ['momentum', 'y'], 'Bz': ['momentum', 'z']}
     if len(name) < 2:
         return None
     current_name = name[0:2]
@@ -174,7 +174,11 @@ class Elements:
                        'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
 
     dict_weightingPower = {'position': 0., 'mass': 1., 'charge': 1., 'momentum': 1.,
-                           'G': 1., 'rmacro': 0., 'nmacro': 0., 'fE': 1, 'fB': 1}
+                           'G': 1., 'rmacro': 0., 'nmacro': 0., 'fE': 1., 'fB': 1.}
+
+    dict_macroWeighted = {'position': 0, 'mass': 1, 'charge': 1, 'momentum': 1,
+                           'G': 1, 'rmacro': 0, 'nmacro': 0, 'fE': 1, 'fB': 1}
+
 
 def add_dataset_attributes(gdf_file, particles, name_atribute, size):
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
@@ -189,6 +193,10 @@ def add_dataset_attributes(gdf_file, particles, name_atribute, size):
         particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
             ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
 
+        if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
+            particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create \
+                ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
+
 
 def add_group_attributes(gdf_file, particles, name_atribute, size):
     sub_group = particles.require_group(name_atribute[0])
@@ -198,6 +206,9 @@ def add_group_attributes(gdf_file, particles, name_atribute, size):
     if Elements.dict_weightingPower.get(name_atribute[0]) != None:
         sub_group.attrs.create('weightingPower', Elements.dict_weightingPower.get(name_atribute[0]),
                                None, dtype=np.dtype('float'))
+    if Elements.dict_macroWeighted.get(name_atribute[0]) != None:
+        sub_group.attrs.create('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[0]),
+                               None, dtype=np.dtype('uint32'))
 
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     sub_group.create_dataset(name_atribute[1], data=value)
