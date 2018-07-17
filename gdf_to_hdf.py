@@ -53,8 +53,6 @@ def add_creation_time(gdf_file, hdf_file):
     hdf_file.attrs.create('openPMD', format_time, None, dtype='<S11')
 
 
-
-    # get other metadata about the GDF file
 def add_gdf_version(gdf_file, hdf_file):
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
@@ -255,7 +253,7 @@ class Constants:
 
 
 def check_gdf_file(gdf_file):
-    """Fuction check that input file is correct GPT file
+    """Check that input file is correct GPT file
         Args:
            gdf_file - input file
         Returns:
@@ -306,7 +304,7 @@ def print_warning_unknown_type(gdf_file, name, primitive_type, size):
            typee - type of block
            size - size of block
         """
-    print('unknown datatype of value!!!')
+    print('unknown datatype of value')
     print('name=', name)
     print('type=', primitive_type)
     print('size=', size)
