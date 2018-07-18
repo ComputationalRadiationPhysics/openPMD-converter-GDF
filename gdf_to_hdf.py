@@ -205,13 +205,14 @@ def add_dataset_attributes(gdf_file, particles_group, name_atribute, size):
     add_macroWeighted_attribute(name_atribute, attribute_dataset)
 
 
-def add_group_attributes(gdf_file, particles, name_atribute, size):
-    sub_group = particles.require_group(name_atribute[0])
+def add_group_attributes(gdf_file, particles_group, name_atribute, size):
+    """  Add required attributes to dataset """
+
+    sub_group = particles_group.require_group(name_atribute[0])
     sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
     sub_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
     add_weightingPower_attribute(name_atribute, sub_group)
     add_macroWeighted_attribute(name_atribute, sub_group)
-
 
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     sub_group.create_dataset(name_atribute[1], data=value)
