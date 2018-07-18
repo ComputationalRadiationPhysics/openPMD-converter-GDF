@@ -11,35 +11,30 @@ import datetime
 import re
 
 
-def add_creator_name(gdf_file, hdf_file, size_gdf_name):
-    """ Add name of creator to root structure"""
-
-    creator = list(gdf_file.read(size_gdf_name))
-    new_creator = []
-    for element in creator:
-        new_creator.append(element)
-    creator_name = []
-    for element in new_creator:
+def parse_name_array(gdf_file, size_gdf_name):
+    list_name = list(gdf_file.read(size_gdf_name))
+    name = []
+    for element in list_name:
         if element is 0:
             break
         else:
-            creator_name.append(chr(element))
-    software = ''.join(creator_name)
-    hdf_file.attrs.create('software', software, None, dtype='<S10')
+            name.append(chr(element))
+    parsing_name = ''.join(name)
+    return parsing_name
+
+
+def add_creator_name(gdf_file, hdf_file, size_gdf_name):
+    """ Add name of creator to root structure"""
+
+    software_name = parse_name_array(gdf_file, size_gdf_name)
+    hdf_file.attrs.create('software', software_name, None, dtype='<S10')
 
 
 def add_dest_name(gdf_file, hdf_file, size_gdf_name):
     """Add destination name to root directory """
 
-    dest = gdf_file.read(size_gdf_name)
-    destination = []
-    for element in dest:
-        if element is 0:
-            break
-        else:
-            destination.append(chr(element))
-
-    hdf_file.attrs['destination'] = ''.join(destination)
+    destination_name = parse_name_array(gdf_file, size_gdf_name)
+    hdf_file.attrs.create('destination', destination_name, None, dtype='<S10')
 
 
 def add_creation_time(gdf_file, hdf_file):
