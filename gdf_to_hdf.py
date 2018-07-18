@@ -379,6 +379,11 @@ def create_iteration_sub_groups(iteration_number, data_group):
 
     return iteration_number_group, electorns_group, iteration_number
 
+def add_positionOffset_attributes(axis_positionOffset_group, shape):
+    axis_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
+    axis_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    axis_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
+
 
 def add_positionOffset(particles_group, size):
     positionOffset_group = particles_group.require_group('positionOffset')
@@ -388,17 +393,11 @@ def add_positionOffset(particles_group, size):
 
     shape = [int(size / 8)]
     x_positionOffset_group = positionOffset_group.require_group('x')
-    x_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
-    x_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
-    x_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    add_positionOffset_attributes(x_positionOffset_group, shape)
     y_positionOffset_group = positionOffset_group.require_group('y')
-    y_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
-    y_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
-    y_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
+    add_positionOffset_attributes(y_positionOffset_group, shape)
     z_positionOffset_group = positionOffset_group.require_group('z')
-    z_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
-    z_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
-    z_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
+    add_positionOffset_attributes(z_positionOffset_group, shape)
 
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
