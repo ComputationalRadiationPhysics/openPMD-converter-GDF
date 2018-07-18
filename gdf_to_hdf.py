@@ -151,25 +151,33 @@ def find_attribute(name):
 
 class Elements:
     dict_particles = {'IDC': ['ID', 'none']}
-    dict_dimensions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'momentum': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'G': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'charge': (0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0),
-                       'fE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
-                       'fB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0),
-                       'std': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'stdB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'stdt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
-                       'rmacro': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'nmacro': (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'avg': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'avgB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'avgr': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                       'avgG': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),
-                       'avgt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
-                       'avgFE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),
-                       'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}
+
+    """ Dictionary of each Record unitDimension
+    1 - length L, 2 - mass M, 3 - time T, 4 - electric current I,
+    4 - thermodynamic temperature theta, 6 - amount of substance N,
+    7 - luminous intensity J
+    https://github.com/openPMD/openPMD-standard/blob/latest/STANDARD.md#required-for-each-record
+        """
+
+    dict_dimensions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),   # length = 1
+                       'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),       # mass = 1
+                       'momentum': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),  # length = 1, time = -1
+                       'G': (-1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),         # length = -1, time = 1
+                       'charge': (0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0),     # time = 1, electric current = 1
+                       'fE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),       # length = 1, mass = 1,  time = -3, electric current = -1
+                       'fB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0),       # mass  = 1, time = -2, electric current = -1
+                       'std': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),        # length = 1
+                       'stdB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = 1, time = -1
+                       'stdt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),       # time = 1
+                       'rmacro': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),     # length = 1
+                       'nmacro': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),     # length = 1
+                       'avg': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),        # length = 1
+                       'avgB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = 1, time = -1
+                       'avgr': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),       # length = 1
+                       'avgG': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = -1, time = 1
+                       'avgt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),       # time = 1
+                       'avgFE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),    # length = 1, mass = 1,  time = -3, electric current = -1
+                       'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0)}    # mass  = 1, time = -2, electric current = -1
 
     dict_weightingPower = {'position': 0., 'mass': 1., 'charge': 1., 'momentum': 1.,
                            'G': 1., 'rmacro': 0., 'nmacro': 0., 'fE': 1., 'fB': 1.}
