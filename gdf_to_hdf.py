@@ -186,7 +186,20 @@ class Elements:
                            'G': 1, 'rmacro': 0, 'nmacro': 0, 'fE': 1, 'fB': 1}
 
 
+def add_weightingPower_attribute(name_atribute, attribute_dataset):
+    if Elements.dict_weightingPower.get(name_atribute[1]) != None:
+        attribute_dataset.attrs.create \
+            ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
+
+
+def add_macroWeighted_attribute(name_atribute, attribute_dataset):
+    if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
+        attribute_dataset.attrs.create \
+            ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
+
+
 def add_dataset_attributes(gdf_file, particles, name_atribute, size):
+
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     particles.create_dataset(name_atribute[1], data=value)
     attribute_dataset = particles.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8'))
@@ -194,26 +207,17 @@ def add_dataset_attributes(gdf_file, particles, name_atribute, size):
     attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
     attribute_dataset.attrs.create('unitDimension',
                                  Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
-    if Elements.dict_weightingPower.get(name_atribute[1]) != None:
-        attribute_dataset.attrs.create \
-            ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
-
-    if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
-        attribute_dataset.attrs.create \
-            ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
+    add_weightingPower_attribute(name_atribute, attribute_dataset)
+    add_macroWeighted_attribute(name_atribute, attribute_dataset)
 
 
 def add_group_attributes(gdf_file, particles, name_atribute, size):
     sub_group = particles.require_group(name_atribute[0])
     sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
     sub_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
+    add_weightingPower_attribute(name_atribute, sub_group)
+    add_macroWeighted_attribute(name_atribute, sub_group)
 
-    if Elements.dict_weightingPower.get(name_atribute[0]) != None:
-        sub_group.attrs.create('weightingPower', Elements.dict_weightingPower.get(name_atribute[0]),
-                               None, dtype=np.dtype('float'))
-    if Elements.dict_macroWeighted.get(name_atribute[0]) != None:
-        sub_group.attrs.create('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[0]),
-                               None, dtype=np.dtype('uint32'))
 
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     sub_group.create_dataset(name_atribute[1], data=value)
