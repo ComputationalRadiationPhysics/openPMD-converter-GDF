@@ -338,6 +338,14 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
 
+def add_time_attributes(iteration_number_group, last_iteration_time, correct_name, value):
+    iteration_number_group.attrs.create(correct_name, value)
+    iteration_number_group.attrs.create('timeUnitSI', 1E-3)
+    dt = value - last_iteration_time
+    iteration_number_group.attrs.create('dt', dt)
+    last_iteration_time.__add__(value)
+
+
 def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, size, name,
                            last_iteration_time):
 
@@ -346,11 +354,7 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
         if correct_name == 'time':
-            iteration_number_group.attrs.create(correct_name, value)
-            iteration_number_group.attrs.create('timeUnitSI', 1E-3)
-            dt = value - last_iteration_time
-            iteration_number_group.attrs.create('dt', dt)
-            last_iteration_time.__add__(value)
+            add_time_attributes(iteration_number_group, last_iteration_time, correct_name, value)
     elif data_type == Block_types.no_data:
         pass
     elif data_type == Block_types.ascii_character:
