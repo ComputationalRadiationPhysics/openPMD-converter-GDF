@@ -250,10 +250,10 @@ class Block_types:
     edir = 512  # Directory entry end
     sval = 1024  # Single valued
     arr = 2048  # Array
-    t_ascii = int('0001', 16)  # ASCII character
-    t_s32 = int('0002', 16)  # Signed long
-    t_dbl = int('0003', 16)  # Double
-    t_null = int('0010', 16)  # No data
+    ascii_character = int('0001', 16)  # ASCII character
+    signed_long = int('0002', 16)  # Signed long
+    double_type = int('0003', 16)  # Double
+    no_data = int('0010', 16)  # No data
 
 
 class Constants:
@@ -295,14 +295,13 @@ def get_block_type(primitive_type):
     """Function return type of curent block
         Args:
           typee - input type from GPT file
-          block_types - all types block in GDF file
-           """
 
+           """
     dir = int(primitive_type & Block_types.dir > 0)
     edir = int(primitive_type & Block_types.edir > 0)
-    sval = int(primitive_type & Block_types.sval > 0)
+    single_value = int(primitive_type & Block_types.sval > 0)
     arr = int(primitive_type & Block_types.arr > 0)
-    return dir, edir, sval, arr
+    return dir, edir, single_value, arr
 
 
 def print_warning_unknown_type(gdf_file, name, primitive_type, size):
@@ -330,7 +329,8 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
            typee - type of block
            size - size of block
         """
-    if dattype == Block_types.t_dbl:
+
+    if dattype == Block_types.double_type:
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
         name_to_group(correct_name, particles_group, size, gdf_file)
@@ -340,7 +340,8 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
 
 def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, size, name,
                            last_iteration_time):
-    if data_type == Block_types.t_dbl:
+
+    if data_type == Block_types.double_type:
         value = struct.unpack('d', gdf_file.read(8))[0]
         decode_name = name.decode('ascii', errors='ignore')
         correct_name = re.sub(r'\W+', '', decode_name)
@@ -350,12 +351,12 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
             dt = value - last_iteration_time
             iteration_number_group.attrs.create('dt', dt)
             last_iteration_time.__add__(value)
-    elif data_type == Block_types.t_null:
+    elif data_type == Block_types.no_data:
         pass
-    elif data_type == Block_types.t_ascii:
+    elif data_type == Block_types.ascii_character:
         value = str(gdf_file.read(size))
         value = value.strip(' \t\r\n\0')
-    elif data_type == Block_types.t_s32:
+    elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
     else:
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
