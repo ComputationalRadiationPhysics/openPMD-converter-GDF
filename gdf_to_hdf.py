@@ -348,6 +348,7 @@ def add_time_attributes(iteration_number_group, last_iteration_time, correct_nam
 
 def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, size, name,
                            last_iteration_time):
+    """Read single value from gdf file """
 
     if data_type == Block_types.double_type:
         value = struct.unpack('d', gdf_file.read(8))[0]
@@ -400,6 +401,8 @@ def add_positionOffset_attributes(axis_positionOffset_group, shape):
 
 
 def add_positionOffset(particles_group, size):
+    """Add position offset group """
+
     positionOffset_group = particles_group.require_group('positionOffset')
     positionOffset_group.attrs.create('unitDimension', (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), None,
                            dtype=np.dtype('float'))
@@ -453,11 +456,9 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         data_group.__delitem__(str(iteration_number_group.name))
 
 
-
-
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
-    """Function find GDF file in gdf_file_directory,
-       and convert to hdf file openPMD standart,
+    """find GDF file in gdf_file_directory,
+       and convert to hdf file openPMD,
        write to hdf_file_directory
         Args:
          gdf_file_directory - path to GDF file
