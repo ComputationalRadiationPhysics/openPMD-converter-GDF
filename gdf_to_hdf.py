@@ -320,6 +320,14 @@ def print_warning_unknown_type(gdf_file, name, primitive_type, size):
     print('value=' + value)
 
 
+def decode_name(attribute_name):
+    """ Decode name from binary """
+
+    decoding_name = attribute_name.decode('ascii', errors='ignore')
+    decoding_name = re.sub(r'\W+', '', decoding_name)
+    return decoding_name
+
+
 def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, size):
     """Function read array type from GDF file
         Args:
@@ -331,15 +339,16 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
         """
 
     if dattype == Block_types.double_type:
-        decode_name = name.decode('ascii', errors='ignore')
-        correct_name = re.sub(r'\W+', '', decode_name)
-        name_to_group(correct_name, particles_group, size, gdf_file)
+        decoding_name = decode_name(name)
+        name_to_group(decoding_name, particles_group, size, gdf_file)
     else:
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
 
-def add_time_attributes(iteration_number_group, last_iteration_time, correct_name, value):
-    iteration_number_group.attrs.create(correct_name, value)
+def add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value):
+    """ Add time attributes to each iteration """
+
+    iteration_number_group.attrs.create(decoding_name, value)
     iteration_number_group.attrs.create('timeUnitSI', 1E-3)
     dt = value - last_iteration_time
     iteration_number_group.attrs.create('dt', dt)
@@ -352,10 +361,9 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
 
     if data_type == Block_types.double_type:
         value = struct.unpack('d', gdf_file.read(8))[0]
-        decode_name = name.decode('ascii', errors='ignore')
-        correct_name = re.sub(r'\W+', '', decode_name)
-        if correct_name == 'time':
-            add_time_attributes(iteration_number_group, last_iteration_time, correct_name, value)
+        decoding_name = decode_name(name)
+        if decoding_name == 'time':
+            add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value)
     elif data_type == Block_types.no_data:
         pass
     elif data_type == Block_types.ascii_character:
