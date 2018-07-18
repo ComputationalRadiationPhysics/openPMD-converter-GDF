@@ -57,21 +57,21 @@ def add_gdf_version(gdf_file, hdf_file):
     """Add gdf version to root directory """
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
-    hdf_file.attrs['gdf_version'] = str(major) + '.' + str(minor)
+    hdf_file.attrs.create('gdf_version', str(major) + '.' + str(minor), None, dtype='<S8')
 
 
 def add_software_version(gdf_file, hdf_file):
     """Add software version to root directory """
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
-    hdf_file.attrs['software version'] = str(major) + '.' + str(minor)
+    hdf_file.attrs.create('software version', str(major) + '.' + str(minor), None, dtype='<S8')
 
 
 def add_destination_version(gdf_file, hdf_file):
     """Add destination version to root directory """
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
-    hdf_file.attrs['destination_version'] = str(major) + '.' + str(minor)
+    hdf_file.attrs.create('destination_version', str(major) + '.' + str(minor), None, dtype='<S8')
 
 
 def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
