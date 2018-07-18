@@ -150,8 +150,6 @@ def find_attribute(name):
 
 
 class Elements:
-    dict_particles = {'IDC': ['ID', 'none']}
-
     """ Dictionary of each Record unitDimension
     1 - length L, 2 - mass M, 3 - time T, 4 - electric current I,
     4 - thermodynamic temperature theta, 6 - amount of substance N,
@@ -240,10 +238,9 @@ def name_to_group(name, particles, size, gdf_file):
             add_dataset_attributes(gdf_file, particles, name_atribute, size)
         else:
             add_group_attributes(gdf_file, particles, name_atribute, size)
-    elif Elements.dict_particles.get(name) != None:
-        if Elements.dict_particles.get(name)[0] == 'ID':
+    elif name[0:2] == 'ID':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            particles.create_dataset('id', data=value, dtype=dtype('int'))
+            particles.create_dataset('ID', data=value)
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
