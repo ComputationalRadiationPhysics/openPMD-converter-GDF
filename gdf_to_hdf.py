@@ -411,6 +411,12 @@ def add_positionOffset_attributes(axis_positionOffset_group, shape):
     axis_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
 
 
+def add_empty_time(iteration_number_group):
+    iteration_number_group.attrs.create('time', 0.0)
+    iteration_number_group.attrs.create('timeUnitSI', 1E-3)
+    iteration_number_group.attrs.create('dt', 0.0)
+
+
 def add_positionOffset(particles_group, size):
     """Add position offset group """
 
