@@ -269,6 +269,9 @@ def name_to_group(name, particles, size, gdf_file):
                                        Elements.dict_dimensions.get('time'), None, dtype=np.dtype('float'))
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+        print_warning_unknown_type(name, Block_types.arr, size)
+
+
 
 
 class Block_types:
@@ -333,7 +336,7 @@ def get_block_type(primitive_type):
     return dir, edir, single_value, arr
 
 
-def print_warning_unknown_type(gdf_file, name, primitive_type, size):
+def print_warning_unknown_type(name, primitive_type, size):
     """Print warning if type of GDF file are unknown"""
     print('unknown datatype of value')
     print('name=', name)
@@ -363,7 +366,7 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
         decoding_name = decode_name(name)
         name_to_group(decoding_name, particles_group, size, gdf_file)
     else:
-        print_warning_unknown_type(gdf_file, name, primitive_type, size)
+        print_warning_unknown_type(name, primitive_type, size)
 
 
 def add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value):
@@ -392,9 +395,8 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         value = value.strip(' \t\r\n\0')
     elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
-        print('Block_types.signed_long ' + str(value))
     else:
-        print_warning_unknown_type(gdf_file, name, primitive_type, size)
+        print_warning_unknown_type(name, primitive_type, size)
 
 
 
