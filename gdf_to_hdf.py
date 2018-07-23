@@ -469,6 +469,10 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
     if particles_group.keys().__len__() == 0:
         data_group.__delitem__(str(iteration_number_group.name))
 
+    if iteration_number_group.attrs.get('time') == None:
+        add_empty_time(iteration_number_group)
+
+
 
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     """find GDF file in gdf_file_directory,
