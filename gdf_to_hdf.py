@@ -132,7 +132,8 @@ def find_multiple_symbols_attribute(name):
                           'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
                           'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt'],
                           'nemixrms': ['none', 'nemixrms'], 'nemiyrms': ['none', 'nemiyrms'],
-                          'nemizrms': ['none', 'nemizrms'], 'avgzrms': ['none', 'avgzrms']}
+                          'nemizrms': ['none', 'nemizrms'], 'avgzrms': ['none', 'avgzrms'],
+                          'time': ['none', 'time']}
     return dict_multiple_symbols.get(name)
 
 
@@ -259,14 +260,6 @@ def name_to_group(name, particles, size, gdf_file):
             attribute_dataset.attrs.create('unitDimension',
                                            Elements.dict_dimensions.get('id'), None,
                                            dtype=np.dtype('float'))
-    elif name[0:4] == 'time':
-        value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-        particles.create_dataset('time', data=value)
-        attribute_dataset = particles.require_dataset('time', value.shape, dtype=dtype('f8'))
-        attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
-        attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
-        attribute_dataset.attrs.create('unitDimension',
-                                       Elements.dict_dimensions.get('time'), None, dtype=np.dtype('float'))
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
         print_warning_unknown_type(name, Block_types.arr, size)
