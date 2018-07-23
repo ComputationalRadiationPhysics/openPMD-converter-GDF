@@ -130,7 +130,9 @@ def find_multiple_symbols_attribute(name):
                           'avgr': ['none', 'avgr'], 'avgG': ['none', 'avgG'],
                           'stdt': ['none', 'stdt'], 'stdG': ['none', 'stdG'],
                           'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
-                          'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt']}
+                          'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt'],
+                          'nemixrms': ['none', 'nemixrms'], 'nemiyrms': ['none', 'nemiyrms'],
+                          'nemizrms': ['none', 'nemizrms'], 'avgzrms': ['none', 'avgzrms']}
     return dict_multiple_symbols.get(name)
 
 
