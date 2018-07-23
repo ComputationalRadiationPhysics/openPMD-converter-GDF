@@ -246,6 +246,8 @@ def name_to_group(name, particles, size, gdf_file):
 
 
 class Block_types:
+    """ Block types for each type in GDF file"""
+
     dir = 256  # Directory entry start
     edir = 512  # Directory entry end
     sval = 1024  # Single valued
@@ -283,7 +285,7 @@ def read_gdf_block_header(gdf_file):
     namesplit = ''
     size = ''
     if len(name) < 15:
-        return namesplit, primitive_type, size;
+        return namesplit, primitive_type, size
     namesplit = name.split()[0]
 
     primitive_type = struct.unpack('i', gdf_file.read(4))[0]
@@ -292,11 +294,12 @@ def read_gdf_block_header(gdf_file):
 
 
 def get_block_type(primitive_type):
-    """Function return type of curent block
+    """return type of current block
         Args:
-          typee - input type from GPT file
+          primitive_type - input type from GPT file
 
            """
+
     dir = int(primitive_type & Block_types.dir > 0)
     edir = int(primitive_type & Block_types.edir > 0)
     single_value = int(primitive_type & Block_types.sval > 0)
@@ -305,19 +308,11 @@ def get_block_type(primitive_type):
 
 
 def print_warning_unknown_type(gdf_file, name, primitive_type, size):
-    """Print warning if type of GDF file are unknown
-        Args:
-           gdf_file - input file
-           name  - name of block
-           typee - type of block
-           size - size of block
-        """
+    """Print warning if type of GDF file are unknown"""
     print('unknown datatype of value')
     print('name=', name)
     print('type=', primitive_type)
     print('size=', size)
-    value = gdf_file.read(size)
-    print('value=' + value)
 
 
 def decode_name(attribute_name):
@@ -371,6 +366,7 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         value = value.strip(' \t\r\n\0')
     elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
+        print('Block_types.signed_long ' + str(value))
     else:
         print_warning_unknown_type(gdf_file, name, primitive_type, size)
 
