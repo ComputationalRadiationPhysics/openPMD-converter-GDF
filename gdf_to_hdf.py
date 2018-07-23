@@ -243,6 +243,14 @@ def name_to_group(name, particles, size, gdf_file):
     elif name[0:2] == 'ID':
             value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
             particles.create_dataset('ID', data=value)
+    elif name[0:4] == 'time':
+        value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+        particles.create_dataset('time', data=value)
+        attribute_dataset = particles.require_dataset('time', value.shape, dtype=dtype('f8'))
+        attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+        attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
+        attribute_dataset.attrs.create('unitDimension',
+                                       Elements.dict_dimensions.get('time'), None, dtype=np.dtype('float'))
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
