@@ -61,7 +61,7 @@ def add_software_version(gdf_file, hdf_file):
 
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
-    hdf_file.attrs.create('software version', str(major) + '.' + str(minor), None, dtype='<S8')
+    hdf_file.attrs.create('softwareVersion', str(major) + '.' + str(minor), None, dtype='<S8')
 
 
 def add_destination_version(gdf_file, hdf_file):
