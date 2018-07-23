@@ -104,7 +104,8 @@ def find_one_symbol_attribute(name):
 
 
 def find_two_symbols_attribute(name):
-    dict_two_symbols = {'Bx': ['momentum', 'x'], 'By': ['momentum', 'y'], 'Bz': ['momentum', 'z']}
+    dict_two_symbols = {'Bx': ['momentum', 'x'], 'By': ['momentum', 'y'], 'Bz': ['momentum', 'z'],
+                        'ID': ['none', 'id']}
     if len(name) < 2:
         return None
     current_name = name[0:2]
@@ -251,15 +252,6 @@ def name_to_group(name, particles, size, gdf_file):
             add_dataset_attributes(gdf_file, particles, name_atribute, size)
         else:
             add_group_attributes(gdf_file, particles, name_atribute, size)
-    elif name[0:2] == 'ID':
-            value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-            particles.create_dataset('id', data=value)
-            attribute_dataset = particles.require_dataset('id', value.shape, dtype=dtype('f8'))
-            attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
-            attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
-            attribute_dataset.attrs.create('unitDimension',
-                                           Elements.dict_dimensions.get('id'), None,
-                                           dtype=np.dtype('float'))
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
         print_warning_unknown_type(name, Block_types.arr, size)
