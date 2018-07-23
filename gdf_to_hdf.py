@@ -399,7 +399,6 @@ def create_iteration_sub_groups(iteration_number, data_group):
           iteration_number - result number of iteration
         """
     iteration_number += 1
-    print(iteration_number)
     iteration_number_group = data_group.create_group(str(iteration_number))
     particles_group = iteration_number_group.create_group('particles')
     electorns_group = particles_group.create_group('electorns')
