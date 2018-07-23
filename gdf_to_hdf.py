@@ -117,12 +117,12 @@ def find_three_symbols_attribute(name):
                           'rxy': ['none', 'rxy']}
     if len(name) < 3:
         return None
-    current_name = name[0:4]
+    current_name = name[0:3]
     return dict_three_symbols.get(current_name)
 
 
 def find_multiple_symbols_attribute(name):
-    dict_three_symbols = {'stdx': ['std', 'x'], 'stdy': ['std', 'y'], 'stdz': ['std', 'z'],
+    dict_multiple_symbols = {'stdx': ['std', 'x'], 'stdy': ['std', 'y'], 'stdz': ['std', 'z'],
                           'avgx': ['avg', 'x'], 'avgy': ['avg', 'y'], 'avgz': ['avg', 'z'],
                           'avgBx': ['avgB', 'x'], 'avgBy': ['avgB', 'y'], 'avgBz': ['avgB', 'z'],
                           'avgFEx': ['avgFE', 'x'], 'avgFEy': ['avgFE', 'y'], 'avgFEz': ['avgFE', 'z'],
@@ -131,7 +131,7 @@ def find_multiple_symbols_attribute(name):
                           'stdt': ['none', 'stdt'], 'stdG': ['none', 'stdG'],
                           'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
                           'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt']}
-    return dict_three_symbols.get(name)
+    return dict_multiple_symbols.get(name)
 
 
 def find_attribute(name):
