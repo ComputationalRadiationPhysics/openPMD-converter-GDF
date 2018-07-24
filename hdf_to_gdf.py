@@ -15,6 +15,13 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
     gdf_file.close()
     hdf_file.close()
     print('Converting .gdf to .hdf file... Complete.')
+def gdf_file_to_hdf_file(gdf_file, hdf_file):
+    add_gdf_id(gdf_file)
+
+
+def add_gdf_id(gdf_file):
+   gdf_id_byte = struct.pack('i', Constants.GDFID)
+   gdf_file.write(gdf_id_byte)
 class Constants:
     GDFID = 94325877
     GDFNAMELEN = 16
