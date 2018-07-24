@@ -2,6 +2,11 @@
 from __future__ import division
 import os
 import sys
+class Constants:
+    GDFID = 94325877
+    GDFNAMELEN = 16
+
+
 def files_from_args(file_names):
     gdf_file = ''
     hdf_file = ''
