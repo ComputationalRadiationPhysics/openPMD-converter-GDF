@@ -33,6 +33,18 @@ def add_time_root_attribute(gdf_file, hdf_file):
         gdf_file.write(time_created_byte)
 
 
+def add_name_array(name, gdf_file):
+    while len(name) < Constants.GDFNAMELEN:
+        name += chr(0)
+        chars_name = []
+        for c in name:
+            chars_name.append(c)
+
+        for s in chars_name:
+            s_pack = struct.pack('c', s.encode('ascii'))
+            gdf_file.write(s_pack)
+
+
 class Constants:
     GDFID = 94325877
     GDFNAMELEN = 16
