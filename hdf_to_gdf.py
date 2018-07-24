@@ -17,11 +17,22 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
     print('Converting .gdf to .hdf file... Complete.')
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
     add_gdf_id(gdf_file)
+    add_time_root_attribute(gdf_file, hdf_file)
 
 
 def add_gdf_id(gdf_file):
    gdf_id_byte = struct.pack('i', Constants.GDFID)
    gdf_file.write(gdf_id_byte)
+def add_time_root_attribute(gdf_file, hdf_file):
+    if  hdf_file.attrs.get('date') != None:
+        time_created = hdf_file.attrs.get('date')
+        decoding_name = time_created.decode('ascii', errors='ignore')
+        time_format = datetime.strptime(str(decoding_name), "%Y-%m-%d %H:%M:%S %z")
+        seconds = time.mktime(time_format.timetuple())
+        time_created_byte = struct.pack('i', int(seconds))
+        gdf_file.write(time_created_byte)
+
+
 class Constants:
     GDFID = 94325877
     GDFNAMELEN = 16
