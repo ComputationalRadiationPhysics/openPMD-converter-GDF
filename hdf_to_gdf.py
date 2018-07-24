@@ -1,3 +1,14 @@
+def files_from_args(file_names):
+    gdf_file = ''
+    hdf_file = ''
+    for arg in file_names:
+        if arg[-4:] == '.gdf':
+            gdf_file = arg
+        elif arg[-4:] == '.hdf':
+            hdf_file = arg
+    return gdf_file, hdf_file
+
+
 def converter(hdf_file, gdf_file):
     if hdf_file != '':
         if os.path.exists(hdf_file):
