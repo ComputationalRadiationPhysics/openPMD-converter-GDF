@@ -8,7 +8,8 @@ def files_from_args(file_names):
     for arg in file_names:
         if arg[-4:] == '.gdf':
             gdf_file = arg
-        elif arg[-4:] == '.hdf':
+        elif arg[-3:] == '.h5':
+
             hdf_file = arg
     return gdf_file, hdf_file
 
@@ -20,7 +21,8 @@ def converter(hdf_file, gdf_file):
                 gdf_file = hdf_file[:-4] + '.gdf'
                 print('Destination .gdf directory not specified. Defaulting to ' + gdf_file)
             else:
-                gdf_file = gdf_file[:-4] + '.hdf'
+                gdf_file = gdf_file[:-4] + '.gdf'
+
             hdf_to_gdf(hdf_file, gdf_file)
         else:
             print('The .hdf file does not exist to convert to .gdf')
