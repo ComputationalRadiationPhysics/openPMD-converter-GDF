@@ -33,6 +33,12 @@ def add_time_root_attribute(gdf_file, hdf_file):
         gdf_file.write(time_created_byte)
 
 
+def add_creator_name_root_attribute(gdf_file, hdf_file):
+    if hdf_file.attrs.get('software') != None:
+        software = hdf_file.attrs.get('software')
+        decoding_name = software.decode('ascii', errors='ignore')
+        add_name_array(decoding_name, gdf_file)
+
 def add_name_array(name, gdf_file):
     while len(name) < Constants.GDFNAMELEN:
         name += chr(0)
