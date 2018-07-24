@@ -2,6 +2,19 @@
 from __future__ import division
 import os
 import sys
+def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
+
+    print('Converting .gdf to .hdf file')
+    if os.path.exists(gdf_file_directory):
+        os.remove(gdf_file_directory)
+
+    hdf_file = h5py.File(hdf_file_directory, 'a')
+    with open(gdf_file_directory, 'wb') as gdf_file:
+        gdf_file_to_hdf_file(gdf_file, hdf_file)
+
+    gdf_file.close()
+    hdf_file.close()
+    print('Converting .gdf to .hdf file... Complete.')
 class Constants:
     GDFID = 94325877
     GDFNAMELEN = 16
