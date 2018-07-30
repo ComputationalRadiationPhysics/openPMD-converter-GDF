@@ -48,7 +48,7 @@ gdf_file --  result gdf file
 ### Example
 
 ```
-gdf_to_hdf examples/examle_3.hdf examples/result.gdf
+gdf_to_hdf examples/examle_3.h5 examples/result.gdf
 
 ```
 
