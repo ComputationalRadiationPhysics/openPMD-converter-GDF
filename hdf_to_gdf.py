@@ -18,6 +18,17 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
     add_gdf_id(gdf_file)
     add_time_root_attribute(gdf_file, hdf_file)
+class Block_types:
+    """ Block types for each type in GDF file"""
+
+    directory = 256  # Directory entry start
+    edir = 512  # Directory entry end
+    single_value = 1024  # Single valued
+    array = 2048  # Array
+    ascii_character = int('0001', 16)  # ASCII character
+    signed_long = int('0002', 16)  # Signed long
+    double_type = int('0003', 16)  # Double
+    no_data = int('0010', 16)  # No data
 
 
 def add_gdf_id(gdf_file):
