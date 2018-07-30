@@ -38,6 +38,30 @@ def add_creator_name_root_attribute(gdf_file, hdf_file):
         software = hdf_file.attrs.get('software')
         decoding_name = software.decode('ascii', errors='ignore')
         add_name_array(decoding_name, gdf_file)
+def add_versions(name, gdf_file, hdf_file):
+    major =''
+    minor =''
+    if hdf_file.attrs.get(name) != None:
+        version = hdf_file.attrs.get(name)
+        decode_version = version.decode('ascii', errors='ignore')
+        point_idx = decode_version.find('.')
+        if point_idx == -1:
+            major = decode_version
+            minor = '0'
+        else:
+            major = decode_version[0:point_idx - 1]
+            minor = decode_version[point_idx - 1: len(decode_version) - 1]
+
+        major_bin = struct.pack('B', int(major))
+        minor_bin = struct.pack('B', int(minor))
+        gdf_file.write(major_bin)
+        gdf_file.write(minor_bin)
+    else:
+        major_bin = struct.pack('B', 0)
+        minor_bin = struct.pack('B', 0)
+        gdf_file.write(major_bin)
+        gdf_file.write(minor_bin)
+
 
 def add_name_array(name, gdf_file):
     while len(name) < Constants.GDFNAMELEN:
