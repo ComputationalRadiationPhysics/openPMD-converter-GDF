@@ -2,6 +2,12 @@
 from __future__ import division
 import os
 import sys
+import struct
+import h5py
+from datetime import datetime
+import time
+import numpy
+
 def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
 
     print('Converting .gdf to .hdf file')
