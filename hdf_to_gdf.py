@@ -18,6 +18,17 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
     add_gdf_id(gdf_file)
     add_time_root_attribute(gdf_file, hdf_file)
+def write_first_block(gdf_file):
+    name = '00'
+    chars_name = []
+    for c in name:
+        chars_name.append(c)
+
+    for s in chars_name:
+        s_pack = struct.pack('c', s.encode('ascii'))
+        gdf_file.write(s_pack)
+
+
 class Block_types:
     """ Block types for each type in GDF file"""
 
