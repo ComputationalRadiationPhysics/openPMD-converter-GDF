@@ -166,13 +166,14 @@ def add_versions(name, gdf_file, hdf_file):
 def write_string(name, gdf_file):
     while len(name) < Constants.GDFNAMELEN:
         name += chr(0)
-        chars_name = []
-        for c in name:
-            chars_name.append(c)
 
-        for s in chars_name:
-            s_pack = struct.pack('c', s.encode('ascii'))
-            gdf_file.write(s_pack)
+    chars_name = []
+    for c in name:
+        chars_name.append(c)
+
+    for s in chars_name:
+        s_pack = struct.pack('c', s.encode('ascii'))
+        gdf_file.write(s_pack)
 
 
 class Constants:
