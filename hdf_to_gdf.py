@@ -49,6 +49,16 @@ def add_creator_name_root_attribute(gdf_file, hdf_file):
         software = hdf_file.attrs.get('software')
         decoding_name = software.decode('ascii', errors='ignore')
         add_name_array(decoding_name, gdf_file)
+def add_dest_name_root_attribute(gdf_file, hdf_file):
+    if hdf_file.attrs.get('destination') != None:
+        destination = hdf_file.attrs.get('destination')
+        decode_destination = destination.decode('ascii', errors='ignore')
+        add_name_array(decode_destination, gdf_file)
+    else:
+        destination = 'empty'
+        add_name_array(destination, gdf_file)
+
+
 def add_required_version_root_attribute(gdf_file, hdf_file):
     add_versions('gdf_version', gdf_file, hdf_file)
     add_versions('softwareVersion', gdf_file, hdf_file)
