@@ -84,8 +84,13 @@ def add_time_root_attribute(gdf_file, hdf_file):
 def add_creator_name_root_attribute(gdf_file, hdf_file):
     if hdf_file.attrs.get('software') != None:
         software = hdf_file.attrs.get('software')
-        decoding_name = software.decode('ascii', errors='ignore')
-        add_name_array(decoding_name, gdf_file)
+        decode_software = software.decode('ascii', errors='ignore')
+        write_string(decode_software, gdf_file)
+    else:
+        software = 'empty'
+        write_string(software, gdf_file)
+
+
 def add_dest_name_root_attribute(gdf_file, hdf_file):
     if hdf_file.attrs.get('destination') != None:
         destination = hdf_file.attrs.get('destination')
