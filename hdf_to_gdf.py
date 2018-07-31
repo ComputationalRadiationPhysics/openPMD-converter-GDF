@@ -45,6 +45,16 @@ class Collect_Datasets():
 
 
 
+def write_double_dataset(gdf_file, name, size, array_dataset):
+    write_string(name, gdf_file)
+    type_bin = struct.pack('i', int(2051))
+    gdf_file.write(type_bin)
+    size_bin = struct.pack('i', int(size * 8))
+    gdf_file.write(size_bin)
+    type_size = str(size)  +'d'
+    gdf_file.write(struct.pack(type_size, *array_dataset))
+
+
 class Block_types:
     """ Block types for each type in GDF file"""
 
