@@ -35,6 +35,16 @@ def write_first_block(gdf_file):
         gdf_file.write(s_pack)
 
 
+class Collect_Datasets():
+    def __init__(self):
+        self.sets = []
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Dataset):
+            self.sets.append(node)
+        return None
+
+
+
 class Block_types:
     """ Block types for each type in GDF file"""
 
