@@ -45,6 +45,37 @@ class Collect_Datasets():
 
 
 
+def write_iteration(hdf_file, gdf_file):
+
+   dict_datasets = {'momentum/x': 'Bx',
+                    'momentum/y': 'By',
+                    'momentum/z': 'Bz',
+                    'position/x': 'x',
+                    'position/y': 'y',
+                    'position/z': 'z'}
+   dict_array_names ={}
+   data_group = hdf_file.get('data')
+   hdf_datasets = Collect_Datasets()
+   hdf_file.visititems(hdf_datasets)
+   for key in hdf_datasets.sets:
+       my_array = hdf_file[key.name][()]
+
+       particles_idx = key.name.find("particles")
+       if (particles_idx == -1):
+           continue
+       substring = key.name[particles_idx + 10: len(key.name)]
+       name_of_particles_idx = substring.find("/")
+       name_of_particles = substring[0 : name_of_particles_idx]
+       name_of_dataset = substring[substring.find("/") + 1: len(substring)]
+       dict_name = name_of_dataset
+       dict_array_names[dict_name] = my_array
+
+   for key in dict_array_names:
+       array = dict_array_names[key]
+       if dict_datasets.get(key) != None:
+           write_double_dataset(gdf_file, dict_datasets[key], len(array), array)
+
+
 def write_double_dataset(gdf_file, name, size, array_dataset):
     write_string(name, gdf_file)
     type_bin = struct.pack('i', int(2051))
