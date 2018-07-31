@@ -126,10 +126,10 @@ def add_dest_name_root_attribute(gdf_file, hdf_file):
     if hdf_file.attrs.get('destination') != None:
         destination = hdf_file.attrs.get('destination')
         decode_destination = destination.decode('ascii', errors='ignore')
-        add_name_array(decode_destination, gdf_file)
+        write_string(decode_destination, gdf_file)
     else:
         destination = 'empty'
-        add_name_array(destination, gdf_file)
+        write_string(destination, gdf_file)
 
 
 def add_required_version_root_attribute(gdf_file, hdf_file):
@@ -163,7 +163,7 @@ def add_versions(name, gdf_file, hdf_file):
         gdf_file.write(minor_bin)
 
 
-def add_name_array(name, gdf_file):
+def write_string(name, gdf_file):
     while len(name) < Constants.GDFNAMELEN:
         name += chr(0)
         chars_name = []
