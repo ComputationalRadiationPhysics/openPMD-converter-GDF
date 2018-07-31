@@ -24,6 +24,13 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
     add_gdf_id(gdf_file)
     add_time_root_attribute(gdf_file, hdf_file)
+    add_creator_name_root_attribute(gdf_file, hdf_file)
+    add_dest_name_root_attribute(gdf_file, hdf_file)
+    add_required_version_root_attribute(gdf_file, hdf_file)
+    write_first_block(gdf_file)
+    write_iteration(hdf_file, gdf_file)
+
+
 def write_first_block(gdf_file):
     name = '00'
     chars_name = []
