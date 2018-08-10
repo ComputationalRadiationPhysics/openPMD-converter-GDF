@@ -59,8 +59,14 @@ def write_iteration(hdf_file, gdf_file):
                     'momentum/z': 'Bz',
                     'position/x': 'x',
                     'position/y': 'y',
-                    'position/z': 'z'}
-   dict_array_names ={}
+                    'position/z': 'z',
+                    'id': 'ID',
+                    'charge': 'charge',
+                    'weighting': 'weighting',
+                    'mass': 'm'}
+
+
+   dict_array_names = {}
    data_group = hdf_file.get('data')
    hdf_datasets = Collect_Datasets()
    hdf_file.visititems(hdf_datasets)
