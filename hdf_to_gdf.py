@@ -94,6 +94,16 @@ def write_iteration(hdf_file, gdf_file):
        array = dict_array_names[key]
        if dict_datasets.get(key) != None:
            write_double_dataset(gdf_file, dict_datasets[key], len(array), array)
+def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
+    for key in hdf_datasets.sets:
+        my_array = hdf_file[key.name][()]
+        name_of_particles, name_of_dataset = parse_group_name(key)
+        if name_of_dataset != '' and name_of_particles != '':
+            dict_array_names[name_of_particles, name_of_dataset] = my_array
+            size_of_main_array = len(my_array)
+    return size_of_main_array
+
+
 def write_ascii_name(name, size, gdf_file, ascii_name):
     write_string(name, gdf_file)
     type_bin = struct.pack('i', int(1025))
