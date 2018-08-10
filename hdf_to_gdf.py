@@ -58,19 +58,20 @@ class Collect_Datasets():
 
 
 
+class Name_of_arrays:
+    dict_datasets = {'momentum/x': 'Bx',
+                     'momentum/y': 'By',
+                     'momentum/z': 'Bz',
+                     'position/x': 'x',
+                     'position/y': 'y',
+                     'position/z': 'z',
+                     'id': 'ID',
+                     'charge': 'charge',
+                     'weighting': 'weighting',
+                     'mass': 'm'}
+
+
 def write_iteration(hdf_file, gdf_file):
-
-   dict_datasets = {'momentum/x': 'Bx',
-                    'momentum/y': 'By',
-                    'momentum/z': 'Bz',
-                    'position/x': 'x',
-                    'position/y': 'y',
-                    'position/z': 'z',
-                    'id': 'ID',
-                    'charge': 'charge',
-                    'weighting': 'weighting',
-                    'mass': 'm'}
-
 
    dict_array_names = {}
    data_group = hdf_file.get('data')
