@@ -90,10 +90,6 @@ def write_iteration(hdf_file, gdf_file):
        dict_name = name_of_dataset
        dict_array_names[dict_name] = my_array
 
-   for key in dict_array_names:
-       array = dict_array_names[key]
-       if dict_datasets.get(key) != None:
-           write_double_dataset(gdf_file, dict_datasets[key], len(array), array)
 def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
     for key in hdf_datasets.sets:
         my_array = hdf_file[key.name][()]
@@ -102,6 +98,19 @@ def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
             dict_array_names[name_of_particles, name_of_dataset] = my_array
             size_of_main_array = len(my_array)
     return size_of_main_array
+
+
+def add_group_values(hdf_datasets, size_of_main_array, dict_array_names):
+    for key in hdf_datasets.grops_values:
+        value = key.attrs['value']
+        i = 0
+        my_array = []
+        while i < size_of_main_array:
+            my_array.append(value)
+            i = i + 1
+        name_of_particles, name_of_dataset = parse_group_name(key)
+        if name_of_dataset != '' and name_of_particles != '':
+            dict_array_names[name_of_particles, name_of_dataset] = my_array
 
 
 def write_ascii_name(name, size, gdf_file, ascii_name):
@@ -141,6 +150,8 @@ class Block_types:
 def add_gdf_id(gdf_file):
    gdf_id_byte = struct.pack('i', Constants.GDFID)
    gdf_file.write(gdf_id_byte)
+
+
 def add_time_root_attribute(gdf_file, hdf_file):
     if  hdf_file.attrs.get('date') != None:
         time_created = hdf_file.attrs.get('date')
