@@ -77,6 +77,21 @@ def write_iteration(hdf_file, gdf_file):
    data_group = hdf_file.get('data')
    hdf_datasets = Collect_Datasets()
    hdf_file.visititems(hdf_datasets)
+   size_of_main_array = add_datasets_values(hdf_file, hdf_datasets, dict_array_names)
+   add_group_values(hdf_datasets, size_of_main_array, dict_array_names)
+   sorted_values = sorted(dict_array_names, key=lambda x: (x[0], x[1]))
+   iterate_values(gdf_file, dict_array_names, sorted_values)
+
+
+def iterate_values(gdf_file, dict_array_names, sorted_values):
+    last_name_of_particles = ''
+    for name_of_particles, name_of_dataset in sorted_values:
+        array = dict_array_names[name_of_particles, name_of_dataset]
+        if Name_of_arrays.dict_datasets.get(name_of_dataset) != None:
+            if last_name_of_particles != name_of_particles:
+                write_ascii_name('var', len(name_of_particles), gdf_file, name_of_particles)
+                last_name_of_particles = name_of_particles
+            write_double_dataset(gdf_file, Name_of_arrays.dict_datasets.get(name_of_dataset), len(array), array)
 
 
 def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
