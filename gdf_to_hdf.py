@@ -254,6 +254,12 @@ def name_to_group(name, particles, size, gdf_file):
             add_group_attributes(gdf_file, particles, name_atribute, size)
     else:
         value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
+        particles.create_dataset(name, data=value)
+        attribute_dataset = particles.require_dataset(name, value.shape, dtype=dtype('f8'))
+        attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+        attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
+        attribute_dataset.attrs.create('unitDimension',
+                                       Elements.dict_dimensions.get(name), None, dtype=np.dtype('float'))
         print_warning_unknown_type(name, Block_types.arr, size)
 
 
@@ -384,8 +390,7 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         print_warning_unknown_type(name, primitive_type, size)
 
 
-
-def create_iteration_sub_groups(iteration_number, data_group):
+def create_iteration_sub_groups(iteration_number, data_group, particles_name='electrons'):
     """Function create subgroup according iteration
         Args:
          iteration_number - number of current iteration
@@ -398,8 +403,9 @@ def create_iteration_sub_groups(iteration_number, data_group):
     iteration_number += 1
     iteration_number_group = data_group.create_group(str(iteration_number))
     particles_group = iteration_number_group.create_group('particles')
-    electorns_group = particles_group.create_group('electorns')
-    return iteration_number_group, electorns_group, iteration_number
+    subparticles_group = particles_group.create_group(particles_name)
+    return iteration_number_group, particles_group, subparticles_group, iteration_number
+
 
 def add_positionOffset_attributes(axis_positionOffset_group, shape):
     axis_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
@@ -429,22 +435,26 @@ def add_positionOffset(particles_group, size):
     z_positionOffset_group = positionOffset_group.require_group('z')
     add_positionOffset_attributes(z_positionOffset_group, shape)
 
+
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     check_gdf_file(gdf_file)
     add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
 
+
     gdf_file.seek(2, 1)  # skip to next block
 
-    iteration_number = 0
+    iteration_number = -1
     data_group = hdf_file.create_group('data')
 
-    iteration_number_group, particles_group, iteration_number\
+    iteration_number_group, particles_group, subparticles_group, iteration_number\
         = create_iteration_sub_groups(iteration_number, data_group)
     last_iteration_time = 0
     lastarr = False
-
+    i = 0
+    particles_name = 'particles'
     while True:
+        i = i + 1
         if gdf_file.read(1) == '':
             break
         gdf_file.seek(-1, 1)
@@ -454,18 +464,40 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         dir, edir, sval, arr = get_block_type(primitive_type)
         data_type = primitive_type & 255
 
-        if lastarr and not arr:
-            iteration_number_group, particles_group, iteration_number \
-                = create_iteration_sub_groups(iteration_number, data_group)
-        if sval:
+        exist = 0
+        var = 1
+        if data_type == Block_types.ascii_character:
+
+            value = str(gdf_file.read(size))
+            value = value.strip(' \t\r\n\0')
+            exist = 1
+
+            decoding_name = decode_name(name)
+            if (decoding_name == 'var'):
+                particles_name = value
+                var = 0
+                if i == 1:
+                    change_name = '/data/0/particles/' + value
+                    subparticles_group[change_name] = subparticles_group['/data/0/particles/electrons']
+                    del subparticles_group['/data/0/particles/electrons']
+                else:
+                    subparticles_group = particles_group.create_group(particles_name)
+
+
+        if lastarr and not arr and not var:
+            iteration_number_group, particles_group, subparticles_group, iteration_number \
+                = create_iteration_sub_groups(iteration_number, data_group, particles_name)
+
+        if sval and not exist:
             read_single_value_type(gdf_file, data_type,
                                    iteration_number_group, primitive_type, size, name, last_iteration_time)
+
         if arr:
-            read_array_type(gdf_file, data_type, particles_group, name, primitive_type, size)
-            add_positionOffset(particles_group, size)
+            read_array_type(gdf_file, data_type, subparticles_group, name, primitive_type, size)
+            add_positionOffset(subparticles_group, size)
 
         lastarr = arr
-    if particles_group.keys().__len__() == 0:
+    if subparticles_group.keys().__len__() == 0:
         data_group.__delitem__(str(iteration_number_group.name))
 
     if iteration_number_group.attrs.get('time') == None:
