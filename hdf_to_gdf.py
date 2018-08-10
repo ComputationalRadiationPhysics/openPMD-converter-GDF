@@ -77,18 +77,7 @@ def write_iteration(hdf_file, gdf_file):
    data_group = hdf_file.get('data')
    hdf_datasets = Collect_Datasets()
    hdf_file.visititems(hdf_datasets)
-   for key in hdf_datasets.sets:
-       my_array = hdf_file[key.name][()]
 
-       particles_idx = key.name.find("particles")
-       if (particles_idx == -1):
-           continue
-       substring = key.name[particles_idx + 10: len(key.name)]
-       name_of_particles_idx = substring.find("/")
-       name_of_particles = substring[0 : name_of_particles_idx]
-       name_of_dataset = substring[substring.find("/") + 1: len(substring)]
-       dict_name = name_of_dataset
-       dict_array_names[dict_name] = my_array
 
 def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
     for key in hdf_datasets.sets:
@@ -98,6 +87,17 @@ def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
             dict_array_names[name_of_particles, name_of_dataset] = my_array
             size_of_main_array = len(my_array)
     return size_of_main_array
+
+
+def parse_group_name(key_value):
+    particles_idx = key_value.name.find("particles")
+    if (particles_idx == -1):
+        return '', ''
+    substring = key_value.name[particles_idx + 10: len(key_value.name)]
+    name_of_particles_idx = substring.find("/")
+    name_of_particles = substring[0: name_of_particles_idx]
+    name_of_dataset = substring[substring.find("/") + 1: len(substring)]
+    return name_of_particles, name_of_dataset
 
 
 def add_group_values(hdf_datasets, size_of_main_array, dict_array_names):
