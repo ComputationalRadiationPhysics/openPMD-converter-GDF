@@ -214,8 +214,14 @@ def add_versions(name, gdf_file, hdf_file):
             major = decode_version
             minor = '0'
         else:
-            major = decode_version[0:point_idx - 1]
-            minor = decode_version[point_idx - 1: len(decode_version) - 1]
+            if RepresentsInt(decode_version[0:point_idx - 1]):
+                major = decode_version[0:point_idx - 1]
+            else:
+                major = 0
+            if RepresentsInt(decode_version[point_idx - 1: len(decode_version) - 1]):
+                minor = decode_version[point_idx - 1: len(decode_version) - 1]
+            else:
+                minor = 0
 
         major_bin = struct.pack('B', int(major))
         minor_bin = struct.pack('B', int(minor))
