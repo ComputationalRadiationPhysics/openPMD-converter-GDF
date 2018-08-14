@@ -1,3 +1,5 @@
+"""Converter from openPMD to GPT format"""
+
 
 from __future__ import division
 import os
@@ -6,9 +8,10 @@ import struct
 import h5py
 from datetime import datetime
 import time
-import numpy
+
 
 def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
+    """ Find hdf file in hdf_file_directory, find gdf_file_directory"""
 
     print('Converting .gdf to .hdf file')
     if os.path.exists(gdf_file_directory):
@@ -16,12 +19,16 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
 
     hdf_file = h5py.File(hdf_file_directory, 'a')
     with open(gdf_file_directory, 'wb') as gdf_file:
-        gdf_file_to_hdf_file(gdf_file, hdf_file)
+        hdf_file_to_gdf_file(gdf_file, hdf_file)
 
     gdf_file.close()
     hdf_file.close()
-    print('Converting .gdf to .hdf file... Complete.')
-def gdf_file_to_hdf_file(gdf_file, hdf_file):
+    print('Converting .hdf to .gdf file... Complete.')
+
+
+def hdf_file_to_gdf_file(gdf_file, hdf_file):
+    """ Convert from hdf file to gdf file """
+
     add_gdf_id(gdf_file)
     add_time_root_attribute(gdf_file, hdf_file)
     add_creator_name_root_attribute(gdf_file, hdf_file)
@@ -32,6 +39,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
 
 def write_first_block(gdf_file):
+    """ Write required empty first block """
+
     name = '00'
     chars_name = []
     for c in name:
@@ -43,10 +52,14 @@ def write_first_block(gdf_file):
 
 
 class Collect_Datasets():
+    """ Collect values from datasets in hdf file """
+
     list_values_group = ['charge', 'mass']
+
     def __init__(self):
         self.sets = []
         self.grops_values = []
+
     def __call__(self, name, node):
         if isinstance(node, h5py.Dataset):
             self.sets.append(node)
@@ -57,8 +70,9 @@ class Collect_Datasets():
         return None
 
 
-
 class Name_of_arrays:
+    """ Storage of datasets in h5 file """
+
     dict_datasets = {'momentum/x': 'Bx',
                      'momentum/y': 'By',
                      'momentum/z': 'Bz',
@@ -72,6 +86,7 @@ class Name_of_arrays:
 
 
 def write_iteration(hdf_file, gdf_file):
+   """ Write all iteration to hdf_file """
 
    dict_array_names = {}
    data_group = hdf_file.get('data')
@@ -84,6 +99,8 @@ def write_iteration(hdf_file, gdf_file):
 
 
 def iterate_values(gdf_file, dict_array_names, sorted_values):
+    """ Write one iteration to hdf_file """
+
     last_name_of_particles = ''
     for name_of_particles, name_of_dataset in sorted_values:
         array = dict_array_names[name_of_particles, name_of_dataset]
@@ -95,16 +112,22 @@ def iterate_values(gdf_file, dict_array_names, sorted_values):
 
 
 def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
+    """ Add values from dataset """
+
+    size_of_main_array = 0
     for key in hdf_datasets.sets:
-        my_array = hdf_file[key.name][()]
         name_of_particles, name_of_dataset = parse_group_name(key)
         if name_of_dataset != '' and name_of_particles != '':
+            my_array = hdf_file[key.name][()]
             dict_array_names[name_of_particles, name_of_dataset] = my_array
             size_of_main_array = len(my_array)
+
     return size_of_main_array
 
 
 def parse_group_name(key_value):
+    """ Separate name of group to particles name and dataset name """
+
     particles_idx = key_value.name.find("particles")
     if (particles_idx == -1):
         return '', ''
@@ -116,6 +139,8 @@ def parse_group_name(key_value):
 
 
 def add_group_values(hdf_datasets, size_of_main_array, dict_array_names):
+    """ Add values from groups with single value """
+
     for key in hdf_datasets.grops_values:
         value = key.attrs['value']
         i = 0
@@ -129,6 +154,8 @@ def add_group_values(hdf_datasets, size_of_main_array, dict_array_names):
 
 
 def write_ascii_name(name, size, gdf_file, ascii_name):
+    """ Write ascii name of value """
+
     write_string(name, gdf_file)
     type_bin = struct.pack('i', int(1025))
     gdf_file.write(type_bin)
@@ -140,6 +167,8 @@ def write_ascii_name(name, size, gdf_file, ascii_name):
 
 
 def write_double_dataset(gdf_file, name, size, array_dataset):
+    """ Write dataset of double values """
+
     write_string(name, gdf_file)
     type_bin = struct.pack('i', int(2051))
     gdf_file.write(type_bin)
@@ -163,11 +192,15 @@ class Block_types:
 
 
 def add_gdf_id(gdf_file):
+   """ Add required indefication block of gdf file"""
+
    gdf_id_byte = struct.pack('i', Constants.GDFID)
    gdf_file.write(gdf_id_byte)
 
 
 def add_time_root_attribute(gdf_file, hdf_file):
+    """ Add time of creation to root"""
+
     if  hdf_file.attrs.get('date') != None:
         time_created = hdf_file.attrs.get('date')
         decoding_name = time_created.decode('ascii', errors='ignore')
@@ -178,6 +211,8 @@ def add_time_root_attribute(gdf_file, hdf_file):
 
 
 def add_creator_name_root_attribute(gdf_file, hdf_file):
+    """ Add name of creator to root"""
+
     if hdf_file.attrs.get('software') != None:
         software = hdf_file.attrs.get('software')
         decode_software = software.decode('ascii', errors='ignore')
@@ -188,6 +223,8 @@ def add_creator_name_root_attribute(gdf_file, hdf_file):
 
 
 def add_dest_name_root_attribute(gdf_file, hdf_file):
+    """ Add dest name to root attribute """
+
     if hdf_file.attrs.get('destination') != None:
         destination = hdf_file.attrs.get('destination')
         decode_destination = destination.decode('ascii', errors='ignore')
@@ -198,14 +235,16 @@ def add_dest_name_root_attribute(gdf_file, hdf_file):
 
 
 def add_required_version_root_attribute(gdf_file, hdf_file):
+    """ Write one iteration to hdf_file """
+
     add_versions('gdf_version', gdf_file, hdf_file)
     add_versions('softwareVersion', gdf_file, hdf_file)
     add_versions('destination_version', gdf_file, hdf_file)
 
 
 def add_versions(name, gdf_file, hdf_file):
-    major =''
-    minor =''
+    """Write version of file to gdf file"""
+
     if hdf_file.attrs.get(name) != None:
         version = hdf_file.attrs.get(name)
         decode_version = version.decode('ascii', errors='ignore')
@@ -234,7 +273,19 @@ def add_versions(name, gdf_file, hdf_file):
         gdf_file.write(minor_bin)
 
 
+def RepresentsInt(s):
+    """Check that argument is int value"""
+
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 def write_string(name, gdf_file):
+    """Write string value to gdf file"""
+
     while len(name) < Constants.GDFNAMELEN:
         name += chr(0)
 
@@ -253,6 +304,8 @@ class Constants:
 
 
 def files_from_args(file_names):
+    """ Parse files from input arguments"""
+
     gdf_file = ''
     hdf_file = ''
     for arg in file_names:
@@ -265,6 +318,8 @@ def files_from_args(file_names):
 
 
 def converter(hdf_file, gdf_file):
+    """ Check correct of arguments"""
+
     if hdf_file != '':
         if os.path.exists(hdf_file):
             if gdf_file == '':
