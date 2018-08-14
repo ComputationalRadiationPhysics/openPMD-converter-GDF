@@ -329,6 +329,7 @@ def get_block_type(primitive_type):
 
 def print_warning_unknown_type(name, primitive_type, size):
     """Print warning if type of GDF file are unknown"""
+
     print('unknown datatype of value')
     print('name=', name)
     print('type=', primitive_type)
@@ -383,7 +384,6 @@ def read_single_value_type(gdf_file, data_type, iteration_number_group, primitiv
         pass
     elif data_type == Block_types.ascii_character:
         value = str(gdf_file.read(size))
-        value = value.strip(' \t\r\n\0')
     elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
     else:
@@ -467,22 +467,19 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         exist = 0
         var = 1
         if data_type == Block_types.ascii_character:
-
-            value = str(gdf_file.read(size))
-            value = value.strip(' \t\r\n\0')
+            value = gdf_file.read(size)
+            decoding_value = decode_name(value)
             exist = 1
-
             decoding_name = decode_name(name)
             if (decoding_name == 'var'):
-                particles_name = value
+                particles_name = decoding_value
                 var = 0
                 if i == 1:
-                    change_name = '/data/0/particles/' + value
+                    change_name = '/data/0/particles/' + particles_name
                     subparticles_group[change_name] = subparticles_group['/data/0/particles/electrons']
                     del subparticles_group['/data/0/particles/electrons']
                 else:
                     subparticles_group = particles_group.create_group(particles_name)
-
 
         if lastarr and not arr and not var:
             iteration_number_group, particles_group, subparticles_group, iteration_number \
