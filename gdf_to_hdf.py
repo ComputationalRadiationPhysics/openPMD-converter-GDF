@@ -391,7 +391,7 @@ def read_single_value_type(gdf_file, data_type, primitive_type, size, name,
     return var, subparticles_group, time
 
 
-def create_iteration_sub_groups(iteration_number, data_group, particles_name='electrons'):
+def create_iteration_sub_groups(iteration_number, data_group):
     """Function create subgroup according iteration
         Args:
          iteration_number - number of current iteration
@@ -404,8 +404,8 @@ def create_iteration_sub_groups(iteration_number, data_group, particles_name='el
     iteration_number += 1
     iteration_number_group = data_group.create_group(str(iteration_number))
     particles_group = iteration_number_group.create_group('particles')
-    subparticles_group = particles_group.create_group(particles_name)
-    return iteration_number_group, particles_group, subparticles_group, iteration_number
+
+    return iteration_number_group, particles_group, iteration_number
 
 
 def add_positionOffset_attributes(axis_positionOffset_group, shape):
