@@ -442,20 +442,17 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
     check_gdf_file(gdf_file)
     add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
 
-
-    gdf_file.seek(2, 1)  # skip to next block
+    gdf_file.seek(2, 1)
 
     iteration_number = -1
     data_group = hdf_file.create_group('data')
 
-    iteration_number_group, particles_group, subparticles_group, iteration_number\
+    iteration_number_group, particles_group, iteration_number\
         = create_iteration_sub_groups(iteration_number, data_group)
     last_iteration_time = 0
     lastarr = False
-    i = 0
-    particles_name = 'particles'
+    subparticles_group = None
     while True:
-        i = i + 1
         if gdf_file.read(1) == '':
             break
         gdf_file.seek(-1, 1)
@@ -465,30 +462,20 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         dir, edir, sval, arr = get_block_type(primitive_type)
         data_type = primitive_type & 255
 
-        exist = 0
-        var = 1
-        if data_type == Block_types.ascii_character:
-            value = gdf_file.read(size)
-            decoding_value = decode_name(value)
-            exist = 1
-            decoding_name = decode_name(name)
-            if (decoding_name == 'var'):
-                particles_name = decoding_value
-                var = 0
-                if i == 1:
-                    change_name = '/data/0/particles/' + particles_name
-                    subparticles_group[change_name] = subparticles_group['/data/0/particles/electrons']
-                    del subparticles_group['/data/0/particles/electrons']
-                else:
-                    subparticles_group = particles_group.create_group(particles_name)
+        var = 0
+        time = 0
 
-        if lastarr and not arr and not var:
-            iteration_number_group, particles_group, subparticles_group, iteration_number \
-                = create_iteration_sub_groups(iteration_number, data_group, particles_name)
+        if sval:
+            var, subparticles_group, time = read_single_value_type(gdf_file, data_type, primitive_type, size, name,
+                                   particles_group, subparticles_group, iteration_number_group, last_iteration_time)
 
-        if sval and not exist:
-            read_single_value_type(gdf_file, data_type,
-                                   iteration_number_group, primitive_type, size, name, last_iteration_time)
+        if time:
+            iteration_number, particles_group, subparticles_group =\
+                create_time_subroup(iteration_number, data_group, particles_group, subparticles_group)
+
+        if lastarr and not arr and (not var and not time):
+            iteration_number_group, particles_group, iteration_number \
+                = create_iteration_sub_groups(iteration_number, data_group)
 
         if arr:
             read_array_type(gdf_file, data_type, subparticles_group, name, primitive_type, size)
