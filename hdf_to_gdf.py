@@ -82,7 +82,10 @@ class Name_of_arrays:
                      'id': 'ID',
                      'charge': 'charge',
                      'weighting': 'weighting',
-                     'mass': 'm'}
+                     'mass': 'm',
+                     'positionOffset/x': 'positionOffset_x',
+                     'positionOffset/y': 'positionOffset_y',
+                     'positionOffset/z': 'positionOffset_z'}
 
 
 def write_iteration(hdf_file, gdf_file):
