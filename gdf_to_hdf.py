@@ -230,7 +230,6 @@ def add_group_attributes(gdf_file, particles_group, name_atribute, size):
     sub_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
     add_weightingPower_attribute(name_atribute, sub_group)
     add_macroWeighted_attribute(name_atribute, sub_group)
-
     value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
     sub_group.create_dataset(name_atribute[1], data=value)
     sub_group.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create\
@@ -261,8 +260,6 @@ def name_to_group(name, particles, size, gdf_file):
         attribute_dataset.attrs.create('unitDimension',
                                        Elements.dict_dimensions.get(name), None, dtype=np.dtype('float'))
         print_warning_unknown_type(name, Block_types.arr, size)
-
-
 
 
 class Block_types:
@@ -307,7 +304,6 @@ def read_gdf_block_header(gdf_file):
     if len(name) < 15:
         return namesplit, primitive_type, size
     namesplit = name.split()[0]
-
     primitive_type = struct.unpack('i', gdf_file.read(4))[0]
     size = struct.unpack('i', gdf_file.read(4))[0]
     return namesplit, primitive_type, size
@@ -319,7 +315,6 @@ def get_block_type(primitive_type):
           primitive_type - input type from GPT file
 
            """
-
     dir = int(primitive_type & Block_types.dir > 0)
     edir = int(primitive_type & Block_types.edir > 0)
     single_value = int(primitive_type & Block_types.sval > 0)
@@ -374,6 +369,7 @@ def add_time_attributes(iteration_number_group, last_iteration_time, decoding_na
 def read_single_value_type(gdf_file, data_type, primitive_type, size, name,
                            particles_group, subparticles_group, iteration_number_group, last_iteration_time):
     """Read single value from gdf file """
+
     time = 0
     var = 0
     if data_type == Block_types.no_data:
@@ -401,6 +397,7 @@ def create_iteration_sub_groups(iteration_number, data_group):
           particles_group - group for particles in result openPMD file
           iteration_number - result number of iteration
         """
+
     iteration_number += 1
     iteration_number_group = data_group.create_group(str(iteration_number))
     particles_group = iteration_number_group.create_group('particles')
@@ -409,19 +406,23 @@ def create_iteration_sub_groups(iteration_number, data_group):
 
 
 def add_positionOffset_attributes(axis_positionOffset_group, shape):
+    """Add default position offset group attributes"""
+
     axis_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
     axis_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
     axis_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
 
 
 def add_empty_time(iteration_number_group):
+    """Add default time attributes """
+
     iteration_number_group.attrs.create('time', 0.0)
     iteration_number_group.attrs.create('timeUnitSI', 1E-3)
     iteration_number_group.attrs.create('dt', 0.0)
 
 
 def add_positionOffset(particles_group, size):
-    """Add position offset group """
+    """Add default position offset group """
 
     positionOffset_group = particles_group.require_group('positionOffset')
     positionOffset_group.attrs.create('unitDimension', (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), None,
@@ -490,6 +491,7 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
 
 def create_time_subroup(iteration_number, data_group, particles_group, subparticles_group):
+    """Create new iteration if find new time  """
 
     if iteration_number != 0:
         iteration_number_group = data_group.create_group(str(iteration_number))
@@ -501,6 +503,8 @@ def create_time_subroup(iteration_number, data_group, particles_group, subpartic
 
 
 def read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name):
+    """Read ascii characters from gdf file """
+
     if data_type == Block_types.ascii_character:
         value = gdf_file.read(size)
         decoding_value = decode_name(value)
@@ -515,6 +519,8 @@ def read_ascii_character(data_type, particles_group, subparticles_group, gdf_fil
 
 
 def read_double_value(name, gdf_file, iteration_number_group, last_iteration_time):
+    """Read double from gdf file """
+
     time = 0
     value = struct.unpack('d', gdf_file.read(8))[0]
     decoding_name = decode_name(name)
@@ -532,6 +538,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
          gdf_file_directory - path to GDF file
          hdf_file_directory - path where the hdf  file is created
         """
+
     print('Converting .gdf to .hdf file')
     if os.path.exists(hdf_file_directory):
         os.remove(hdf_file_directory)
