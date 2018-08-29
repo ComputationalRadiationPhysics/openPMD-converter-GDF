@@ -12,6 +12,8 @@ import re
 
 
 def parse_name_array(gdf_file, size_gdf_name):
+    """Parse ascii value"""
+
     list_name = list(gdf_file.read(size_gdf_name))
     name = []
     for element in list_name:
@@ -134,7 +136,9 @@ def find_multiple_symbols_attribute(name):
                           'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt'],
                           'nemixrms': ['none', 'nemixrms'], 'nemiyrms': ['none', 'nemiyrms'],
                           'nemizrms': ['none', 'nemizrms'], 'avgzrms': ['none', 'avgzrms'],
-                          'time': ['none', 'time']}
+                          'time': ['none', 'time'], 'positionOffset_x': ['positionOffset', 'x'],
+                          'positionOffset_y': ['positionOffset', 'y'], 'positionOffset_z': ['positionOffset', 'z']}
+
     return dict_multiple_symbols.get(name)
 
 
