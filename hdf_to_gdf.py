@@ -246,12 +246,12 @@ def add_dest_name_root_attribute(gdf_file, hdf_file):
 def add_required_version_root_attribute(gdf_file, hdf_file):
     """ Write one iteration to hdf_file """
 
-    add_versions('gdf_version', gdf_file, hdf_file)
-    add_versions('softwareVersion', gdf_file, hdf_file)
+    add_versions('gdf_version', gdf_file, hdf_file, 1, 1)
+    add_versions('softwareVersion', gdf_file, hdf_file, 3, 0)
     add_versions('destination_version', gdf_file, hdf_file)
 
 
-def add_versions(name, gdf_file, hdf_file):
+def add_versions(name, gdf_file, hdf_file, major = 0, minor = 0):
     """Write version of file to gdf file"""
 
     if hdf_file.attrs.get(name) != None:
@@ -260,24 +260,23 @@ def add_versions(name, gdf_file, hdf_file):
         point_idx = decode_version.find('.')
         if point_idx == -1:
             major = decode_version
-            minor = '0'
+            minor = 0
         else:
-            if RepresentsInt(decode_version[0:point_idx - 1]):
-                major = decode_version[0:point_idx - 1]
+            if RepresentsInt(decode_version[0: point_idx - 1]):
+                major = decode_version[0: point_idx - 1]
             else:
                 major = 0
             if RepresentsInt(decode_version[point_idx - 1: len(decode_version) - 1]):
                 minor = decode_version[point_idx - 1: len(decode_version) - 1]
             else:
                 minor = 0
-
         major_bin = struct.pack('B', int(major))
         minor_bin = struct.pack('B', int(minor))
         gdf_file.write(major_bin)
         gdf_file.write(minor_bin)
     else:
-        major_bin = struct.pack('B', 0)
-        minor_bin = struct.pack('B', 0)
+        major_bin = struct.pack('B', major)
+        minor_bin = struct.pack('B', minor)
         gdf_file.write(major_bin)
         gdf_file.write(minor_bin)
 
