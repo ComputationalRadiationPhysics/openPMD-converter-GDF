@@ -501,6 +501,20 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         add_empty_time(iteration_number_group)
 
 
+def read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name):
+    if data_type == Block_types.ascii_character:
+        value = gdf_file.read(size)
+        decoding_value = decode_name(value)
+        decoding_name = decode_name(name)
+        if (decoding_name == 'var'):
+            particles_name = decoding_value
+            var = 1
+            subparticles_group = particles_group.require_group(particles_name)
+        else:
+            value = str(gdf_file.read(size))
+    return var, subparticles_group
+
+
 def read_double_value(name, gdf_file, iteration_number_group, last_iteration_time):
     time = 0
     value = struct.unpack('d', gdf_file.read(8))[0]
