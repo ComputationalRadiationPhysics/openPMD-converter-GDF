@@ -501,6 +501,17 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         add_empty_time(iteration_number_group)
 
 
+def create_time_subroup(iteration_number, data_group, particles_group, subparticles_group):
+
+    if iteration_number != 0:
+        iteration_number_group = data_group.create_group(str(iteration_number))
+        particles_group = iteration_number_group.create_group('particles')
+        subparticles_group = None
+    iteration_number += 1
+
+    return iteration_number, particles_group, subparticles_group
+
+
 def read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name):
     if data_type == Block_types.ascii_character:
         value = gdf_file.read(size)
