@@ -93,7 +93,7 @@ def write_iteration(hdf_file, gdf_file):
    hdf_datasets = Collect_Datasets()
    hdf_file.visititems(hdf_datasets)
    size_of_main_array = add_datasets_values(hdf_file, hdf_datasets, dict_array_names)
-   add_group_values(hdf_datasets, size_of_main_array, dict_array_names)
+   add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file)
    sorted_values = sorted(dict_array_names, key=lambda x: (x[0], x[1]))
    iterate_values(gdf_file, dict_array_names, sorted_values)
 
@@ -102,9 +102,14 @@ def iterate_values(gdf_file, dict_array_names, sorted_values):
     """ Write one iteration to hdf_file """
 
     last_name_of_particles = ''
-    for name_of_particles, name_of_dataset in sorted_values:
-        array = dict_array_names[name_of_particles, name_of_dataset]
+    last_name_of_iteration = 0
+    for name_of_iteration, name_of_particles, name_of_dataset in sorted_values:
+        array = dict_array_names[name_of_iteration, name_of_particles, name_of_dataset]
         if Name_of_arrays.dict_datasets.get(name_of_dataset) != None:
+            if not(float(last_name_of_iteration) == float(name_of_iteration)):
+                write_float('time', gdf_file, float(name_of_iteration))
+                last_name_of_iteration = name_of_iteration
+
             if last_name_of_particles != name_of_particles:
                 write_ascii_name('var', len(name_of_particles), gdf_file, name_of_particles)
                 last_name_of_particles = name_of_particles
@@ -116,41 +121,50 @@ def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
 
     size_of_main_array = 0
     for key in hdf_datasets.sets:
-        name_of_particles, name_of_dataset = parse_group_name(key)
+        name_of_particles, name_of_dataset, name_of_iteration = parse_group_name(key, hdf_file)
         if name_of_dataset != '' and name_of_particles != '':
             my_array = hdf_file[key.name][()]
-            dict_array_names[name_of_particles, name_of_dataset] = my_array
+            dict_array_names[name_of_iteration, name_of_particles, name_of_dataset] = my_array
             size_of_main_array = len(my_array)
 
     return size_of_main_array
 
 
-def parse_group_name(key_value):
+def parse_group_name(key_value, hdf_file):
     """ Separate name of group to particles name and dataset name """
+    numer_of_iteration = key_value.name.find('data')
 
     particles_idx = key_value.name.find("particles")
     if (particles_idx == -1):
-        return '', ''
+        return '', '', ''
+
+
+    name_of_iteration = 0
+    if hdf_file[key_value.name[0: particles_idx]].attrs.get('time') != None:
+        name_of_iteration = hdf_file[key_value.name[0: particles_idx]].attrs.get('time')
+
+
     substring = key_value.name[particles_idx + 10: len(key_value.name)]
     name_of_particles_idx = substring.find("/")
     name_of_particles = substring[0: name_of_particles_idx]
     name_of_dataset = substring[substring.find("/") + 1: len(substring)]
-    return name_of_particles, name_of_dataset
+    return name_of_particles, name_of_dataset, name_of_iteration
 
 
-def add_group_values(hdf_datasets, size_of_main_array, dict_array_names):
+def add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file):
     """ Add values from groups with single value """
 
     for key in hdf_datasets.grops_values:
-        value = key.attrs['value']
-        i = 0
-        my_array = []
-        while i < size_of_main_array:
-            my_array.append(value)
-            i = i + 1
-        name_of_particles, name_of_dataset = parse_group_name(key)
-        if name_of_dataset != '' and name_of_particles != '':
-            dict_array_names[name_of_particles, name_of_dataset] = my_array
+        if key.attrs.get('value') != None:
+            value = key.attrs['value']
+            i = 0
+            my_array = []
+            while i < size_of_main_array:
+                my_array.append(value)
+                i = i + 1
+            name_of_particles, name_of_dataset, name_of_iteration = parse_group_name(key, hdf_file)
+            if name_of_dataset != '' and name_of_particles != '':
+                dict_array_names[name_of_iteration, name_of_particles, name_of_dataset] = my_array
 
 
 def write_ascii_name(name, size, gdf_file, ascii_name):
