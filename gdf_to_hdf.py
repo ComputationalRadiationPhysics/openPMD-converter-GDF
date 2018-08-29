@@ -371,23 +371,24 @@ def add_time_attributes(iteration_number_group, last_iteration_time, decoding_na
     last_iteration_time.__add__(value)
 
 
-def read_single_value_type(gdf_file, data_type, iteration_number_group, primitive_type, size, name,
-                           last_iteration_time):
+def read_single_value_type(gdf_file, data_type, primitive_type, size, name,
+                           particles_group, subparticles_group, iteration_number_group, last_iteration_time):
     """Read single value from gdf file """
-
-    if data_type == Block_types.double_type:
-        value = struct.unpack('d', gdf_file.read(8))[0]
-        decoding_name = decode_name(name)
-        if decoding_name == 'time':
-            add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value)
-    elif data_type == Block_types.no_data:
+    time = 0
+    var = 0
+    if data_type == Block_types.no_data:
         pass
-    elif data_type == Block_types.ascii_character:
-        value = str(gdf_file.read(size))
     elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
+    elif data_type == Block_types.ascii_character:
+        var, subparticles_group = \
+            read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name)
+
+    elif data_type == Block_types.double_type:
+        time = read_double_value(name, gdf_file, iteration_number_group, last_iteration_time)
     else:
         print_warning_unknown_type(name, primitive_type, size)
+    return var, subparticles_group, time
 
 
 def create_iteration_sub_groups(iteration_number, data_group, particles_name='electrons'):
