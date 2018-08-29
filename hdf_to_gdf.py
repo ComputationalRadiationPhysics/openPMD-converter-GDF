@@ -166,6 +166,15 @@ def write_ascii_name(name, size, gdf_file, ascii_name):
     gdf_file.write(struct.pack(type_size, ascii_name.encode('ascii')))
 
 
+def write_float(name, gdf_file, value):
+    write_string(name, gdf_file)
+    type_bin = struct.pack('i', int(1283))
+    gdf_file.write(type_bin)
+    size_bin = struct.pack('i', 8)
+    gdf_file.write(size_bin)
+    gdf_file.write(struct.pack('d', value))
+
+
 def write_double_dataset(gdf_file, name, size, array_dataset):
     """ Write dataset of double values """
 
