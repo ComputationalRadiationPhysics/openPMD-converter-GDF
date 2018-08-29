@@ -501,6 +501,15 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
         add_empty_time(iteration_number_group)
 
 
+def read_double_value(name, gdf_file, iteration_number_group, last_iteration_time):
+    time = 0
+    value = struct.unpack('d', gdf_file.read(8))[0]
+    decoding_name = decode_name(name)
+    if decoding_name == 'time':
+        add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value)
+        time = 1
+    return time
+
 
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     """find GDF file in gdf_file_directory,
