@@ -6,6 +6,23 @@ import h5py
 from shutil import copyfile
 
 
+def add_patches(hdf_file, hdf_file_with_patches):
+    """ Check correct of arguments"""
+
+    name_of_file_with_patches = ''
+    if hdf_file != '':
+        if os.path.exists(hdf_file):
+            name = hdf_file[:-4]
+            idx_of_name = name.rfind('/')
+            if idx_of_name != -1:
+                name_of_file_with_patches = hdf_file_with_patches + hdf_file[idx_of_name + 1: -3] + 'with_patches.h5'
+            else:
+                name_of_file_with_patches = hdf_file_with_patches + hdf_file[:-3] + '.h5'
+            OpenPMD_add_patches(hdf_file, name_of_file_with_patches)
+        else:
+            print('The .hdf file does not exist')
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="add patches to OpenPMD file")
