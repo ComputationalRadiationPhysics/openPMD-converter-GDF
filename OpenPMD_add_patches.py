@@ -26,6 +26,15 @@ class Collect_Particles_Groups():
                 if group_particles_name.find('/') == -1 and len(group_particles_name) != 0:
                     self.particles_groups.append(node)
         return None
+
+
+def add_patch_to_particle_group(group):
+
+    patch_group = group.require_group('ParticlePatches')
+    extent_group = patch_group.require_group('extent')
+    offset_group = patch_group.require_group('offset')
+
+
 def get_particles_name(hdf_file):
 
     particles_name = ''
