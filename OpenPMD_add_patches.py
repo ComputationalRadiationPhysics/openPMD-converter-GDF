@@ -11,8 +11,21 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
 
     file_with_patches = h5py.File(name_of_file_with_patches)
     hdf_file = h5py.File(hdf_file_name)
+class Collect_Particles_Groups():
+    """ Collect values from datasets in hdf file """
 
+    def __init__(self, particles_name):
+        self.particles_groups = []
+        self.name_particles = particles_name
 
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Group):
+            name_idx = node.name.find(self.name_particles)
+            if name_idx != -1:
+                group_particles_name = node.name[name_idx + len(self.name_particles) + 1:]
+                if group_particles_name.find('/') == -1 and len(group_particles_name) != 0:
+                    self.particles_groups.append(node)
+        return None
 def get_particles_name(hdf_file):
 
     particles_name = ''
