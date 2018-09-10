@@ -37,6 +37,14 @@ def get_particles_name(hdf_file):
     return particles_name
 
 
+def decode_name(attribute_name):
+    """ Decode name from binary """
+
+    decoding_name = attribute_name.decode('ascii', errors='ignore')
+    decoding_name = re.sub(r'\W+', '', decoding_name)
+    return decoding_name
+
+
     """ Check correct of arguments"""
 
     name_of_file_with_patches = ''
