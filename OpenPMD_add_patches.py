@@ -4,6 +4,7 @@ import argparse
 import os
 import h5py
 from shutil import copyfile
+import re
 
 
 def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
@@ -54,6 +55,7 @@ def decode_name(attribute_name):
     return decoding_name
 
 
+def add_patches(hdf_file, hdf_file_with_patches, grid_sizes, devices_number):
     """ Check correct of arguments"""
 
     name_of_file_with_patches = ''
@@ -65,7 +67,7 @@ def decode_name(attribute_name):
                 name_of_file_with_patches = hdf_file_with_patches + hdf_file[idx_of_name + 1: -3] + 'with_patches.h5'
             else:
                 name_of_file_with_patches = hdf_file_with_patches + hdf_file[:-3] + '.h5'
-            OpenPMD_add_patches(hdf_file, name_of_file_with_patches)
+            OpenPMD_add_patches(hdf_file, name_of_file_with_patches, grid_sizes, devices_number)
         else:
             print('The .hdf file does not exist')
 
@@ -85,5 +87,7 @@ if __name__ == "__main__":
                         help="Number of devices in each dimension (x,y,z)")
 
     args = parser.parse_args()
+    add_patches(args.hdf, args.result, args.gridSize, args.devicesNumber)
 
-    converter(args.hdf, args.result)
+
+
