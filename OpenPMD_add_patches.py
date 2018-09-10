@@ -13,7 +13,17 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
     hdf_file = h5py.File(hdf_file_name)
 
 
-def add_patches(hdf_file, hdf_file_with_patches):
+def get_particles_name(hdf_file):
+
+    particles_name = ''
+    if hdf_file.attrs.get('particlesPath') != None:
+        particles_name = hdf_file.attrs.get('particlesPath')
+    else:
+        particles_name = 'particles'
+    particles_name = decode_name(particles_name)
+    return particles_name
+
+
     """ Check correct of arguments"""
 
     name_of_file_with_patches = ''
