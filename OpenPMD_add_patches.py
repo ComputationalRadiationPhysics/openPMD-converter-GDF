@@ -139,6 +139,18 @@ def count_indexes(links_to_array, final_size, size_indexes, size_array):
     return resultArray
 
 
+def points_to_patches(patch_data):
+
+    list_number_particles_in_parts = np.zeros(patch_data.get_size_split() + 1)
+    links_to_array = []
+    for i in range(0, patch_data.get_array_lenght()):
+        particle_idx = patch_data. get_position_idx(i)
+        sum_links = list_number_particles_in_parts[particle_idx]
+        list_number_particles_in_parts[particle_idx] = sum_links + 1
+        links_to_array.append(particle_idx)
+
+    return list_number_particles_in_parts, links_to_array
+
 def get_positon(max_coord, min_coord, separator, x_current):
     lenght = max_coord - min_coord
     return min(int((x_current - min_coord) * separator / lenght), separator - 1)
