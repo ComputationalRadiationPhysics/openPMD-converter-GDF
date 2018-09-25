@@ -88,6 +88,15 @@ class Particles_data():
     def get_array_lenght(self):
         return len(self.x_coord)
 
+    def get_patch_x(self, i):
+        return get_positon(self.x_max_coord, self.x_min_coord, self.x_split, self.x_coord[i])
+
+    def get_patch_y(self, i):
+        return get_positon(self.y_max_coord, self.y_min_coord, self.y_split, self.y_coord[i])
+
+    def get_patch_z(self, i):
+        return get_positon(self.z_max_coord, self.z_min_coord, self.z_split, self.z_coord[i])
+
 def add_patch_to_particle_group(group):
 
     patch_group = group.require_group('ParticlePatches')
