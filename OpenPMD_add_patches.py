@@ -15,6 +15,20 @@ class List_coorditates():
         self.list_y = None
         self.list_z = None
 
+    def __call__(self, name, node):
+        if name == 'position':
+            for key in node.keys():
+                if key == 'x':
+                    print('find X!!!! ')
+                    self.list_x = node[key][()]
+                elif key == 'y':
+                    print('find Y!!!! ')
+                    self.list_y = node[key][()]
+                elif key == 'z':
+                    print('find Z!!!! ')
+                    self.list_z = node[key][()]
+        return None
+
 def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
     copyfile(hdf_file_name, name_of_file_with_patches)
 
