@@ -85,6 +85,9 @@ class Particles_data():
             size = self.x_split * self.y_split * self.z_split
         return size
 
+    def get_array_lenght(self):
+        return len(self.x_coord)
+
 def add_patch_to_particle_group(group):
 
     patch_group = group.require_group('ParticlePatches')
