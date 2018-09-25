@@ -125,6 +125,19 @@ def add_patch_to_particle_group(group):
     offset_group = patch_group.require_group('offset')
 
 
+def count_indexes(links_to_array, final_size, size_indexes, size_array):
+
+    counter_indexes = np.zeros(size_indexes)
+    resultArray = np.zeros(max(size_indexes, size_array))
+
+    for i in range(0, len(links_to_array)):
+        xy_idx = links_to_array[i]
+        start_size = final_size[xy_idx]
+        adding_counter = counter_indexes[xy_idx]
+        resultArray[int(start_size + adding_counter)] = i
+        counter_indexes[xy_idx] = adding_counter + 1
+    return resultArray
+
 
 def get_positon(max_coord, min_coord, separator, x_current):
     lenght = max_coord - min_coord
