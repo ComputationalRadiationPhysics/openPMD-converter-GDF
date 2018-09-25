@@ -76,6 +76,15 @@ class Particles_data():
         self.x_min_coord = min_x
         self.y_min_coord = min_y
         self.z_min_coord = min_z
+   
+    def get_size_split(self):
+        size = 0
+        if self.z_split == None:
+            size = self.x_split * self.y_split
+        else:
+            size = self.x_split * self.y_split * self.z_split
+        return size
+
 def add_patch_to_particle_group(group):
 
     patch_group = group.require_group('ParticlePatches')
