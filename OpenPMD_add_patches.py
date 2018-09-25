@@ -5,6 +5,7 @@ import os
 import h5py
 from shutil import copyfile
 import re
+import numpy as np
 
 
 class List_coorditates():
@@ -31,15 +32,48 @@ class List_coorditates():
 
 def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
     copyfile(hdf_file_name, name_of_file_with_patches)
-
     file_with_patches = h5py.File(name_of_file_with_patches)
     hdf_file = h5py.File(hdf_file_name)
     particles_name = get_particles_name(hdf_file)
-    hdf_datasets = Collect_Particles_Groups(particles_name)
+    hdf_datasets = Particles_groups(particles_name)
     file_with_patches.visititems(hdf_datasets)
-    for particles_group in hdf_datasets.particles_groups:
-        add_patch_to_particle_group(particles_group)
+    match_group_positions = np.zeros(len(hdf_datasets.particles_groups))
 
+
+    group = hdf_datasets.particles_groups[0]
+    coordinate_lists = List_coorditates()
+    group.visititems(coordinate_lists)
+    list_x = coordinate_lists.list_x
+    list_y = coordinate_lists.list_y
+    list_z = coordinate_lists.list_z
+    max_x = max(list_x)
+    max_y = max(list_y)
+    max_z = max(list_z)
+
+    min_x = min(list_x)
+    min_y = min(list_y)
+    min_z = min(list_z)
+
+    size_array = len(list_z)
+    splitting_x = 7
+    splitting_y = 3
+    splittung_z = 3
+    patch_data = None
+
+    if size_array != 0:
+        patch_data = Particles_data(list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y,
+                                    list_z, splittung_z, max_z, min_z)
+    else:
+        patch_data = Particles_data(list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y)
+
+
+
+    size_indexes = patch_data.get_size_split()
+
+    list_number_particles_in_parts, links_to_array = \
+        points_to_patches(patch_data)
+
+    resultArray, final_size = divide_points_to_patches(size_array, size_indexes, list_number_particles_in_parts, links_to_array)
 
 class Particles_groups():
     """ Collect values from datasets in hdf file """
