@@ -7,6 +7,14 @@ from shutil import copyfile
 import re
 
 
+class List_coorditates():
+    """ Collect values from datasets in hdf file """
+
+    def __init__(self):
+        self.list_x = None
+        self.list_y = None
+        self.list_z = None
+
 def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
     copyfile(hdf_file_name, name_of_file_with_patches)
 
