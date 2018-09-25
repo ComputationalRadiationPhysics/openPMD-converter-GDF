@@ -60,7 +60,22 @@ class Particles_groups():
                     self.particles_groups.append(node)
         return None
 
+class Particles_data():
 
+    def __init__(self, list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y,
+                 list_z=None, splitting_z=None, max_z=None, min_z=None):
+        self.x_coord = list_x
+        self.y_coord = list_y
+        self.z_coord = list_z
+        self.x_split = splitting_x
+        self.y_split = splitting_y
+        self.z_split = splitting_z
+        self.x_max_coord = max_x
+        self.y_max_coord = max_y
+        self.z_max_coord = max_z
+        self.x_min_coord = min_x
+        self.y_min_coord = min_y
+        self.z_min_coord = min_z
 def add_patch_to_particle_group(group):
 
     patch_group = group.require_group('ParticlePatches')
