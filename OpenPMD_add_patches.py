@@ -103,6 +103,21 @@ class Particles_data():
     def get_position_idx3d(self, x_patch, y_patch, z_patch):
         return (x_patch * self.y_split + y_patch) * self.z_split + z_patch
 
+    def get_position_idx(self, i):
+        particle_idx = 0
+        if self.z_split == None:
+            x_patch = self.get_patch_x(i)
+            y_patch = self.get_patch_y(i)
+            particle_idx = self.get_position_idx2d(x_patch, y_patch)
+        else:
+            x_patch = self.get_patch_x(i)
+            y_patch = self.get_patch_y(i)
+            z_patch = self.get_patch_z(i)
+            particle_idx = self.get_position_idx3d(x_patch, y_patch, z_patch)
+        return particle_idx
+
+
+
 def add_patch_to_particle_group(group):
 
     patch_group = group.require_group('ParticlePatches')
