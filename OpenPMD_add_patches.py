@@ -104,6 +104,12 @@ def add_patch_to_particle_group(group):
     offset_group = patch_group.require_group('offset')
 
 
+
+def get_positon(max_coord, min_coord, separator, x_current):
+    lenght = max_coord - min_coord
+    return min(int((x_current - min_coord) * separator / lenght), separator - 1)
+
+
 def get_particles_name(hdf_file):
 
     particles_name = ''
