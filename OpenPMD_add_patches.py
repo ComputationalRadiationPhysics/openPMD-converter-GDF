@@ -158,6 +158,15 @@ def divide_points_to_patches(size_array, size_indexes, list_number_particles_in_
     return resultArray, final_size
 
 
+def test_print_2d(list_x, list_y, resultArray, final_size):
+    for i in range(0, len(final_size) - 1):
+        print('-----------------------------------------------')
+        print('particles in ' + str(i))
+        print('start   ' + str(int(final_size[i])) + str(' end   ') + str(int(final_size[i + 1] - 1)))
+        for j in range(int(final_size[i]), int(final_size[i + 1])):
+            print('x ==  ' + str(list_x[int(resultArray[j])]) + 'y ==  ' + str(list_y[int(resultArray[j])]))
+
+
 def get_positon(max_coord, min_coord, separator, x_current):
     lenght = max_coord - min_coord
     return min(int((x_current - min_coord) * separator / lenght), separator - 1)
