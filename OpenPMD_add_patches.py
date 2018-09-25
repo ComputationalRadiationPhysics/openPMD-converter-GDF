@@ -151,6 +151,13 @@ def points_to_patches(patch_data):
 
     return list_number_particles_in_parts, links_to_array
 
+def divide_points_to_patches(size_array, size_indexes, list_number_particles_in_parts, links_to_array):
+    final_size = np.cumsum(list_number_particles_in_parts, dtype=int)
+    final_size = np.insert(final_size, 0, 0)
+    resultArray = count_indexes(links_to_array, final_size, size_indexes, size_array)
+    return resultArray, final_size
+
+
 def get_positon(max_coord, min_coord, separator, x_current):
     lenght = max_coord - min_coord
     return min(int((x_current - min_coord) * separator / lenght), separator - 1)
