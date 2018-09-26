@@ -75,6 +75,22 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
 
     resultArray, final_size = divide_points_to_patches(size_array, size_indexes, list_number_particles_in_parts, links_to_array)
 
+
+def move_values(file_with_patches, final_size, values_list, resultArray):
+
+    for dataset in values_list.list_values:
+        name_dataset = dataset.name
+        print('name == '+ str(dataset.name))
+        size = len(dataset.value)
+        print('size ==   ' + str(size))
+        moved_values = np.zeros(size)
+        for i in range(0, len(final_size) - 1):
+            for j in range(int(final_size[i]), int(final_size[i + 1])):
+                moved_values[j] = (dataset.value[int(resultArray[j])])
+        del file_with_patches[name_dataset]
+        file_with_patches.create_dataset(name_dataset, data=moved_values)
+
+
 class Particles_groups():
     """ Collect values from datasets in hdf file """
 
