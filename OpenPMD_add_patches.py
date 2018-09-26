@@ -46,7 +46,7 @@ class List_values():
         return None
 
     group = hdf_datasets.particles_groups[0]
-    coordinate_lists = List_coorditates()
+def count_points_idx(coordinate_lists, splitting_x, splitting_y, splittung_z):
     group.visititems(coordinate_lists)
     list_x = coordinate_lists.list_x
     list_y = coordinate_lists.list_y
@@ -59,9 +59,7 @@ class List_values():
     min_z = min(list_z)
 
     size_array = len(list_z)
-    splitting_x = 7
-    splitting_y = 3
-    splittung_z = 3
+
     patch_data = None
 
     if size_array != 0:
@@ -70,14 +68,16 @@ class List_values():
     else:
         patch_data = Particles_data(list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y)
 
-
-
     size_indexes = patch_data.get_size_split()
 
     list_number_particles_in_parts, links_to_array = \
         points_to_patches(patch_data)
 
-    resultArray, final_size = divide_points_to_patches(size_array, size_indexes, list_number_particles_in_parts, links_to_array)
+    resultArray, final_size = divide_points_to_patches(size_array, size_indexes, list_number_particles_in_parts,
+                                                       links_to_array)
+
+   # test_print_2d(list_x, list_y, resultArray, final_size)
+    return resultArray, final_size
 
 
 def move_values(file_with_patches, final_size, values_list, resultArray):
