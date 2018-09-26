@@ -20,13 +20,10 @@ class List_coorditates():
         if name == 'position':
             for key in node.keys():
                 if key == 'x':
-                    print('find X!!!! ')
                     self.list_x = node[key][()]
                 elif key == 'y':
-                    print('find Y!!!! ')
                     self.list_y = node[key][()]
                 elif key == 'z':
-                    print('find Z!!!! ')
                     self.list_z = node[key][()]
         return None
 
@@ -57,7 +54,6 @@ class List_values():
     max_x = max(list_x)
     max_y = max(list_y)
     max_z = max(list_z)
-
     min_x = min(list_x)
     min_y = min(list_y)
     min_z = min(list_z)
@@ -88,9 +84,7 @@ def move_values(file_with_patches, final_size, values_list, resultArray):
 
     for dataset in values_list.list_values:
         name_dataset = dataset.name
-        print('name == '+ str(dataset.name))
         size = len(dataset.value)
-        print('size ==   ' + str(size))
         moved_values = np.zeros(size)
         for i in range(0, len(final_size) - 1):
             for j in range(int(final_size[i]), int(final_size[i + 1])):
