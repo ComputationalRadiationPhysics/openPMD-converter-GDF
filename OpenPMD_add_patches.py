@@ -99,6 +99,23 @@ def move_values(file_with_patches, final_size, values_list, resultArray):
         file_with_patches.create_dataset(name_dataset, data=moved_values)
 
 
+def handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes):
+
+    for particles_group in hdf_datasets.particles_groups:
+        add_patch_to_particle_group(particles_group)
+    coordinate_lists = List_coorditates()
+    group.visititems(coordinate_lists)
+    values_list = List_values()
+    group.visititems(values_list)
+    splitting_x = devices_numbers[0]
+    splitting_y = devices_numbers[1]
+    splitting_z = devices_numbers[2]
+
+    resultArray, final_size = count_points_idx(coordinate_lists, splitting_x, splitting_y, splitting_z)
+
+    move_values(file_with_patches, final_size, values_list, resultArray)
+
+
 class Particles_groups():
     """ Collect values from datasets in hdf file """
 
