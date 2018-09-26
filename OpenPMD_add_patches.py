@@ -39,6 +39,14 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
     file_with_patches.visititems(hdf_datasets)
     match_group_positions = np.zeros(len(hdf_datasets.particles_groups))
 
+class List_values():
+    def __init__(self):
+        self.list_values = []
+
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Dataset):
+            self.list_values.append(node)
+        return None
 
     group = hdf_datasets.particles_groups[0]
     coordinate_lists = List_coorditates()
