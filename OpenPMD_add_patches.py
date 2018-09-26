@@ -27,14 +27,6 @@ class List_coorditates():
                     self.list_z = node[key][()]
         return None
 
-def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
-    copyfile(hdf_file_name, name_of_file_with_patches)
-    file_with_patches = h5py.File(name_of_file_with_patches)
-    hdf_file = h5py.File(hdf_file_name)
-    particles_name = get_particles_name(hdf_file)
-    hdf_datasets = Particles_groups(particles_name)
-    file_with_patches.visititems(hdf_datasets)
-    match_group_positions = np.zeros(len(hdf_datasets.particles_groups))
 
 class List_values():
     def __init__(self):
@@ -45,9 +37,8 @@ class List_values():
             self.list_values.append(node)
         return None
 
-    group = hdf_datasets.particles_groups[0]
+
 def count_points_idx(coordinate_lists, splitting_x, splitting_y, splittung_z):
-    group.visititems(coordinate_lists)
     list_x = coordinate_lists.list_x
     list_y = coordinate_lists.list_y
     list_z = coordinate_lists.list_z
@@ -108,6 +99,20 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
     resultArray, final_size = count_points_idx(coordinate_lists, splitting_x, splitting_y, splitting_z)
 
     move_values(file_with_patches, final_size, values_list, resultArray)
+
+
+def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
+
+    copyfile(hdf_file_name, name_of_file_with_patches)
+    file_with_patches = h5py.File(name_of_file_with_patches)
+    hdf_file = h5py.File(hdf_file_name)
+    particles_name = get_particles_name(hdf_file)
+    hdf_datasets = Particles_groups(particles_name)
+    file_with_patches.visititems(hdf_datasets)
+
+
+    group = hdf_datasets.particles_groups[0]
+    handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes)
 
 
 class Particles_groups():
