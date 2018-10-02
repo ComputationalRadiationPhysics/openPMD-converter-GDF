@@ -52,8 +52,7 @@ def get_ranges(grid_sizes):
     return x_range, y_range, z_range
 
 
-
-def count_points_idx(coordinate_lists, grid_sizes, splitting_x, splitting_y, splittung_z):
+def count_points_idx(coordinate_lists, grid_sizes, devices_numbers):
     list_x = coordinate_lists.list_x
     list_y = coordinate_lists.list_y
     list_z = coordinate_lists.list_z
@@ -63,10 +62,15 @@ def count_points_idx(coordinate_lists, grid_sizes, splitting_x, splitting_y, spl
 
     patch_data = None
 
-    if size_array != 0:
+    if size_array != 0 and len(devices_numbers) == 3:
+        splitting_x = devices_numbers[0]
+        splitting_y = devices_numbers[1]
+        splitting_z = devices_numbers[2]
         patch_data = Particles_data(list_x, splitting_x, x_range, list_y, splitting_y, y_range,
-                                    list_z, splittung_z, z_range)
+                                    list_z, splitting_z, z_range)
     else:
+        splitting_x = devices_numbers[0]
+        splitting_y = devices_numbers[1]
         patch_data = Particles_data(list_x, splitting_x, x_range, list_y, splitting_y, y_range)
 
     size_indexes = patch_data.get_size_split()
@@ -102,11 +106,9 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
     group.visititems(coordinate_lists)
     values_list = List_values()
     group.visititems(values_list)
-    splitting_x = devices_numbers[0]
-    splitting_y = devices_numbers[1]
-    splitting_z = devices_numbers[2]
 
-    resultArray, final_size = count_points_idx(coordinate_lists, grid_sizes, splitting_x, splitting_y, splitting_z)
+    resultArray, final_size, list_number_particles_in_parts\
+        = count_points_idx(coordinate_lists, grid_sizes, devices_numbers)
 
     move_values(file_with_patches, final_size, values_list, resultArray)
 
