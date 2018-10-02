@@ -38,26 +38,36 @@ class List_values():
         return None
 
 
-def count_points_idx(coordinate_lists, splitting_x, splitting_y, splittung_z):
+def get_ranges(grid_sizes):
+    x_range = None
+    y_range = None
+    z_range = None
+    if len(grid_sizes) == 4:
+        x_range = (grid_sizes[0], grid_sizes[1])
+        y_range = (grid_sizes[2], grid_sizes[3])
+    elif len(grid_sizes) == 6:
+        x_range = (grid_sizes[0], grid_sizes[1])
+        y_range = (grid_sizes[2], grid_sizes[3])
+        z_range = (grid_sizes[4], grid_sizes[5])
+    return x_range, y_range, z_range
+
+
+
+def count_points_idx(coordinate_lists, grid_sizes, splitting_x, splitting_y, splittung_z):
     list_x = coordinate_lists.list_x
     list_y = coordinate_lists.list_y
     list_z = coordinate_lists.list_z
-    max_x = max(list_x)
-    max_y = max(list_y)
-    max_z = max(list_z)
-    min_x = min(list_x)
-    min_y = min(list_y)
-    min_z = min(list_z)
 
+    x_range, y_range, z_range = get_ranges(grid_sizes)
     size_array = len(list_z)
 
     patch_data = None
 
     if size_array != 0:
-        patch_data = Particles_data(list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y,
-                                    list_z, splittung_z, max_z, min_z)
+        patch_data = Particles_data(list_x, splitting_x, x_range, list_y, splitting_y, y_range,
+                                    list_z, splittung_z, z_range)
     else:
-        patch_data = Particles_data(list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y)
+        patch_data = Particles_data(list_x, splitting_x, x_range, list_y, splitting_y, y_range)
 
     size_indexes = patch_data.get_size_split()
 
@@ -96,7 +106,7 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
     splitting_y = devices_numbers[1]
     splitting_z = devices_numbers[2]
 
-    resultArray, final_size = count_points_idx(coordinate_lists, splitting_x, splitting_y, splitting_z)
+    resultArray, final_size = count_points_idx(coordinate_lists, grid_sizes, splitting_x, splitting_y, splitting_z)
 
     move_values(file_with_patches, final_size, values_list, resultArray)
 
@@ -136,21 +146,18 @@ class Particles_groups():
 
 class Particles_data():
 
-    def __init__(self, list_x, splitting_x, max_x, min_x, list_y, splitting_y, max_y, min_y,
-                 list_z=None, splitting_z=None, max_z=None, min_z=None):
+    def __init__(self, list_x, splitting_x, range_x, list_y, splitting_y, range_y,
+                 list_z=None, splitting_z=None, range_z=None):
         self.x_coord = list_x
         self.y_coord = list_y
         self.z_coord = list_z
         self.x_split = splitting_x
         self.y_split = splitting_y
         self.z_split = splitting_z
-        self.x_max_coord = max_x
-        self.y_max_coord = max_y
-        self.z_max_coord = max_z
-        self.x_min_coord = min_x
-        self.y_min_coord = min_y
-        self.z_min_coord = min_z
-   
+        self.x_range = range_x
+        self.y_range = range_y
+        self.z_range = range_z
+
     def get_size_split(self):
         size = 0
         if self.z_split == None:
@@ -163,13 +170,14 @@ class Particles_data():
         return len(self.x_coord)
 
     def get_patch_x(self, i):
-        return get_positon(self.x_max_coord, self.x_min_coord, self.x_split, self.x_coord[i])
+
+        return get_positon(self.x_range[0], self.x_range[1], self.x_split, self.x_coord[i])
 
     def get_patch_y(self, i):
-        return get_positon(self.y_max_coord, self.y_min_coord, self.y_split, self.y_coord[i])
+        return get_positon(self.y_range[0], self.y_range[1], self.y_split, self.y_coord[i])
 
     def get_patch_z(self, i):
-        return get_positon(self.z_max_coord, self.z_min_coord, self.z_split, self.z_coord[i])
+        return get_positon(self.z_range[0], self.z_range[1], self.z_split, self.z_coord[i])
 
     def get_position_idx2d(self, x_patch, y_patch):
         return x_patch * self.y_split + y_patch
