@@ -120,9 +120,10 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
     hdf_datasets = Particles_groups(particles_name)
     file_with_patches.visititems(hdf_datasets)
 
-
-    group = hdf_datasets.particles_groups[0]
-    handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes)
+    for group in hdf_datasets.particles_groups:
+        final_size, list_number_particles_in_parts = \
+            handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes)
+        add_patch_to_particle_group(group, final_size, list_number_particles_in_parts)
 
 
 class Particles_groups():
