@@ -12,9 +12,9 @@ class List_coorditates():
     """ Collect values from datasets in hdf file """
 
     def __init__(self):
-        self.list_x = None
-        self.list_y = None
-        self.list_z = None
+        self.list_x = []
+        self.list_y = []
+        self.list_z = []
 
     def __call__(self, name, node):
         if name == 'position':
