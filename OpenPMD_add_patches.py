@@ -256,7 +256,7 @@ def test_print_2d(list_x, list_y, resultArray, final_size):
 
 def get_positon(max_coord, min_coord, separator, x_current):
     lenght = max_coord - min_coord
-    return min(int((x_current - min_coord) * separator / lenght), separator - 1)
+    return max(0, min(int((x_current - min_coord) * separator / lenght), separator - 1))
 
 
 def get_particles_name(hdf_file):
