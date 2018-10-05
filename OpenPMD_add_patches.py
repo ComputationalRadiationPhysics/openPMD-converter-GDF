@@ -228,7 +228,7 @@ def count_indexes(links_to_array, final_size, size_indexes, size_array):
 
 def points_to_patches(patch_data):
 
-    list_number_particles_in_parts = np.zeros(patch_data.get_size_split() + 1)
+    list_number_particles_in_parts = np.zeros(patch_data.get_size_split() + 1, dtype=int)
     links_to_array = []
     for i in range(0, patch_data.get_array_lenght()):
         particle_idx = patch_data. get_position_idx(i)
