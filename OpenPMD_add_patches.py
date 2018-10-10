@@ -145,7 +145,6 @@ def move_values(file_with_patches, final_size, values_list, resultArray):
 
 def handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes):
 
-
     coordinate_lists = List_coorditates()
     group.visititems(coordinate_lists)
     values_list = List_values()
@@ -154,8 +153,13 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
     resultArray, final_size, list_number_particles_in_parts\
         = count_points_idx(coordinate_lists, grid_sizes, devices_numbers)
 
+
+    values_extent = Extent_values(0.00000001, grid_sizes, devices_numbers)
+    array_x = values_extent.get_x_extent()
+    array_y = values_extent.get_y_extent()
+
     move_values(file_with_patches, final_size, values_list, resultArray)
-    return final_size, list_number_particles_in_parts
+    return final_size, list_number_particles_in_parts, values_extent
 
 
 def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
@@ -165,12 +169,13 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
     hdf_file = h5py.File(hdf_file_name)
     particles_name = get_particles_name(hdf_file)
     hdf_datasets = Particles_groups(particles_name)
+
     file_with_patches.visititems(hdf_datasets)
 
     for group in hdf_datasets.particles_groups:
-        final_size, list_number_particles_in_parts = \
+        final_size, list_number_particles_in_parts, values_extent= \
             handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes)
-        add_patch_to_particle_group(group, final_size, list_number_particles_in_parts)
+        add_patch_to_particle_group(group, final_size, list_number_particles_in_parts, values_extent)
 
 
 class Particles_groups():
@@ -247,8 +252,7 @@ class Particles_data():
         return particle_idx
 
 
-
-def add_patch_to_particle_group(group, final_size, list_number_particles_in_parts):
+def add_patch_to_particle_group(group, final_size, list_number_particles_in_parts, values_extent):
 
     patch_group = group.require_group('ParticlePatches')
     patch_group.create_dataset('numParticlesOffset', data=final_size.data, dtype=np.dtype('int64'))
