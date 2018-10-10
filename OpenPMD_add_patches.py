@@ -210,6 +210,21 @@ def add_patch_to_particle_group(group, final_size, list_number_particles_in_part
     patch_group.create_dataset('numParticles', data=list_number_particles_in_parts.data, dtype=np.dtype('int64'))
     extent_group = patch_group.require_group('extent')
     offset_group = patch_group.require_group('offset')
+def add_extent(extent_group, values_extent):
+    if values_extent.gef_dimention() == 2:
+        array_x = values_extent.get_x_extent()
+        array_y = values_extent.get_y_extent()
+        extent_group.create_dataset('x', data=array_x, dtype=np.dtype('int'))
+        extent_group.create_dataset('y', data=array_y, dtype=np.dtype('int'))
+    elif values_extent.gef_dimention() == 3:
+        array_x = values_extent.get_x_extent()
+        array_y = values_extent.get_y_extent()
+        array_z = values_extent.get_z_extent()
+        extent_group.create_dataset('x', data=array_x, dtype=np.dtype('int'))
+        extent_group.create_dataset('y', data=array_y, dtype=np.dtype('int'))
+        extent_group.create_dataset('z', data=array_z, dtype=np.dtype('int'))
+
+        array_z = values_extent.get_z_extent()
 
 
 def count_indexes(links_to_array, final_size, size_indexes, size_array):
