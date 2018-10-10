@@ -67,6 +67,22 @@ class Extent_values():
         else:
             return None
 
+    def get_extent(self, current_range, split):
+        extent = []
+        lenght = current_range[1] - current_range[0]
+        current_part = lenght / float(split)
+        start_value = current_range[0]
+        for i in range(0, split):
+            if (start_value + current_part) < current_range[1]:
+                extent.append(current_part/self.unitSI)
+                start_value = start_value + current_part
+            else:
+                extent.append((current_range[1] - start_value)/self.unitSI)
+                start_value = start_value + current_range[1] - start_value
+
+        return extent
+
+
 def get_ranges(grid_sizes):
     x_range = None
     y_range = None
