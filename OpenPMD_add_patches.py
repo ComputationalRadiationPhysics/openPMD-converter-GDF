@@ -38,6 +38,20 @@ class List_values():
         return None
 
 
+class Extent_values():
+    def __init__(self, unitSI, grid_sizes, devices_numbers):
+        self.unitSI = unitSI
+        self.x_range, self.y_range, self.z_range = get_ranges(grid_sizes)
+        if len(devices_numbers) > 2:
+            self.dimension = 3
+            self.x_split = devices_numbers[0]
+            self.y_split = devices_numbers[1]
+            self.z_split = devices_numbers[2]
+        else:
+            self.dimension = 2
+            self.x_split = devices_numbers[0]
+            self.y_split = devices_numbers[1]
+
 def get_ranges(grid_sizes):
     x_range = None
     y_range = None
