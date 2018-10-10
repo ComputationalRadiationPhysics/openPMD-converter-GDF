@@ -52,6 +52,18 @@ class Extent_values():
             self.x_split = devices_numbers[0]
             self.y_split = devices_numbers[1]
 
+    def get_x_extent(self):
+        return self.get_extent(self.x_range, self.x_split)
+
+    def get_y_extent(self):
+        return self.get_extent(self.y_range, self.y_split)
+
+    def get_z_extent(self):
+        if self.z_range != None:
+            return self.get_extent(self.z_range, self.z_split)
+        else:
+            return None
+
 def get_ranges(grid_sizes):
     x_range = None
     y_range = None
