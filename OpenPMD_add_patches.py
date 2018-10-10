@@ -224,7 +224,25 @@ def add_extent(extent_group, values_extent):
         extent_group.create_dataset('y', data=array_y, dtype=np.dtype('int'))
         extent_group.create_dataset('z', data=array_z, dtype=np.dtype('int'))
 
+
+def add_offset(offset_group, values_extent):
+    if values_extent.gef_dimention() == 2:
+        array_x = values_extent.get_x_extent()
+        offset_x = np.cumsum(array_x,  dtype=int)
+        array_y = values_extent.get_y_extent()
+        offset_y = np.cumsum(array_y, dtype=int)
+        offset_group.create_dataset('x', data=offset_x, dtype=np.dtype('int'))
+        offset_group.create_dataset('y', data=offset_y, dtype=np.dtype('int'))
+    elif values_extent.gef_dimention() == 3:
+        array_x = values_extent.get_x_extent()
+        array_y = values_extent.get_y_extent()
         array_z = values_extent.get_z_extent()
+        offset_x = np.cumsum(array_x, dtype=int)
+        offset_y = np.cumsum(array_y, dtype=int)
+        offset_z = np.cumsum(array_z, dtype=int)
+        offset_group.create_dataset('x', data=offset_x, dtype=np.dtype('int'))
+        offset_group.create_dataset('y', data=offset_y, dtype=np.dtype('int'))
+        offset_group.create_dataset('z', data=offset_z, dtype=np.dtype('int'))
 
 
 def count_indexes(links_to_array, final_size, size_indexes, size_array):
