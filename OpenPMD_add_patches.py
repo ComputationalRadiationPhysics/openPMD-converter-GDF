@@ -385,10 +385,8 @@ if __name__ == "__main__":
     parser.add_argument("-result", metavar='hdf_file_with_patches', type=str,
                         help="path to result file with patches")
     parser.add_argument("-gridSize", type=float, nargs='*',
-                      #  metavar=('min__x', 'max__x', 'min__y', 'max__y', 'min__z', 'max__z' ),
                         help="Size of the simulation grid in cells as x y z")
     parser.add_argument("-devicesNumber", type=int, nargs='*',
-                    #    metavar=('devices_number_x', 'devices_number_y', 'size_grid_z'),
                         help="Number of devices in each dimension (x,y,z)")
 
     args = parser.parse_args()
