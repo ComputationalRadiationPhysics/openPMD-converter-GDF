@@ -299,7 +299,47 @@ def add_offset(offset_group, values_extent):
         offset_group.create_dataset('z', data=offset_z, dtype=np.dtype('int'))
 
 
+def test_patches(grid_sizes, devices_numbers, numParticlesOffset, arrayX, arrayY):
 
+    maxX = max(arrayX)
+    minX = min(arrayX)
+    if len(devices_numbers) == 3:
+        print('3-D patches')
+    elif len(devices_numbers) == 2:
+        print('2-d patches')
+        len_x = (grid_sizes[1] - grid_sizes[0]) / devices_numbers[0]
+        len_y = (grid_sizes[3] - grid_sizes[2]) / devices_numbers[1]
+
+        patchX = []
+        patchY = []
+        for i in range(0, devices_numbers[0]):
+            Xstart = grid_sizes[0] + i * len_x
+            Xend = 0
+            if i == devices_numbers[0]:
+                Xend = grid_sizes[1]
+            else:
+                Xend = grid_sizes[0] + (i + 1) * len_x
+            patchX.append((Xstart, Xend))
+
+        for i in range(0, devices_numbers[1]):
+            Ystart = grid_sizes[2] + i * len_y
+            Yend = 0
+            if i == devices_numbers[1]:
+                Yend = grid_sizes[3]
+            else:
+                Yend = grid_sizes[2] + (i + 1) * len_y
+            patchY.append((Ystart, Yend))
+
+        numXpatch = devices_numbers[0]
+        numYpatch = devices_numbers[1]
+
+        for i in range(0, numXpatch):
+            for j in range(0, numYpatch):
+                idx = j + i * numYpatch
+                check_particles_in_patch(numParticlesOffset[idx], numParticlesOffset[idx + 1], patchX[i], patchY[j], arrayX, arrayY)
+
+    elif len(devices_numbers) == 1:
+        print('1-d patches')
 
 
 def check_particles_in_patch(idxStartPatch, idxEndPatch, rangeX, rangeY, arrayX, arrayY):
