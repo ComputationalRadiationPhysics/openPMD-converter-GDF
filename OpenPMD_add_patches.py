@@ -299,6 +299,18 @@ def add_offset(offset_group, values_extent):
         offset_group.create_dataset('z', data=offset_z, dtype=np.dtype('int'))
 
 
+
+
+
+def point_in_range(rangePoint, point):
+    startValue = float(rangePoint[0])
+    endValue = float(rangePoint[1])
+    if startValue <= point and point <= endValue:
+        return True
+    else:
+        return False
+
+
 def count_indexes(links_to_array, final_size, size_indexes, size_array):
 
     counter_indexes = np.zeros(size_indexes)
