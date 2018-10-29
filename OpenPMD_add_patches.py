@@ -146,6 +146,7 @@ def move_values(file_with_patches, final_size, values_list, resultArray):
 
 
 def handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes):
+    """ move values according the patches,  count idxs, change grids """
 
     coordinate_lists = List_coorditates()
     group.visititems(coordinate_lists)
@@ -165,6 +166,7 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
 
 
 def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
+    """ Add patche to OpenPMD file """
 
     copyfile(hdf_file_name, name_of_file_with_patches)
     file_with_patches = h5py.File(name_of_file_with_patches)
@@ -199,7 +201,9 @@ class Particles_groups():
                     self.particles_groups.append(node)
         return None
 
+
 class Particles_data():
+    """ Class with  calculating position of particles"""
 
     def __init__(self, list_x, splitting_x, range_x, list_y, splitting_y, range_y,
                  list_z=None, splitting_z=None, range_z=None):
@@ -254,6 +258,7 @@ class Particles_data():
 
 
 def add_patch_to_particle_group(group, final_size, list_number_particles_in_parts, values_extent):
+    """Add patch to ecach particle group: """
 
     patch_group = group.require_group('ParticlePatches')
     patch_group.create_dataset('numParticlesOffset', data=final_size.data, dtype=np.dtype('int64'))
@@ -265,6 +270,8 @@ def add_patch_to_particle_group(group, final_size, list_number_particles_in_part
 
 
 def add_extent(extent_group, values_extent):
+    """ Add extent group to particle group """
+
     if values_extent.gef_dimention() == 2:
         array_x = values_extent.get_x_extent()
         array_y = values_extent.get_y_extent()
@@ -280,6 +287,8 @@ def add_extent(extent_group, values_extent):
 
 
 def add_offset(offset_group, values_extent):
+    """ Add offset group to particle group """
+
     if values_extent.gef_dimention() == 2:
         array_x = values_extent.get_x_extent()
         offset_x = np.cumsum(array_x,  dtype=int)
@@ -368,6 +377,7 @@ def point_in_range(rangePoint, point):
 
 
 def count_indexes(links_to_array, final_size, size_indexes, size_array):
+    """ Add offset group to particle group """
 
     counter_indexes = np.zeros(size_indexes)
     resultArray = np.zeros(max(size_indexes, size_array))
@@ -382,6 +392,7 @@ def count_indexes(links_to_array, final_size, size_indexes, size_array):
 
 
 def points_to_patches(patch_data):
+    """ Devide points to patches """
 
     list_number_particles_in_parts = np.zeros(patch_data.get_size_split() + 1, dtype=int)
     links_to_array = []
@@ -390,8 +401,8 @@ def points_to_patches(patch_data):
         sum_links = list_number_particles_in_parts[particle_idx]
         list_number_particles_in_parts[particle_idx] = sum_links + 1
         links_to_array.append(particle_idx)
-
     return list_number_particles_in_parts, links_to_array
+
 
 def divide_points_to_patches(size_array, size_indexes, list_number_particles_in_parts, links_to_array):
     final_size = np.cumsum(list_number_particles_in_parts, dtype=int)
@@ -410,6 +421,7 @@ def test_print_2d(list_x, list_y, resultArray, final_size):
 
 
 def get_positon(max_coord, min_coord, separator, x_current):
+    """ Get name of particles group """
     lenght = max_coord - min_coord
     return max(0, min(int((x_current - min_coord) * separator / lenght), separator - 1))
 
