@@ -302,6 +302,22 @@ def add_offset(offset_group, values_extent):
 
 
 
+def check_particles_in_patch(idxStartPatch, idxEndPatch, rangeX, rangeY, arrayX, arrayY):
+
+    particle_in_patch = True
+    for i in range(idxStartPatch, idxEndPatch):
+        pointX = float(arrayX[i])
+        pointY = float(arrayY[i])
+      #  print('point ==  ' + str(pointX) +' , ' + str(pointY))
+        if point_in_range(rangeX, pointX) and point_in_range(rangeY, pointY):
+            particle_in_patch = True
+        else:
+            particle_in_patch = False
+            print('ERRROR!!!! point ' + str(pointX) + ', ' + str(pointY) + 'is not in: '+ str(rangeX) + ', '+ str(rangeY))
+        #    break
+    return particle_in_patch
+
+
 def point_in_range(rangePoint, point):
     startValue = float(rangePoint[0])
     endValue = float(rangePoint[1])
