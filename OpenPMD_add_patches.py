@@ -258,6 +258,10 @@ def add_patch_to_particle_group(group, final_size, list_number_particles_in_part
     patch_group.create_dataset('numParticles', data=list_number_particles_in_parts.data, dtype=np.dtype('int64'))
     extent_group = patch_group.require_group('extent')
     offset_group = patch_group.require_group('offset')
+    add_extent(extent_group, values_extent)
+    add_offset(offset_group, values_extent)
+
+
 def add_extent(extent_group, values_extent):
     if values_extent.gef_dimention() == 2:
         array_x = values_extent.get_x_extent()
