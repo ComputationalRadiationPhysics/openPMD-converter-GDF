@@ -87,6 +87,8 @@ def get_ranges(grid_sizes):
     x_range = None
     y_range = None
     z_range = None
+    if len(grid_sizes) == 2:
+        x_range = (grid_sizes[0], grid_sizes[1])
     if len(grid_sizes) == 4:
         x_range = (grid_sizes[0], grid_sizes[1])
         y_range = (grid_sizes[2], grid_sizes[3])
