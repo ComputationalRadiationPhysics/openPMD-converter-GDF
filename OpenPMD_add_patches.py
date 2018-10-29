@@ -415,13 +415,14 @@ def get_positon(max_coord, min_coord, separator, x_current):
 
 
 def get_particles_name(hdf_file):
+    """ Get name of particles group """
 
     particles_name = ''
     if hdf_file.attrs.get('particlesPath') != None:
         particles_name = hdf_file.attrs.get('particlesPath')
+        particles_name = decode_name(particles_name)
     else:
         particles_name = 'particles'
-    particles_name = decode_name(particles_name)
     return particles_name
 
 
