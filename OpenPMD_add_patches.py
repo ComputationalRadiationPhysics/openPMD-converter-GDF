@@ -156,10 +156,7 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
     resultArray, final_size, list_number_particles_in_parts\
         = count_points_idx(coordinate_lists, grid_sizes, devices_numbers)
 
-
-    values_extent = Extent_values(0.00000001, grid_sizes, devices_numbers)
-    array_x = values_extent.get_x_extent()
-    array_y = values_extent.get_y_extent()
+    values_extent = Extent_values(field_size, grid_sizes, devices_numbers)
 
     move_values(file_with_patches, final_size, values_list, resultArray)
     return final_size, list_number_particles_in_parts, values_extent
