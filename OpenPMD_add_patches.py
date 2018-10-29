@@ -145,7 +145,7 @@ def move_values(file_with_patches, final_size, values_list, resultArray):
         file_with_patches.create_dataset(name_dataset, data=moved_values)
 
 
-def handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes):
+def handle_particle_group(group, file_with_patches, devices_numbers, grid_sizes, field_size):
     """ move values according the patches,  count idxs, change grids """
 
     coordinate_lists = List_coorditates()
@@ -159,10 +159,10 @@ def handle_particle_group(hdf_datasets, group, file_with_patches, devices_number
     values_extent = Extent_values(field_size, grid_sizes, devices_numbers)
 
     move_values(file_with_patches, final_size, values_list, resultArray)
-    return final_size, list_number_particles_in_parts, values_extent
+    return final_size, list_number_particles_in_parts, values_extent, coordinate_lists
 
 
-def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers):
+def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, devices_numbers, field_size):
     """ Add patche to OpenPMD file """
 
     copyfile(hdf_file_name, name_of_file_with_patches)
@@ -174,8 +174,8 @@ def OpenPMD_add_patches(hdf_file_name, name_of_file_with_patches, grid_sizes, de
     file_with_patches.visititems(hdf_datasets)
 
     for group in hdf_datasets.particles_groups:
-        final_size, list_number_particles_in_parts, values_extent= \
-            handle_particle_group(hdf_datasets, group, file_with_patches, devices_numbers, grid_sizes)
+        final_size, list_number_particles_in_parts, values_extent, coordinate_lists = \
+            handle_particle_group(group, file_with_patches, devices_numbers, grid_sizes, field_size)
         add_patch_to_particle_group(group, final_size, list_number_particles_in_parts, values_extent)
 
 
