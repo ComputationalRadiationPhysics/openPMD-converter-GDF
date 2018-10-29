@@ -223,14 +223,13 @@ class Particles_data():
         return len(self.x_coord)
 
     def get_patch_x(self, i):
-
-        return get_positon(self.x_range[0], self.x_range[1], self.x_split, self.x_coord[i])
+        return get_positon(self.x_range[1], self.x_range[0], self.x_split, self.x_coord[i])
 
     def get_patch_y(self, i):
-        return get_positon(self.y_range[0], self.y_range[1], self.y_split, self.y_coord[i])
+        return get_positon(self.y_range[1], self.y_range[0], self.y_split, self.y_coord[i])
 
     def get_patch_z(self, i):
-        return get_positon(self.z_range[0], self.z_range[1], self.z_split, self.z_coord[i])
+        return get_positon(self.z_range[1], self.z_range[0], self.z_split, self.z_coord[i])
 
     def get_position_idx2d(self, x_patch, y_patch):
         return x_patch * self.y_split + y_patch
