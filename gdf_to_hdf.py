@@ -566,11 +566,10 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
 def files_from_args(file_names):
     gdf_file = ''
     hdf_file = ''
-    for arg in file_names:
-        if arg[-4:] == '.gdf':
-            gdf_file = arg
-        elif arg[-4:] == '.hdf':
-            hdf_file = arg
+    if len(file_names) >= 2:
+        gdf_file = file_names[1]
+    if len(file_names) >= 3:
+        hdf_file = file_names[2]
     return gdf_file, hdf_file
 
 
@@ -580,8 +579,7 @@ def converter(gdf_file, hdf_file):
             if hdf_file == '':
                 hdf_file = gdf_file[:-4] + '.hdf'
                 print('Destination .hdf directory not specified. Defaulting to ' + hdf_file)
-            else:
-                hdf_file = hdf_file[:-4] + '.hdf'
+
             gdf_to_hdf(gdf_file, hdf_file)
         else:
             print('The .gdf file does not exist to convert to .hdf')

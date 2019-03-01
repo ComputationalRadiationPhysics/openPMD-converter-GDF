@@ -329,16 +329,12 @@ class Constants:
 
 
 def files_from_args(file_names):
-    """ Parse files from input arguments"""
-
     gdf_file = ''
     hdf_file = ''
-    for arg in file_names:
-        if arg[-4:] == '.gdf':
-            gdf_file = arg
-        elif arg[-3:] == '.h5':
-
-            hdf_file = arg
+    if len(file_names) >= 2:
+        hdf_file = file_names[1]
+    if len(file_names) >= 3:
+        gdf_file = file_names[2]
     return gdf_file, hdf_file
 
 
@@ -350,8 +346,6 @@ def converter(hdf_file, gdf_file):
             if gdf_file == '':
                 gdf_file = hdf_file[:-4] + '.gdf'
                 print('Destination .gdf directory not specified. Defaulting to ' + gdf_file)
-            else:
-                gdf_file = gdf_file[:-4] + '.gdf'
 
             hdf_to_gdf(hdf_file, gdf_file)
         else:
