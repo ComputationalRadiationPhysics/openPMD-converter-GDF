@@ -455,8 +455,11 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
     iteration_number_group, particles_group, iteration_number\
         = create_iteration_sub_groups(iteration_number, data_group)
     last_iteration_time = 0
-    lastarr = False
-    subparticles_group = None
+    last_arr = False
+    subparticles_group = particles_group
+    last_time = False
+    last_iteration = False
+
     while True:
         if gdf_file.read(1) == '':
             break
@@ -474,21 +477,27 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             var, subparticles_group, time = read_single_value_type(gdf_file, data_type, primitive_type, size, name,
                                    particles_group, subparticles_group, iteration_number_group, last_iteration_time)
 
-        if time:
+        if time and not last_iteration:
+
             iteration_number, particles_group, subparticles_group =\
                 create_time_subroup(iteration_number, data_group, particles_group, subparticles_group)
 
-        if lastarr and not arr and (not var and not time):
-            iteration_number_group, particles_group, iteration_number \
+        if last_arr and not arr and (not var and not last_time):
+            iteration_number_group, subparticles_group, iteration_number \
                 = create_iteration_sub_groups(iteration_number, data_group)
 
         if arr:
+
             read_array_type(gdf_file, data_type, subparticles_group, name, primitive_type, size)
             add_positionOffset(subparticles_group, size)
 
-        lastarr = arr
-    if subparticles_group.keys().__len__() == 0:
-        data_group.__delitem__(str(iteration_number_group.name))
+        last_time = time
+        last_iteration = last_arr and not arr and (not var and not time)
+        last_arr = arr
+
+    if subparticles_group != None:
+        if subparticles_group.keys().__len__() == 0:
+            data_group.__delitem__(str(iteration_number_group.name))
 
     if iteration_number_group.attrs.get('time') == None:
         add_empty_time(iteration_number_group)
@@ -500,10 +509,10 @@ def create_time_subroup(iteration_number, data_group, particles_group, subpartic
     if iteration_number != 0:
         iteration_number_group = data_group.create_group(str(iteration_number))
         particles_group = iteration_number_group.create_group('particles')
-        subparticles_group = None
+        subparticles_group = particles_group
     iteration_number += 1
 
-    return iteration_number, particles_group, subparticles_group
+    return iteration_number, particles_group, particles_group
 
 
 def read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name):
@@ -517,8 +526,7 @@ def read_ascii_character(data_type, particles_group, subparticles_group, gdf_fil
             particles_name = decoding_value
             var = 1
             subparticles_group = particles_group.require_group(particles_name)
-        else:
-            value = str(gdf_file.read(size))
+
     return var, subparticles_group
 
 
