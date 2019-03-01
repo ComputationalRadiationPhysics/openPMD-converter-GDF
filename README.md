@@ -10,9 +10,9 @@ The software is written in python 3, python 2 is not supported. For the rest of 
 
 Clone this repository by running
 ```
-git clone https://github.com/KseniaBastrakova/openPMD-converter-GDF.git
+git clone https://github.com/ComputationalRadiationPhysics/openPMD-converter-GDF.git
 ```
-or download an archive from the [github page](https://github.com/KseniaBastrakova/openPMD-converter-GDF) and unpack it.
+or download an archive from the [github page](https://github.com/ComputationalRadiationPhysics/openPMD-converter-GDF) and unpack it.
 
 The only dependency is [h5py](https://www.h5py.org/), which can be installed e.g., by
 ```
