@@ -33,15 +33,15 @@ where
 
 To run the script for the provided examples, run the following from a project directory:
 ```
-python gdf_to_hdf examples/example_1.gdf examples/example_1.h5
-python gdf_to_hdf examples/example_2.gdf examples/example_2.h5
+python3 gdf_to_hdf.py examples/example_1.gdf examples/example_1.h5
+python3 gdf_to_hdf.py examples/example_2.gdf examples/example_2.h5
 ```
 
 ## Converting from openPMD to GDF
 
 To convert an openPMD-conforming hdf5 file into a GDF file run the ```hdf_to_gdf.py``` module as follows:
 ```
-python3 hdf_to_gdf hdf5_file [gdf_file]
+python3 hdf_to_gdf.py hdf5_file [gdf_file]
 ```
 where
 * ```hdf5_file``` is the path to an input openPMD-conforming hdf5 file; 
@@ -51,6 +51,6 @@ where
 
 To run the script for the provided example, run the following from a project directory:
 ```
-python hdf_to_gdf examples/example_3.h5 examples/example_3.gdf
+python3 hdf_to_gdf.py examples/example_3.h5 examples/example_3.gdf
 
 ```
