@@ -51,6 +51,6 @@ where
 
 To run the script for the provided example, run the following from a project directory:
 ```
-python gdf_to_hdf examples/example_3.h5 examples/example_3.gdf
+python hdf_to_gdf examples/example_3.h5 examples/example_3.gdf
 
 ```
