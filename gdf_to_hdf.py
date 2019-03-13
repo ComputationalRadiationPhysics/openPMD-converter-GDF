@@ -9,6 +9,67 @@ import os
 import sys
 import datetime
 import re
+import numpy as np
+
+
+
+class Particles_base_group_functor():
+    """
+    """
+
+    def __init__(self):
+        self.particles_groups = []
+
+    def __call__(self, name, node):
+
+        if isinstance(node, h5py.Group):
+            if node.name.endswith('particles'):
+                self.particles_groups.append(node)
+        return None
+
+
+class Datasets_functor():
+    """
+    """
+
+    def __init__(self):
+        self.datasets = []
+
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Dataset):
+            self.datasets.append(node)
+        return None
+
+
+class Momentum_base_group_functor():
+    """
+    """
+
+    def __init__(self):
+        self.momentum = []
+
+    def __call__(self, name, node):
+
+        if isinstance(node, h5py.Group):
+            if node.name.endswith('momentum'):
+                self.momentum.append(node)
+        return None
+
+
+class Particle_types_elements_functor():
+
+    def __init__(self):
+        self.mass = []
+        self.charge = []
+
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Dataset):
+            if node.name.endswith('mass'):
+                self.mass = node.value
+
+            if node.name.endswith('charge'):
+                self.charge = node.value
+        return None
 
 
 def parse_name_array(gdf_file, size_gdf_name):
@@ -164,6 +225,7 @@ class Elements:
         """
 
     dict_dimensions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),   # length = 1
+
                        'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),       # mass = 1
                        'momentum': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),  # length = 1, time = -1
                        'G': (-1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),         # length = -1, time = 1
@@ -442,6 +504,178 @@ def add_positionOffset(particles_group, size):
     add_positionOffset_attributes(z_positionOffset_group, shape)
 
 
+class Collect_moving_groups():
+    def __init__(self, old_base_group):
+
+        self.old_base_group = old_base_group
+        self.group_for_moving =[]
+        self.datasets_for_moving = []
+        self.datasets_name = []
+
+    def __call__(self, name, node):
+
+        if isinstance(node, h5py.Group) and not node.name.endswith('electrons')\
+                and not node.name.endswith('/x') and not node.name.endswith('/y') \
+                and not node.name.endswith('/z'):
+            self.group_for_moving.append(node)
+
+        elif isinstance(node, h5py.Dataset) and node.parent == self.old_base_group:
+            self.datasets_for_moving.append(node)
+            self.datasets_name.append(node.name)
+
+
+def check_name_particles_exist(group):
+
+    base_particles_name = False
+    for key in group.keys():
+        if key == 'position' or key == 'momentum' or key == 'G':
+            base_particles_name = True
+
+    return base_particles_name
+
+
+def move_dataset(base_group_moving, new_particles_group, indexes):
+
+    dataset_names = []
+
+    for dataset_name in base_group_moving.datasets_name:
+        dataset_names.append(dataset_name)
+
+    for i in range(0, len(base_group_moving.datasets_name)):
+        name_dataset = base_group_moving.datasets_name[i]
+
+        name_of_particles_idx = name_dataset.rfind("/")
+        name_of_dataset = name_dataset[name_of_particles_idx + 1: len(name_dataset)]
+        current_attrs = base_group_moving.datasets[i].attrs
+        current_dataset_value = base_group_moving.datasets[i].value[indexes]
+        new_particles_group.create_dataset(name_of_dataset, data=current_dataset_value)
+        current_dataset = new_particles_group.require_dataset(name_of_dataset,
+                                                              base_group_moving.datasets[i].shape, dtype=dtype('f8'))
+        for name, value in current_attrs.items():
+            current_dataset.attrs.create(name, value)
+
+
+def move_group(hdf_file, base_group_moving, new_particles_group, indexes):
+
+    for group in base_group_moving.group_for_delete:
+        datasets_reader = Datasets_functor()
+        group.visititems(datasets_reader)
+        hdf_file.copy(group, new_particles_group)
+
+        for dataset in datasets_reader.datasets:
+            type_of_dataset = str(dataset.dtype)
+
+            current_dataset = new_particles_group.require_dataset(dataset.name, dataset.shape, dtype=type_of_dataset)
+            current_dataset_name = dataset.name
+
+            current_dataset_value = dataset.value
+            del hdf_file[current_dataset.name]
+            new_datset_values = current_dataset_value[indexes]
+            new_particles_group.create_dataset(current_dataset_name, new_datset_values.shape, dtype=type_of_dataset)
+
+
+def get_particles_idxes_by_types(mass_array, charge_array, mass_value, charge_value):
+
+    indexes_array_mass = [i for i in range(len(mass_array)) if math.isclose(mass_array[i], mass_value, rel_tol=1e-5)]
+    indexes_array_second = [i for i in range(len(charge_array)) if math.isclose(charge_array[i], charge_value, rel_tol=1e-5)]
+    compare_values = [i for i, j in zip(indexes_array_mass, indexes_array_second) if i == j]
+
+    return compare_values
+
+
+def get_other_indexes(start_indexes, electrons_indexes, protons_indexes, positrons_indexes):
+
+    electrons_indexes.sort()
+    protons_indexes.sort()
+    positrons_indexes.sort()
+    categoriased_indexes = electrons_indexes + protons_indexes + positrons_indexes
+    uncategoriased_indexes = list(set(start_indexes) - set(categoriased_indexes))
+
+    return uncategoriased_indexes
+
+
+def get_particle_types(mass_array, charge_array):
+
+    particle_mass = [9.10953E-31, 1.672621898E-27, 9.10953E-31]
+    particle_charge = [-1.60217662E-19, 1.60217662E-19,1.60217662E-19]
+
+    start_indexes = list(range(0, len(mass_array)))
+
+    electrons_indexes = get_particles_idxes_by_types(mass_array, charge_array, particle_mass[0], particle_charge[0])
+    protons_indexes = get_particles_idxes_by_types(mass_array, charge_array, particle_mass[1], particle_charge[1])
+    positrons_indexes = get_particles_idxes_by_types(mass_array, charge_array, particle_mass[2], particle_charge[2])
+
+    uncategoriased_indexes = get_other_indexes(start_indexes, electrons_indexes, protons_indexes, positrons_indexes)
+
+    return electrons_indexes, protons_indexes, positrons_indexes, uncategoriased_indexes
+
+
+def delete_old_groups(hdf_file, base_group_moving):
+    array_names = []
+
+    for group in base_group_moving.group_for_delete:
+        array_names.append(group.name)
+
+    for name in array_names:
+        del hdf_file[name]
+
+
+def delete_old_datasets(hdf_file, base_group_moving):
+    dataset_names = []
+
+    for dataset_name in base_group_moving.datasets_name:
+        dataset_names.append(dataset_name)
+
+    for name in dataset_names:
+        del hdf_file[name]
+
+
+def create_particles_group_by_type(hdf_file, base_group_moving, group, elements_indexes, name_of_group):
+
+    new_particles_group = group.create_group(name_of_group)
+
+    move_group(hdf_file, base_group_moving, new_particles_group, elements_indexes)
+    move_dataset(base_group_moving, new_particles_group, elements_indexes)
+    return new_particles_group
+
+
+def add_base_partilces_types(data_group, hdf_file):
+    collect_particles = Particles_base_group_functor()
+    data_group.visititems(collect_particles)
+    first_group = collect_particles.particles_groups[0]
+    collect_particle_type = Particle_types_elements_functor()
+    first_group.visititems(collect_particle_type)
+    electrons_indexes, protons_indexes, positrons_indexes, uncategorised_indexes =\
+        get_particle_types(collect_particle_type.mass, collect_particle_type.charge)
+
+    if check_name_particles_exist(first_group):
+        base_group_moving = Collect_moving_groups(first_group)
+        first_group.visititems(base_group_moving)
+
+        if len(electrons_indexes) != 0:
+            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, electrons_indexes, 'electrons')
+            mass_spices = collect_particle_type.mass[electrons_indexes[0]]
+            add_unit_SI_momentum(mass_spices, particle_type_group)
+
+        if len(protons_indexes) != 0:
+            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, protons_indexes, 'protons')
+            mass_spices = collect_particle_type.mass[protons_indexes[0]]
+            add_unit_SI_momentum(mass_spices, particle_type_group)
+
+        if len(positrons_indexes) != 0:
+            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, positrons_indexes, 'positrons')
+            mass_spices = collect_particle_type.mass[positrons_indexes[0]]
+            add_unit_SI_momentum(mass_spices, particle_type_group)
+
+        if len(uncategorised_indexes) != 0:
+            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, uncategorised_indexes, 'uncategorised')
+            mass_spices = collect_particle_type.mass[uncategorised_indexes[0]]
+            add_unit_SI_momentum(mass_spices, particle_type_group)
+
+        delete_old_groups(hdf_file, base_group_moving)
+        delete_old_datasets(hdf_file, base_group_moving)
+
+
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     check_gdf_file(gdf_file)
@@ -501,6 +735,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
     if iteration_number_group.attrs.get('time') == None:
         add_empty_time(iteration_number_group)
+
+    add_base_partilces_types(data_group, hdf_file)
 
 
 def create_time_subroup(iteration_number, data_group, particles_group, subparticles_group):
