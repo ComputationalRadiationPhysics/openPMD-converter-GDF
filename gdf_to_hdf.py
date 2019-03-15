@@ -546,18 +546,18 @@ def move_dataset(base_group_moving, new_particles_group, indexes):
 
         name_of_particles_idx = name_dataset.rfind("/")
         name_of_dataset = name_dataset[name_of_particles_idx + 1: len(name_dataset)]
-        current_attrs = base_group_moving.datasets[i].attrs
-        current_dataset_value = base_group_moving.datasets[i].value[indexes]
+        current_attrs = base_group_moving.datasets_for_moving[i].attrs
+        current_dataset_value = base_group_moving.datasets_for_moving[i].value[indexes]
         new_particles_group.create_dataset(name_of_dataset, data=current_dataset_value)
         current_dataset = new_particles_group.require_dataset(name_of_dataset,
-                                                              base_group_moving.datasets[i].shape, dtype=dtype('f8'))
+                                                              base_group_moving.datasets_for_moving[i].shape, dtype=dtype('f8'))
         for name, value in current_attrs.items():
             current_dataset.attrs.create(name, value)
 
 
 def move_group(hdf_file, base_group_moving, new_particles_group, indexes):
 
-    for group in base_group_moving.group_for_delete:
+    for group in base_group_moving.group_for_moving:
         datasets_reader = Datasets_functor()
         group.visititems(datasets_reader)
         hdf_file.copy(group, new_particles_group)
@@ -611,22 +611,24 @@ def get_particle_types(mass_array, charge_array):
 
 
 def delete_old_groups(hdf_file, base_group_moving):
-    array_names = []
 
-    for group in base_group_moving.group_for_delete:
-        array_names.append(group.name)
+    group_names = []
 
-    for name in array_names:
+    for group in base_group_moving.group_for_moving:
+        group_names.append(group.name)
+
+    for name in group_names:
         del hdf_file[name]
 
 
 def delete_old_datasets(hdf_file, base_group_moving):
-    dataset_names = []
 
-    for dataset_name in base_group_moving.datasets_name:
-        dataset_names.append(dataset_name)
+    datasets_names = []
 
-    for name in dataset_names:
+    for group in base_group_moving.datasets_for_moving:
+        datasets_names.append(group.name)
+
+    for name in datasets_names:
         del hdf_file[name]
 
 
@@ -658,6 +660,7 @@ def add_base_partilces_types(data_group, hdf_file):
     first_group = collect_particles.particles_groups[0]
     collect_particle_type = Particle_types_elements_functor()
     first_group.visititems(collect_particle_type)
+
     electrons_indexes, protons_indexes, positrons_indexes, uncategorised_indexes =\
         get_particle_types(collect_particle_type.mass, collect_particle_type.charge)
 
@@ -712,6 +715,8 @@ def gdf_file_to_hdf_file(gdf_file, hdf_file):
             break
         gdf_file.seek(-1, 1)
         name, primitive_type, size = read_gdf_block_header(gdf_file)
+        print(name)
+
         if size == '':
             break
         dir, edir, sval, arr = get_block_type(primitive_type)
