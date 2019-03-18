@@ -234,6 +234,10 @@ def add_time_root_attribute(gdf_file, hdf_file):
         seconds = time.mktime(time_format.timetuple())
         time_created_byte = struct.pack('i', int(seconds))
         gdf_file.write(time_created_byte)
+    else:
+        seconds = int(round(time.time()))
+        time_created_byte = struct.pack('i', int(seconds))
+        gdf_file.write(time_created_byte)
 
 
 def add_creator_name_root_attribute(gdf_file, hdf_file):

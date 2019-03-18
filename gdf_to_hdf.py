@@ -108,7 +108,7 @@ def add_creation_time(gdf_file, hdf_file):
     time_created = struct.unpack('i', gdf_file.read(4))[0]
     format_time = datetime.datetime.fromtimestamp(time_created)
     format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-    hdf_file.attrs.create('data', format_time, None, dtype='<S11')
+    hdf_file.attrs.create('date', format_time, None, dtype='<S25')
 
 
 def add_gdf_version(gdf_file, hdf_file):
