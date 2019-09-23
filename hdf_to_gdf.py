@@ -156,7 +156,18 @@ class Name_of_arrays:
                      'positionOffset/z': 'positionOffset_z'}
 
 
-def write_iteration(hdf_file, gdf_file):
+def read_position_offset(hdf_datasets):
+
+
+    position_offset_values = DatasetReader('positionOffset')
+    position_offset_group = hdf_datasets.position_offset[0]
+    position_offset_group.visititems(position_offset_values)
+
+    offset_unit_si = position_offset_values.get_unit_si_array()
+
+    return position_offset_values, offset_unit_si
+
+
    """ Write all iteration to hdf_file """
 
    dict_array_names = {}
