@@ -212,6 +212,21 @@ def write_momentum_values(axis_idx, vector_values, name_dataset, gdf_file, hdf_f
     write_dataset(gdf_file, absolute_values)
 
 
+def iterate_momentum(gdf_file, hdf_file, group_values, unit_si_momentum):
+
+    if len(group_values.vector_x) != 0:
+        name_dataset = str(group_values.name_dataset + '/x')
+        write_momentum_values(0, group_values.vector_x, name_dataset, gdf_file, hdf_file, unit_si_momentum)
+
+    if len(group_values.vector_y) != 0:
+        name_dataset = str(group_values.name_dataset + '/y')
+        write_momentum_values(1, group_values.vector_y, name_dataset, gdf_file, hdf_file, unit_si_momentum)
+
+    if len(group_values.vector_z) != 0:
+        name_dataset = str(group_values.name_dataset + '/z')
+        write_momentum_values(2, group_values.vector_z, name_dataset, gdf_file, hdf_file, unit_si_momentum)
+
+
 class DatasetReader():
     """
 
