@@ -167,9 +167,43 @@ def write_iteration(hdf_file, gdf_file):
    add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file)
    sorted_values = sorted(dict_array_names, key=lambda x: (x[0], x[1]))
    iterate_values(gdf_file, dict_array_names, sorted_values)
+class DatasetReader():
+    """
 
+     Read datasets values from hdf file
+     name_dataset -- name of base group
 
-def iterate_values(gdf_file, dict_array_names, sorted_values):
+    """
+
+    def __init__(self, name_dataset):
+        self.vector_x = ''
+        self.vector_y = ''
+        self.vector_z = ''
+        self.unit_SI_x = 1.
+        self.unit_SI_y = 1.
+        self.unit_SI_z = 1.
+        self.name_dataset = name_dataset
+        self.size = 0
+
+    def __call__(self, name, node):
+
+        dataset_x = self.name_dataset + '/x'
+        dataset_y = self.name_dataset + '/y'
+        dataset_z = self.name_dataset + '/z'
+        if isinstance(node, h5py.Dataset):
+            if node.name.endswith(dataset_x):
+                self.vector_x = node.name
+                self.unit_SI_x = node.attrs["unitSI"]
+
+            if node.name.endswith(dataset_y):
+                self.vector_y = node.name
+                self.unit_SI_y = node.attrs["unitSI"]
+
+            if node.name.endswith(dataset_z):
+                self.vector_z = node.name
+                self.unit_SI_z = node.attrs["unitSI"]
+
+        return None
     """ Write one iteration to hdf_file """
 
     last_name_of_particles = ''
