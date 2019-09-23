@@ -153,10 +153,7 @@ class Name_of_arrays:
                      'id': 'ID',
                      'charge': 'charge',
                      'weighting': 'weighting',
-                     'mass': 'm',
-                     'positionOffset/x': 'positionOffset_x',
-                     'positionOffset/y': 'positionOffset_y',
-                     'positionOffset/z': 'positionOffset_z'}
+                     'mass': 'm'}
 
 
 def read_position_offset(hdf_datasets):
@@ -323,7 +320,7 @@ class DatasetReader():
                 self.unit_SI_z = node.attrs["unitSI"]
 
         return None
-    """ Write one iteration to hdf_file """
+
 class Particles_Functor():
     """
 
