@@ -205,6 +205,13 @@ def get_absolute_momentum(hdf_file, axis_idx, path_dataset, unit_si_momentum):
     return absolute_momentum
 
 
+def write_momentum_values(axis_idx, vector_values, name_dataset, gdf_file, hdf_file, unit_si_momentum):
+
+    write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
+    absolute_values = get_absolute_momentum(hdf_file, axis_idx, vector_values, unit_si_momentum)
+    write_dataset(gdf_file, absolute_values)
+
+
 class DatasetReader():
     """
 
