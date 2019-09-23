@@ -401,16 +401,16 @@ def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position, i
     return absolute_result
 
 
-def add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file):
+def add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size):
     """ Add values from groups with single value """
 
     for key in hdf_datasets.grops_values:
         if key.attrs.get('value') != None:
             value = key.attrs['value']
-            i = 0
-            my_array = []
-            while i < size_of_main_array:
-                my_array.append(value)
+            name_attribute = key.name[key.name.rfind('/')+1:]
+            write_double_dataset_values(gdf_file, Name_of_arrays.dict_datasets.get(name_attribute), size_of_main_array, value)
+
+
                 i = i + 1
             name_of_particles, name_of_dataset, name_of_iteration = parse_group_name(key, hdf_file)
             if name_of_dataset != '' and name_of_particles != '':
