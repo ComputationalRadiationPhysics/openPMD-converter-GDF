@@ -70,6 +70,31 @@ class Collect_Datasets():
         return None
 
 
+class Particles_Groups():
+    """
+
+    Collect particles groups from hdf file
+    particles_name -- name of main partcles group
+
+    """
+
+    def __init__(self, particles_name):
+
+        self.name_particles = particles_name
+        self.particles_groups = []
+        self.particles_names = []
+
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Group):
+            name_idx = node.name.find(self.name_particles)
+            if name_idx != -1:
+                group_particles_name = node.name[name_idx + len(self.name_particles) + 1:]
+                if group_particles_name.find('/') == -1 and group_particles_name != '':
+                    self.particles_names.append(group_particles_name)
+                    self.particles_groups.append(node)
+        return None
+
+
 class Name_of_arrays:
     """ Storage of datasets in h5 file """
 
