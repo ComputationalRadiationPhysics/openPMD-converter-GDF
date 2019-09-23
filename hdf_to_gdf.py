@@ -187,6 +187,17 @@ def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset,
     return absolute_values
 
 
+
+def get_absolute_momentum(hdf_file, axis_idx, path_dataset, unit_si_momentum):
+
+    array_dataset = hdf_file[path_dataset][()]
+    absolute_momentum = []
+    for point in array_dataset:
+        absolute_momentum.append(point * unit_si_momentum[axis_idx])
+
+    return absolute_momentum
+
+
 class DatasetReader():
     """
 
