@@ -411,10 +411,17 @@ def add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size):
             write_double_dataset_values(gdf_file, Name_of_arrays.dict_datasets.get(name_attribute), size_of_main_array, value)
 
 
-                i = i + 1
-            name_of_particles, name_of_dataset, name_of_iteration = parse_group_name(key, hdf_file)
-            if name_of_dataset != '' and name_of_particles != '':
-                dict_array_names[name_of_iteration, name_of_particles, name_of_dataset] = my_array
+def write_double_dataset_values(gdf_file, name, size_dataset, value):
+    """" Write dataset of double values """
+
+    write_string(name, gdf_file)
+    type_bin = struct.pack('i', int(2051))
+    gdf_file.write(type_bin)
+    array_dataset = [value] * size_dataset
+    size_bin = struct.pack('i', int(size_dataset * 8))
+    gdf_file.write(size_bin)
+    type_size = str(size_dataset) + 'd'
+    gdf_file.write(struct.pack(type_size, *array_dataset))
 
 
 def write_ascii_name(name, size, gdf_file, ascii_name):
