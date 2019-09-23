@@ -168,16 +168,40 @@ def read_position_offset(hdf_datasets):
     return position_offset_values, offset_unit_si
 
 
+def write_iteration(hdf_file, gdf_file, max_cell_size):
    """ Write all iteration to hdf_file """
 
-   dict_array_names = {}
-   data_group = hdf_file.get('data')
-   hdf_datasets = Collect_Datasets()
-   hdf_file.visititems(hdf_datasets)
-   size_of_main_array = add_datasets_values(hdf_file, hdf_datasets, dict_array_names)
-   add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file)
-   sorted_values = sorted(dict_array_names, key=lambda x: (x[0], x[1]))
-   iterate_values(gdf_file, dict_array_names, sorted_values)
+   particles_name = get_particles_name(hdf_file)
+   iteration_collect = Iteration_Groups()
+   hdf_file.visititems(iteration_collect)
+
+   for i in range(0, len(iteration_collect.iteration_groups)):
+
+       iteration = iteration_collect.iteration_groups[i]
+       name_iteration = iteration_collect.iteration_names[i]
+
+       particles_collect = Particles_Groups(particles_name)
+       iteration.visititems(particles_collect)
+       write_float('time', gdf_file, float(name_iteration))
+
+       for j in range(0, len(particles_collect.particles_groups)):
+           group = particles_collect.particles_groups[j]
+           hdf_datasets = Collect_Datasets()
+           group.visititems(hdf_datasets)
+           name_group = particles_collect.particles_names[j]
+
+           position_values, momentum_values, weighting, unit_si_position, \
+           unit_si_momentum, position_offset, unit_si_offset = read_points_group(group)
+
+           if position_values == None and momentum_values == None:
+               continue
+
+           size_of_main_array = hdf_file[position_values.vector_x][()].size
+           write_ascii_name('var', len(name_group), gdf_file, name_group)
+           iterate_coords(gdf_file, hdf_file, position_values, position_offset, unit_si_offset, unit_si_position)
+           iterate_momentum(gdf_file, hdf_file, momentum_values, unit_si_momentum)
+           add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size)
+
 
 def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis):
     array_dataset = hdf_file[path_dataset][()]
