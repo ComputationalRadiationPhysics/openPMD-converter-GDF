@@ -387,16 +387,18 @@ def read_points_group(group):
 
     return position_values, momentum_values, weighting, unit_si_position, unit_SI_momentum, position_offset, unit_si_offset
 
-    name_of_iteration = 0
-    if hdf_file[key_value.name[0: particles_idx]].attrs.get('time') != None:
-        name_of_iteration = hdf_file[key_value.name[0: particles_idx]].attrs.get('time')
 
+def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position, idx_axis):
 
-    substring = key_value.name[particles_idx + 10: len(key_value.name)]
-    name_of_particles_idx = substring.find("/")
-    name_of_particles = substring[0: name_of_particles_idx]
-    name_of_dataset = substring[substring.find("/") + 1: len(substring)]
-    return name_of_particles, name_of_dataset, name_of_iteration
+    absolute_result = []
+
+    i = 0
+    for point in values:
+        i=+1
+        absolute_coord = point * unit_si_position[idx_axis] + offset[i] * unit_si_offset[idx_axis]
+        absolute_result.append(absolute_coord)
+
+    return absolute_result
 
 
 def add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file):
