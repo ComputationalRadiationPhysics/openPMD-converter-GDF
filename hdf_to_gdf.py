@@ -297,32 +297,42 @@ class DatasetReader():
 
         return None
     """ Write one iteration to hdf_file """
+class Particles_Functor():
+    """
 
-    last_name_of_particles = ''
-    last_name_of_iteration = 0
-    for name_of_iteration, name_of_particles, name_of_dataset in sorted_values:
-        array = dict_array_names[name_of_iteration, name_of_particles, name_of_dataset]
-        if Name_of_arrays.dict_datasets.get(name_of_dataset) != None:
-            if not(float(last_name_of_iteration) == float(name_of_iteration)):
-                write_float('time', gdf_file, float(name_of_iteration))
-                last_name_of_iteration = name_of_iteration
+    Collect values(weighting, position, momentum) from paticle dataset in hdf file.
+    positions -- group of position coords
+    momentum -- group of momentum coords
+    weightins -- values of weights for particles
 
-            if last_name_of_particles != name_of_particles:
-                write_ascii_name('var', len(name_of_particles), gdf_file, name_of_particles)
-                last_name_of_particles = name_of_particles
-            write_double_dataset(gdf_file, Name_of_arrays.dict_datasets.get(name_of_dataset), len(array), array)
+    """
+
+    def __init__(self):
+        self.momentum = []
+        self.weighting = []
+        self.bound_electrons = []
+        self.position_offset = []
+        self.positions = []
+
+    def __call__(self, name, node):
+
+        if isinstance(node, h5py.Dataset):
+            if node.name.endswith('weighting'):
+                self.weighting = node.name
+
+        if isinstance(node, h5py.Group):
+            if node.name.endswith('position'):
+                self.positions.append(node)
+
+            if node.name.endswith('momentum'):
+                self.momentum.append(node)
+
+            if node.name.endswith('positionOffset'):
+                self.position_offset.append(node)
+
+        return None
 
 
-def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
-    """ Add values from dataset """
-
-    size_of_main_array = 0
-    for key in hdf_datasets.sets:
-        name_of_particles, name_of_dataset, name_of_iteration = parse_group_name(key, hdf_file)
-        if name_of_dataset != '' and name_of_particles != '':
-            my_array = hdf_file[key.name][()]
-            dict_array_names[name_of_iteration, name_of_particles, name_of_dataset] = my_array
-            size_of_main_array = len(my_array)
 def read_points_group(group):
     """
 
