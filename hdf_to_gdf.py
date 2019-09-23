@@ -178,6 +178,15 @@ def read_position_offset(hdf_datasets):
    add_group_values(hdf_datasets, size_of_main_array, dict_array_names, hdf_file)
    sorted_values = sorted(dict_array_names, key=lambda x: (x[0], x[1]))
    iterate_values(gdf_file, dict_array_names, sorted_values)
+
+def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis):
+    array_dataset = hdf_file[path_dataset][()]
+    size = hdf_file[path_dataset][()].size
+    offset = hdf_file[position_offset][()]
+    absolute_values = get_absolute_coordinates(array_dataset, offset, unit_si_offset, unit_si_position, idx_axis)
+    return absolute_values
+
+
 class DatasetReader():
     """
 
