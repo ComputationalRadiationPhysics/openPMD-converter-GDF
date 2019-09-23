@@ -125,6 +125,19 @@ def decode_name(attribute_name):
     return decoding_name
 
 
+def get_particles_name(hdf_file):
+    """ Get name of particles group """
+
+    particles_name = ''
+    if hdf_file.attrs.get('particlesPath') != None:
+        particles_name = hdf_file.attrs.get('particlesPath')
+        particles_name = decode_name(particles_name)
+    else:
+        particles_name = 'particles'
+    return particles_name
+
+
+
 class Name_of_arrays:
     """ Storage of datasets in h5 file """
 
