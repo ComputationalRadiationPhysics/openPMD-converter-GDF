@@ -116,6 +116,15 @@ class Iteration_Groups():
                 self.iteration_names.append(iteration_name)
         return None
 
+
+def decode_name(attribute_name):
+    """ Decode name from binary """
+
+    decoding_name = attribute_name.decode('ascii', errors='ignore')
+    decoding_name = re.sub(r'\W+', '', decoding_name)
+    return decoding_name
+
+
 class Name_of_arrays:
     """ Storage of datasets in h5 file """
 
