@@ -187,6 +187,13 @@ def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset,
     return absolute_values
 
 
+def write_coord_values(axis_idx, vector_values, position_offset, name_dataset, gdf_file, hdf_file, unit_si_offset, unit_si_position):
+
+
+    write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
+    absolute_values = get_absolute_values(hdf_file, vector_values, position_offset, unit_si_offset, unit_si_position, axis_idx)
+    write_dataset(gdf_file, absolute_values)
+
 
 def get_absolute_momentum(hdf_file, axis_idx, path_dataset, unit_si_momentum):
 
