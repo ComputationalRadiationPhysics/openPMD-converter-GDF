@@ -321,6 +321,36 @@ class DatasetReader():
 
         return None
 
+    def get_unit_si_array(self):
+
+        array_unit_SI = []
+        if self.get_dimension() == 3:
+            array_unit_SI = [self.unit_SI_x, self.unit_SI_y, self.unit_SI_z]
+        elif self.get_dimension() == 2:
+            array_unit_SI = [self.unit_SI_x, self.unit_SI_y]
+
+        return array_unit_SI
+
+    def get_dimension(self):
+        """
+
+         get dimension of particles datasets
+
+        """
+
+        size = 0
+        if len(self.vector_x) > 0:
+            if len(self.vector_y) > 0:
+                if len(self.vector_z) > 0:
+                    size = 3
+                else:
+                    size = 2
+            else:
+                size = 1
+
+        return size
+
+
 class Particles_Functor():
     """
 
