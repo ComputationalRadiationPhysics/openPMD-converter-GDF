@@ -449,16 +449,10 @@ def write_float(name, gdf_file, value):
     gdf_file.write(struct.pack('d', value))
 
 
-def write_double_dataset(gdf_file, name, size, array_dataset):
-    """ Write dataset of double values """
-
+def write_dataset_header(name, gdf_file):
     write_string(name, gdf_file)
     type_bin = struct.pack('i', int(2051))
     gdf_file.write(type_bin)
-    size_bin = struct.pack('i', int(size * 8))
-    gdf_file.write(size_bin)
-    type_size = str(size)  +'d'
-    gdf_file.write(struct.pack(type_size, *array_dataset))
 
 
 class Block_types:
