@@ -95,6 +95,27 @@ class Particles_Groups():
         return None
 
 
+class Iteration_Groups():
+    """
+
+    Collect iteration groups from hdf file
+    particles_name -- name of main partcles group
+
+    """
+
+    def __init__(self):
+        self.iteration_groups = []
+        self.iteration_names = []
+
+    def __call__(self, name, node):
+        if isinstance(node, h5py.Group):
+            data_idx = node.name.find("data")
+            iteration_name = node.name[data_idx + 5:]
+            if iteration_name.find('/') == -1 and iteration_name != '' and RepresentsInt(iteration_name):
+                self.iteration_groups.append(node)
+                self.iteration_names.append(iteration_name)
+        return None
+
 class Name_of_arrays:
     """ Storage of datasets in h5 file """
 
