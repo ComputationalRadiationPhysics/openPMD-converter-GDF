@@ -227,8 +227,25 @@ def iterate_momentum(gdf_file, hdf_file, group_values, unit_si_momentum):
         write_momentum_values(2, group_values.vector_z, name_dataset, gdf_file, hdf_file, unit_si_momentum)
 
 
+def iterate_coords(gdf_file, hdf_file, group_values, position_offset, unit_si_offset, unit_si_position):
+
+    if len(group_values.vector_x) != 0:
+        name_dataset = str(group_values.name_dataset + '/x')
+        write_coord_values(0, group_values.vector_x, position_offset.vector_x, name_dataset, gdf_file, hdf_file, unit_si_offset,
+                           unit_si_position)
 
 
+    if len(group_values.vector_y) != 0:
+        name_dataset = str(group_values.name_dataset + '/y')
+        write_coord_values(1, group_values.vector_y, position_offset.vector_y, name_dataset, gdf_file, hdf_file,
+                           unit_si_offset,
+                           unit_si_position)
+
+    if len(group_values.vector_z) != 0:
+        name_dataset = str(group_values.name_dataset + '/z')
+        write_coord_values(2, group_values.vector_z, position_offset.vector_z, name_dataset, gdf_file, hdf_file,
+                           unit_si_offset,
+                           unit_si_position)
 
 
 def write_dataset(gdf_file, absolute_values):
