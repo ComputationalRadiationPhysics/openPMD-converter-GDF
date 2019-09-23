@@ -227,6 +227,21 @@ def iterate_momentum(gdf_file, hdf_file, group_values, unit_si_momentum):
         write_momentum_values(2, group_values.vector_z, name_dataset, gdf_file, hdf_file, unit_si_momentum)
 
 
+
+
+
+
+def write_dataset(gdf_file, absolute_values):
+    """" Write dataset of double values """
+
+    size = len(absolute_values)
+    size_bin = struct.pack('i', int(size * 8))
+    gdf_file.write(size_bin)
+    type_size = str(size) + 'd'
+    gdf_file.write(struct.pack(type_size, *absolute_values))
+
+
+
 class DatasetReader():
     """
 
