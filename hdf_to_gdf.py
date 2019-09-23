@@ -269,18 +269,35 @@ def add_datasets_values(hdf_file, hdf_datasets, dict_array_names):
             my_array = hdf_file[key.name][()]
             dict_array_names[name_of_iteration, name_of_particles, name_of_dataset] = my_array
             size_of_main_array = len(my_array)
+def read_points_group(group):
+    """
 
-    return size_of_main_array
+    convert values from position and momentum datasets into points
+    group -- base group of points from hdf file
+
+    """
+
+    hdf_datasets = Particles_Functor()
+    group.visititems(hdf_datasets)
 
 
-def parse_group_name(key_value, hdf_file):
-    """ Separate name of group to particles name and dataset name """
-    numer_of_iteration = key_value.name.find('data')
+    weighting = hdf_datasets.weighting
+    position_values = DatasetReader('position')
+    momentum_values = DatasetReader('momentum')
+    position_offset, unit_si_offset = read_position_offset(hdf_datasets)
 
-    particles_idx = key_value.name.find("particles")
-    if (particles_idx == -1):
-        return '', '', ''
+    if len(hdf_datasets.positions) == 0 or len(hdf_datasets.momentum) == 0:
+        return None, None, [], [], [], [], []
 
+    position_group = hdf_datasets.positions[0]
+    momentum_group = hdf_datasets.momentum[0]
+    position_group.visititems(position_values)
+    momentum_group.visititems(momentum_values)
+
+    unit_si_position = position_values.get_unit_si_array()
+    unit_SI_momentum = momentum_values.get_unit_si_array()
+
+    return position_values, momentum_values, weighting, unit_si_position, unit_SI_momentum, position_offset, unit_si_offset
 
     name_of_iteration = 0
     if hdf_file[key_value.name[0: particles_idx]].attrs.get('time') != None:
