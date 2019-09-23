@@ -8,25 +8,27 @@ import struct
 import h5py
 from datetime import datetime
 import time
+import re
 
 
-def hdf_to_gdf(hdf_file_directory, gdf_file_directory):
+def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size):
     """ Find hdf file in hdf_file_directory, find gdf_file_directory"""
 
     print('Converting .gdf to .hdf file')
     if os.path.exists(gdf_file_directory):
         os.remove(gdf_file_directory)
 
+
     hdf_file = h5py.File(hdf_file_directory, 'a')
     with open(gdf_file_directory, 'wb') as gdf_file:
-        hdf_file_to_gdf_file(gdf_file, hdf_file)
+        hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size)
 
     gdf_file.close()
     hdf_file.close()
     print('Converting .hdf to .gdf file... Complete.')
 
 
-def hdf_file_to_gdf_file(gdf_file, hdf_file):
+def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size):
     """ Convert from hdf file to gdf file """
 
     add_gdf_id(gdf_file)
@@ -35,7 +37,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file):
     add_dest_name_root_attribute(gdf_file, hdf_file)
     add_required_version_root_attribute(gdf_file, hdf_file)
     write_first_block(gdf_file)
-    write_iteration(hdf_file, gdf_file)
+    write_iteration(hdf_file, gdf_file, max_cell_size)
 
 
 def write_first_block(gdf_file):
@@ -66,6 +68,7 @@ class Collect_Datasets():
         if isinstance(node, h5py.Group):
             for value in self.list_values_group:
                 if value in node.name:
+
                     self.grops_values.append(node)
         return None
 
@@ -599,13 +602,14 @@ def files_from_args(file_names):
 def converter(hdf_file, gdf_file):
     """ Check correct of arguments"""
 
+    max_cell_size = 10000
     if hdf_file != '':
         if os.path.exists(hdf_file):
             if gdf_file == '':
                 gdf_file = hdf_file[:-4] + '.gdf'
                 print('Destination .gdf directory not specified. Defaulting to ' + gdf_file)
 
-            hdf_to_gdf(hdf_file, gdf_file)
+            hdf_to_gdf(hdf_file, gdf_file, max_cell_size)
         else:
             print('The .hdf file does not exist to convert to .gdf')
 
