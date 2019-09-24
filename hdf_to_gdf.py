@@ -193,19 +193,18 @@ def write_iteration(hdf_file, gdf_file, max_cell_size):
            position_values, momentum_values, weighting, unit_si_position, \
            unit_si_momentum, position_offset, unit_si_offset = read_points_group(group)
 
-           if position_values == None and momentum_values == None:
+           if position_values == None or momentum_values == None:
                continue
 
-           size_of_main_array = hdf_file[position_values.vector_x][()].size
+
            write_ascii_name('var', len(name_group), gdf_file, name_group)
-           iterate_coords(gdf_file, hdf_file, position_values, position_offset, unit_si_offset, unit_si_position)
+           size_of_main_array = iterate_coords(gdf_file, hdf_file, position_values, position_offset, unit_si_offset, unit_si_position)
            iterate_momentum(gdf_file, hdf_file, momentum_values, unit_si_momentum)
            add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size)
 
 
 def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis):
     array_dataset = hdf_file[path_dataset][()]
-    size = hdf_file[path_dataset][()].size
     offset = hdf_file[position_offset][()]
     absolute_values = get_absolute_coordinates(array_dataset, offset, unit_si_offset, unit_si_position, idx_axis)
     return absolute_values
@@ -253,23 +252,29 @@ def iterate_momentum(gdf_file, hdf_file, group_values, unit_si_momentum):
 
 def iterate_coords(gdf_file, hdf_file, group_values, position_offset, unit_si_offset, unit_si_position):
 
+    size_of_main_array = 0
     if len(group_values.vector_x) != 0:
+        size_of_main_array = max(hdf_file[group_values.vector_x][()].size, size_of_main_array)
         name_dataset = str(group_values.name_dataset + '/x')
         write_coord_values(0, group_values.vector_x, position_offset.vector_x, name_dataset, gdf_file, hdf_file, unit_si_offset,
                            unit_si_position)
 
 
     if len(group_values.vector_y) != 0:
+        size_of_main_array = max(hdf_file[group_values.vector_y][()].size, size_of_main_array)
         name_dataset = str(group_values.name_dataset + '/y')
         write_coord_values(1, group_values.vector_y, position_offset.vector_y, name_dataset, gdf_file, hdf_file,
                            unit_si_offset,
                            unit_si_position)
 
     if len(group_values.vector_z) != 0:
+        size_of_main_array = max(hdf_file[group_values.vector_z][()].size, size_of_main_array)
         name_dataset = str(group_values.name_dataset + '/z')
         write_coord_values(2, group_values.vector_z, position_offset.vector_z, name_dataset, gdf_file, hdf_file,
                            unit_si_offset,
                            unit_si_position)
+
+    return size_of_main_array
 
 
 def write_dataset(gdf_file, absolute_values):
@@ -307,15 +312,15 @@ class DatasetReader():
         dataset_y = self.name_dataset + '/y'
         dataset_z = self.name_dataset + '/z'
         if isinstance(node, h5py.Dataset):
-            if node.name.endswith(dataset_x):
+            if node.name.endswith(dataset_x) and node.shape != None:
                 self.vector_x = node.name
                 self.unit_SI_x = node.attrs["unitSI"]
 
-            if node.name.endswith(dataset_y):
+            if node.name.endswith(dataset_y) and node.shape != None:
                 self.vector_y = node.name
                 self.unit_SI_y = node.attrs["unitSI"]
 
-            if node.name.endswith(dataset_z):
+            if node.name.endswith(dataset_z) and node.shape != None:
                 self.vector_z = node.name
                 self.unit_SI_z = node.attrs["unitSI"]
 
