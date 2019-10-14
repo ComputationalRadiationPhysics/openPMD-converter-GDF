@@ -36,7 +36,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size):
     add_dest_name_root_attribute(gdf_file, hdf_file)
     add_required_version_root_attribute(gdf_file, hdf_file)
     write_first_block(gdf_file)
-    write_iteration(hdf_file, gdf_file, max_cell_size)
+    write_file(hdf_file, gdf_file, max_cell_size)
 
 
 def write_first_block(gdf_file):
@@ -167,7 +167,40 @@ def read_position_offset(hdf_datasets):
     return position_offset_values, offset_unit_si
 
 
-def write_iteration(hdf_file, gdf_file, max_cell_size):
+def write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size):
+
+        group = particles_collect.particles_groups[j]
+        hdf_datasets = Collect_Datasets()
+        group.visititems(hdf_datasets)
+        name_group = particles_collect.particles_names[j]
+
+        position_values, momentum_values, weighting, unit_si_position, \
+        unit_si_momentum, position_offset, unit_si_offset = read_points_group(group)
+
+        if position_values == None or momentum_values == None:
+            return
+
+        write_ascii_name('var', len(name_group), gdf_file, name_group)
+        size_of_main_array = iterate_coords(gdf_file, hdf_file, position_values, position_offset, unit_si_offset,
+                                            unit_si_position, max_cell_size)
+        iterate_momentum(gdf_file, hdf_file, momentum_values, unit_si_momentum, max_cell_size)
+        add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size)
+
+
+def write_iteration(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size):
+
+    iteration = iteration_collect.iteration_groups[i]
+    name_iteration = iteration_collect.iteration_names[i]
+
+    particles_collect = Particles_Groups(particles_name)
+    iteration.visititems(particles_collect)
+    write_float('time', gdf_file, float(name_iteration))
+
+    for j in range(0, len(particles_collect.particles_groups)):
+        write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size)
+
+
+def write_file(hdf_file, gdf_file, max_cell_size):
    """ Write all iteration to hdf_file """
 
    particles_name = get_particles_name(hdf_file)
@@ -175,30 +208,7 @@ def write_iteration(hdf_file, gdf_file, max_cell_size):
    hdf_file.visititems(iteration_collect)
 
    for i in range(0, len(iteration_collect.iteration_groups)):
-
-       iteration = iteration_collect.iteration_groups[i]
-       name_iteration = iteration_collect.iteration_names[i]
-
-       particles_collect = Particles_Groups(particles_name)
-       iteration.visititems(particles_collect)
-       write_float('time', gdf_file, float(name_iteration))
-
-       for j in range(0, len(particles_collect.particles_groups)):
-           group = particles_collect.particles_groups[j]
-           hdf_datasets = Collect_Datasets()
-           group.visititems(hdf_datasets)
-           name_group = particles_collect.particles_names[j]
-
-           position_values, momentum_values, weighting, unit_si_position, \
-           unit_si_momentum, position_offset, unit_si_offset = read_points_group(group)
-
-           if position_values == None or momentum_values == None:
-               continue
-
-           write_ascii_name('var', len(name_group), gdf_file, name_group)
-           size_of_main_array = iterate_coords(gdf_file, hdf_file, position_values, position_offset, unit_si_offset, unit_si_position, max_cell_size)
-           iterate_momentum(gdf_file, hdf_file, momentum_values, unit_si_momentum, max_cell_size)
-           add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size)
+       write_iteration(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size)
 
 
 def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis, idx_start, idx_end):
@@ -210,7 +220,6 @@ def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset,
 
 
 def write_coord_values(axis_idx, vector_values, position_offset, name_dataset, gdf_file, hdf_file, unit_si_offset, unit_si_position, max_cell_size):
-
 
     write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
     size = hdf_file[vector_values][()].size
