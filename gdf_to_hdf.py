@@ -307,8 +307,9 @@ def name_to_group(name, particles, size, gdf_file):
         Args:
             particles - particles group
             name - name of dataset in gdf_file
-            size - size of dataset in gdf_file
+            size - size of dataset in gdf_file, in bytes
             gdf_file - input file GPT
+
            """
 
     if find_attribute(name) != None:
@@ -371,6 +372,7 @@ def read_gdf_block_header(gdf_file):
         return namesplit, primitive_type, size
     namesplit = name.split()[0]
     primitive_type = struct.unpack('i', gdf_file.read(4))[0]
+    #size in bytes
     size = struct.unpack('i', gdf_file.read(4))[0]
     return namesplit, primitive_type, size
 
