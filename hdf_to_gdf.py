@@ -9,25 +9,37 @@ import h5py
 from datetime import datetime
 import time
 import re
+import argparse
 
 
-def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size):
+def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species):
     """ Find hdf file in hdf_file_directory, find gdf_file_directory"""
 
     print('Converting .gdf to .hdf file')
-    if os.path.exists(gdf_file_directory):
-        os.remove(gdf_file_directory)
+    print(gdf_file_directory)
+
+    default_max_cell_size = 1000000
+    if gdf_file_directory == None:
+        gdf_file_directory = hdf_file_directory[:-3] + '.gdf'
+
+    if max_cell_size == None:
+        max_cell_size = default_max_cell_size
+
+    if species == None:
+        species = ''
+
+    print('Destination .gdf directory not specified. Defaulting to ' + gdf_file_directory)
 
     hdf_file = h5py.File(hdf_file_directory, 'a')
     with open(gdf_file_directory, 'wb') as gdf_file:
-        hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size)
+        hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species)
 
     gdf_file.close()
     hdf_file.close()
     print('Converting .hdf to .gdf file... Complete.')
 
 
-def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size):
+def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
     """ Convert from hdf file to gdf file """
 
     add_gdf_id(gdf_file)
@@ -36,7 +48,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size):
     add_dest_name_root_attribute(gdf_file, hdf_file)
     add_required_version_root_attribute(gdf_file, hdf_file)
     write_first_block(gdf_file)
-    write_file(hdf_file, gdf_file, max_cell_size)
+    write_file(hdf_file, gdf_file, max_cell_size, species)
 
 
 def write_first_block(gdf_file):
@@ -119,6 +131,7 @@ class Iteration_Groups():
         return None
 
 
+
 def decode_name(attribute_name):
     """ Decode name from binary """
 
@@ -151,7 +164,7 @@ class Name_of_arrays:
                      'position/z': 'z',
                      'id': 'ID',
                      'charge': 'charge',
-                     'weighting': 'weighting',
+                     'weighting': 'nmacro',
                      'mass': 'm'}
 
 
@@ -187,7 +200,22 @@ def write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size
         add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size)
 
 
-def write_iteration(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size):
+def all_species(particles_collect, gdf_file, hdf_file, max_cell_size):
+
+    for j in range(0, len(particles_collect.particles_groups)):
+        write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size)
+
+
+def one_type_species(particles_collect, gdf_file, hdf_file, max_cell_size, species):
+
+    for j in range(0, len(particles_collect.particles_groups)):
+
+        name_group = particles_collect.particles_names[j]
+        if species == name_group:
+            write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size)
+
+
+def write_data(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size, species):
 
     iteration = iteration_collect.iteration_groups[i]
     name_iteration = iteration_collect.iteration_names[i]
@@ -196,11 +224,13 @@ def write_iteration(iteration_collect, i, particles_name, gdf_file, hdf_file, ma
     iteration.visititems(particles_collect)
     write_float('time', gdf_file, float(name_iteration))
 
-    for j in range(0, len(particles_collect.particles_groups)):
-        write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size)
+    if species == '':
+        all_species(particles_collect, gdf_file, hdf_file, max_cell_size)
+    else:
+        one_type_species(particles_collect, gdf_file, hdf_file, max_cell_size, species)
 
 
-def write_file(hdf_file, gdf_file, max_cell_size):
+def write_file(hdf_file, gdf_file, max_cell_size, species):
    """ Write all iteration to hdf_file """
 
    particles_name = get_particles_name(hdf_file)
@@ -208,7 +238,7 @@ def write_file(hdf_file, gdf_file, max_cell_size):
    hdf_file.visititems(iteration_collect)
 
    for i in range(0, len(iteration_collect.iteration_groups)):
-       write_iteration(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size)
+       write_data(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size, species)
 
 
 def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis, idx_start, idx_end):
@@ -222,8 +252,8 @@ def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset,
 def write_coord_values(axis_idx, vector_values, position_offset, name_dataset, gdf_file, hdf_file, unit_si_offset, unit_si_position, max_cell_size):
 
     write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
-    size = hdf_file[vector_values][()].size
-    size_bin = struct.pack('i', int(size * 8))
+    size = hdf_file[vector_values][()].size #size of dataset
+    size_bin = struct.pack('I', int(size * 8)) #size in bytes, has to be 4 bytes
     gdf_file.write(size_bin)
 
     number_cells = int(size / max_cell_size)
@@ -488,7 +518,6 @@ def write_double_dataset_values(gdf_file, name, size_dataset, value, max_cell_si
     """" Write dataset of double values """
 
     write_dataset_header(name, gdf_file)
-    print('name == '+ str(name))
 
     size_bin = struct.pack('i', int(size_dataset * 8))
     gdf_file.write(size_bin)
@@ -662,36 +691,24 @@ class Constants:
     GDFNAMELEN = 16
 
 
-def files_from_args(file_names):
-    gdf_file = ''
-    hdf_file = ''
-    if len(file_names) >= 2:
-        hdf_file = file_names[1]
-    if len(file_names) >= 3:
-        gdf_file = file_names[2]
-    return gdf_file, hdf_file
-
-
-def converter(hdf_file, gdf_file):
-    """ Check correct of arguments"""
-
-    max_cell_size = 1000000
-    if hdf_file != '':
-        if os.path.exists(hdf_file):
-            if gdf_file == '':
-                gdf_file = hdf_file[:-4] + '.gdf'
-                print('Destination .gdf directory not specified. Defaulting to ' + gdf_file)
-
-            hdf_to_gdf(hdf_file, gdf_file, max_cell_size)
-        else:
-            print('The .hdf file does not exist to convert to .gdf')
-
-
-def main(file_names):
-    gdf_path, hdf_path = files_from_args(file_names)
-    converter(hdf_path, gdf_path)
-
-
 if __name__ == "__main__":
-    file_names = sys.argv
-    main(file_names)
+    """ Parse arguments from command line """
+
+    parser = argparse.ArgumentParser(description="conversion from gdf to hdf")
+
+    parser.add_argument("-hdf", metavar='hdf_file', type=str,
+                        help="hdf file for conversion")
+
+    parser.add_argument("-gdf", metavar='gdf_file', type=str,
+                        help="result gdf file")
+
+    parser.add_argument("-max_cell", metavar='max_cell', type=str,
+                        help="result gdf file")
+
+    parser.add_argument("-species", metavar='species', type=str,
+                        help="one species to convert")
+
+    args = parser.parse_args()
+
+    hdf_to_gdf(args.hdf, args.gdf, args.max_cell, args.species)
+
