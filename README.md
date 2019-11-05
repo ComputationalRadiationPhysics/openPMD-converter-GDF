@@ -53,6 +53,6 @@ where parameters
 
 To run the script for the provided example, run the following from a project directory:
 ```
-python3 hdf_to_gdf.py examples/example_3.h5 examples/example_3.gdf
+python3 hdf_to_gdf.py -hdf examples/example_3.h5 
 
 ```
