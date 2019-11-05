@@ -10,6 +10,7 @@ from datetime import datetime
 import time
 import re
 import argparse
+import numpy
 
 
 def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species):
@@ -244,7 +245,12 @@ def write_file(hdf_file, gdf_file, max_cell_size, species):
 def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis, idx_start, idx_end):
 
     array_dataset = hdf_file[path_dataset][()][idx_start:idx_end]
-    offset = hdf_file[position_offset][()][idx_start:idx_end]
+    if position_offset != '':
+        offset = hdf_file[position_offset][()][idx_start:idx_end]
+    else:
+        size = idx_end - idx_start
+        offset = numpy.empty(size)
+        offset.fill(1.)
     absolute_values = get_absolute_coordinates(array_dataset, offset, unit_si_offset, unit_si_position, idx_axis)
     return absolute_values
 
@@ -494,6 +500,9 @@ def read_points_group(group):
 def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position, idx_axis):
 
     absolute_result = []
+
+    if len(unit_si_offset) == 0:
+        unit_si_offset = [1., 1., 1.]
 
     i = 0
     for point in values:
