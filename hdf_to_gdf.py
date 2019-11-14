@@ -314,36 +314,6 @@ def write_dataset(gdf_file, absolute_values):
 
 def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position):
 
-def read_points_group(group):
-    """
-
-    convert values from position and momentum datasets into points
-    group -- base group of points from hdf file
-
-    """
-
-    hdf_datasets = Particles_Functor()
-    group.visititems(hdf_datasets)
-
-
-    weighting = hdf_datasets.weighting
-    position_values = DatasetReader('position')
-    momentum_values = DatasetReader('momentum')
-    position_offset, unit_si_offset = read_position_offset(hdf_datasets)
-
-    if len(hdf_datasets.positions) == 0 or len(hdf_datasets.momentum) == 0:
-        return None, None, [], [], [], [], []
-
-    position_group = hdf_datasets.positions[0]
-    momentum_group = hdf_datasets.momentum[0]
-    position_group.visititems(position_values)
-    momentum_group.visititems(momentum_values)
-
-    unit_si_position = position_values.get_unit_si_array()
-    unit_SI_momentum = momentum_values.get_unit_si_array()
-
-    return position_values, momentum_values, weighting, unit_si_position, unit_SI_momentum, position_offset, unit_si_offset
-
 
 def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position, idx_axis):
 
