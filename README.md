@@ -25,7 +25,7 @@ To convert a GDF file into an openPMD-conforming hdf5 file run the ```gdf_to_hdf
 ```
 python gdf_to_hdf gdf_file [hdf5_file]
 ```
-where
+where 
 * ```gdf_file``` is the path to an input GDF file;
 * ```hdf5_file``` is the path to an output openPMD-conforming hdf5 file, by default ```result.h5```.
 
@@ -33,24 +33,26 @@ where
 
 To run the script for the provided examples, run the following from a project directory:
 ```
-python3 gdf_to_hdf.py examples/example_1.gdf examples/example_1.h5
-python3 gdf_to_hdf.py examples/example_2.gdf examples/example_2.h5
+python3 gdf_to_hdf.py -gdf examples/example_1.gdf -hdf examples/example_1.h5
+python3 gdf_to_hdf.py -hdf examples/example_2.gdf -gdf examples/example_2.h5
 ```
 
 ## Converting from openPMD to GDF
 
 To convert an openPMD-conforming hdf5 file into a GDF file run the ```hdf_to_gdf.py``` module as follows:
 ```
-python3 hdf_to_gdf.py hdf5_file [gdf_file]
+python3 hdf_to_gdf.py -hdf hdf5_file -gdf [gdf_file] -species (optional)
 ```
-where
-* ```hdf5_file``` is the path to an input openPMD-conforming hdf5 file; 
-* ```gdf_file``` is the path to an output GDF file, by default ```result.gdf```.
+where parameters
+* ```-hdf``` is the path to an input openPMD-conforming hdf5 file; 
+* ```-gdf``` is the path to an output GDF file, by default ```hdf path + .cgf```
+* ```-species``` chosen particle species.
+
 
 ### Example
 
 To run the script for the provided example, run the following from a project directory:
 ```
-python3 hdf_to_gdf.py examples/example_3.h5 examples/example_3.gdf
+python3 hdf_to_gdf.py -hdf examples/example_3.h5 
 
 ```
