@@ -2,10 +2,7 @@
 
 
 from __future__ import division
-import os
-import sys
 import struct
-import h5py
 from datetime import datetime
 import time
 import re
@@ -135,11 +132,10 @@ def write_particles_type(series, particle_species, gdf_file, max_cell_size):
     position_offset = particle_species["positionOffset"]
     position = particle_species["position"]
 
-    iterate_coords(series, gdf_file, position, position_offset, max_cell_size)
+    size_dataset = iterate_coords(series, gdf_file, position, position_offset, max_cell_size)
 
     momentum_values = particle_species["momentum"]
     iterate_momentum(series, gdf_file, momentum_values, max_cell_size)
-    size_dataset = 1000000
     write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "mass")
     write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "charge")
 
@@ -147,7 +143,6 @@ def write_particles_type(series, particle_species, gdf_file, max_cell_size):
 def check_item_exist(particle_species, name_item):
 
     item_exist = False
-
     for value in particle_species.items():
         if value[0] == name_item:
             item_exist = True
@@ -260,46 +255,25 @@ def write_momentum_values(series, name_dataset, momentum_values, gdf_file, max_c
 
 def iterate_momentum(series, gdf_file, momentum_values, max_cell_size):
 
-    dimension = len(momentum_values)
+    name_vector = "momentum/"
 
-    if dimension == 2:
-        name_dataset = str("momentum" + '/x')
-        write_momentum_values(series, name_dataset, momentum_values["x"], gdf_file, max_cell_size)
-
-        name_dataset = str("momentum" + '/y')
-        write_momentum_values(series, name_dataset, momentum_values["y"], gdf_file, max_cell_size)
-
-    if dimension == 3:
-        name_dataset = str("momentum" + '/x')
-        write_momentum_values(series, name_dataset, momentum_values["x"], gdf_file, max_cell_size)
-
-        name_dataset = str("momentum" + '/y')
-        write_momentum_values(series, name_dataset, momentum_values["y"], gdf_file, max_cell_size)
-
-        name_dataset = str("momentum" + '/z')
-        write_momentum_values(series, name_dataset, momentum_values["z"], gdf_file, max_cell_size)
+    for value in momentum_values.items():
+        name_value = value[0]
+        name_dataset = str(name_vector + name_value)
+        write_momentum_values(series, name_dataset, momentum_values[name_value], gdf_file, max_cell_size)
 
 
 def iterate_coords(series, gdf_file, position, position_offset, max_cell_size):
 
-    dimension = len(position)
-    if dimension == 2:
-        name_dataset = str("position" + '/x')
-        write_coord_values(series, name_dataset, position["x"], position_offset["x"], gdf_file, max_cell_size)
+    dataset_size = 0
+    name_vector = "position/"
+    for value in position.items():
+        name_value = value[0]
+        name_dataset = str(name_vector + name_value)
+        dataset_size = position[name_value].shape[0]
+        write_coord_values(series, name_dataset, position[name_value], position_offset[name_value], gdf_file, max_cell_size)
 
-        name_dataset = str("position" + '/y')
-        write_coord_values(series, name_dataset, position["y"], position_offset["y"], gdf_file, max_cell_size)
-
-    if dimension == 3:
-        name_dataset = str("position" + '/x')
-        write_coord_values(series, name_dataset, position["x"], position_offset["x"], gdf_file, max_cell_size)
-
-        name_dataset = str("position" + '/y')
-        write_coord_values(series, name_dataset, position["y"], position_offset["y"], gdf_file, max_cell_size)
-
-        name_dataset = str("position" + '/z')
-        write_coord_values(series, name_dataset, position["z"], position_offset["z"], gdf_file, max_cell_size)
-
+    return dataset_size
 
 
 def write_dataset(gdf_file, absolute_values):
