@@ -314,42 +314,6 @@ def write_dataset(gdf_file, absolute_values):
 
 def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position):
 
-class Particles_Functor():
-    """
-
-    Collect values(weighting, position, momentum) from paticle dataset in hdf file.
-    positions -- group of position coords
-    momentum -- group of momentum coords
-    weightins -- values of weights for particles
-
-    """
-
-    def __init__(self):
-        self.momentum = []
-        self.weighting = []
-        self.bound_electrons = []
-        self.position_offset = []
-        self.positions = []
-
-    def __call__(self, name, node):
-
-        if isinstance(node, h5py.Dataset):
-            if node.name.endswith('weighting'):
-                self.weighting = node.name
-
-        if isinstance(node, h5py.Group):
-            if node.name.endswith('position'):
-                self.positions.append(node)
-
-            if node.name.endswith('momentum'):
-                self.momentum.append(node)
-
-            if node.name.endswith('positionOffset'):
-                self.position_offset.append(node)
-
-        return None
-
-
 def read_points_group(group):
     """
 
