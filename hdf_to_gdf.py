@@ -219,10 +219,10 @@ def get_absolute_momentum(hdf_file, axis_idx, path_dataset, unit_si_momentum, id
     return absolute_momentum
 
 
-def write_momentum_values(axis_idx, vector_values, name_dataset, gdf_file, hdf_file, unit_si_momentum, max_cell_size):
+def write_momentum_values(series, name_dataset, momentum_values, gdf_file, max_cell_size):
 
     write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
-    size = hdf_file[vector_values][()].size
+    size = momentum_values.shape[0]
     size_bin = struct.pack('i', int(size * 8))
     gdf_file.write(size_bin)
 
@@ -230,11 +230,11 @@ def write_momentum_values(axis_idx, vector_values, name_dataset, gdf_file, hdf_f
     for i in range(1, number_cells + 1):
         idx_start = (i - 1) * max_cell_size
         idx_end = i * max_cell_size
-        absolute_momentum = get_absolute_momentum(hdf_file, axis_idx, vector_values, unit_si_momentum, idx_start, idx_end)
+        absolute_momentum = get_absolute_momentum(series, momentum_values, idx_start, idx_end)
         type_size = str(max_cell_size) + 'd'
         gdf_file.write(struct.pack(type_size, *absolute_momentum))
 
-    absolute_momentum = get_absolute_momentum(hdf_file, axis_idx, vector_values, unit_si_momentum, number_cells * max_cell_size, size)
+    absolute_momentum = get_absolute_momentum(series, momentum_values, number_cells * max_cell_size, size)
     last_cell_size = size - number_cells * max_cell_size
     type_size = str(last_cell_size) + 'd'
     gdf_file.write(struct.pack(type_size, *absolute_momentum))
