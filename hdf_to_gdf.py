@@ -41,7 +41,7 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species):
     print('Converting .hdf to .gdf file... Complete.')
 
 
-def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
+def hdf_file_to_gdf_file(gdf_file, series_hdf, max_cell_size, species):
     """ Convert from hdf file to gdf file """
 
     add_gdf_id(gdf_file)
@@ -51,7 +51,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
     add_dest_name_root_attribute(gdf_file, series_hdf)
     add_required_version_root_attribute(gdf_file, series_hdf)
     write_first_block(gdf_file)
-    write_file(hdf_file, gdf_file, max_cell_size, species)
+    write_file(series_hdf, gdf_file, max_cell_size, species)
 
 
 def write_first_block(gdf_file):
@@ -247,12 +247,17 @@ def write_file(hdf_file, gdf_file, max_cell_size, species):
 def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis, idx_start, idx_end):
 
     array_dataset = hdf_file[path_dataset][()][idx_start:idx_end]
-    if position_offset != '':
-        offset = hdf_file[position_offset][()][idx_start:idx_end]
+def write_data(series,iteration, gdf_file, max_cell_size, species):
+
+    time = iteration.time()
+    write_float('time', gdf_file, float(time))
+
+    if species == '':
+        all_species(series, iteration, gdf_file, max_cell_size)
     else:
-        size = idx_end - idx_start
-        offset = numpy.empty(size)
-        offset.fill(1.)
+        one_type_species(series, iteration, gdf_file, max_cell_size, species)
+
+
     absolute_values = get_absolute_coordinates(array_dataset, offset, unit_si_offset, unit_si_position, idx_axis)
     return absolute_values
 
