@@ -314,18 +314,12 @@ def write_dataset(gdf_file, absolute_values):
 
 def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position):
 
-
-def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position, idx_axis):
-
     absolute_result = []
-
-    if len(unit_si_offset) == 0:
-        unit_si_offset = [1., 1., 1.]
 
     i = 0
     for point in values:
         i=+1
-        absolute_coord = point * unit_si_position[idx_axis] + offset[i] * unit_si_offset[idx_axis]
+        absolute_coord = point * unit_si_position + offset[i] * unit_si_offset
         absolute_result.append(absolute_coord)
 
     return absolute_result
