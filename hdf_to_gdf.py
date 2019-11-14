@@ -165,13 +165,18 @@ def all_species(series, iteration, gdf_file, max_cell_size):
         write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size)
 
 
-   for i in range(0, len(iteration_collect.iteration_groups)):
-       write_data(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size, species)
+def one_type_species(series, iteration, gdf_file, max_cell_size, species):
+
+    for name_group in iteration.particles:
+        if name_group == species:
+            if not (check_item_exist(iteration.particles[name_group], "momentum") and
+                    check_item_exist(iteration.particles[name_group], "position")):
+                continue
+
+            write_ascii_name('var', len(name_group), gdf_file, name_group)
+            write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size)
 
 
-def get_absolute_values(hdf_file, path_dataset, position_offset, unit_si_offset, unit_si_position, idx_axis, idx_start, idx_end):
-
-    array_dataset = hdf_file[path_dataset][()][idx_start:idx_end]
 def write_data(series,iteration, gdf_file, max_cell_size, species):
 
     time = iteration.time()
