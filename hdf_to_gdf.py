@@ -193,6 +193,14 @@ def write_file(series_hdf, gdf_file, max_cell_size, species):
     for iteration in series_hdf.iterations:
         write_data(series_hdf, series_hdf.iterations[iteration], gdf_file, max_cell_size, species)
 
+
+def get_absolute_values(series, position_axis, position_offset_axis, idx_start, idx_end):
+
+    position_dataset = position_axis[idx_start:idx_end]
+    position_offset = position_offset_axis[idx_start:idx_end]
+    series.flush()
+    absolute_values = get_absolute_coordinates(position_dataset, position_offset, position_offset_axis.unit_SI, position_axis.unit_SI)
+
     return absolute_values
 
 
