@@ -46,7 +46,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
 
     add_gdf_id(gdf_file)
     add_time_root_attribute(gdf_file, hdf_file)
-    add_creator_name_root_attribute(gdf_file, hdf_file)
+    add_time_root_attribute(gdf_file, series_hdf)
     add_dest_name_root_attribute(gdf_file, hdf_file)
     add_required_version_root_attribute(gdf_file, hdf_file)
     write_first_block(gdf_file)
@@ -593,20 +593,14 @@ def add_gdf_id(gdf_file):
    gdf_file.write(gdf_id_byte)
 
 
-def add_time_root_attribute(gdf_file, hdf_file):
+def add_time_root_attribute(gdf_file, series_hdf):
     """ Add time of creation to root"""
 
-    if  hdf_file.attrs.get('date') != None:
-        time_created = hdf_file.attrs.get('date')
-        decoding_name = time_created.decode('ascii', errors='ignore')
-        time_format = datetime.strptime(str(decoding_name), "%Y-%m-%d %H:%M:%S %z")
-        seconds = time.mktime(time_format.timetuple())
-        time_created_byte = struct.pack('i', int(seconds))
-        gdf_file.write(time_created_byte)
-    else:
-        seconds = int(round(time.time()))
-        time_created_byte = struct.pack('i', int(seconds))
-        gdf_file.write(time_created_byte)
+    data_name = series_hdf.date
+    time_format = datetime.strptime(data_name, "%Y-%m-%d %H:%M:%S %z")
+    seconds = time.mktime(time_format.timetuple())
+    time_created_byte = struct.pack('i', int(seconds))
+    gdf_file.write(time_created_byte)
 
 
 def add_creator_name_root_attribute(gdf_file, hdf_file):
