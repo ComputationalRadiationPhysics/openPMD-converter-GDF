@@ -152,24 +152,18 @@ def check_item_exist(particle_species, name_item):
             item_exist = True
 
     return item_exist
-    name_iteration = iteration_collect.iteration_names[i]
-
-    particles_collect = Particles_Groups(particles_name)
-    iteration.visititems(particles_collect)
-    write_float('time', gdf_file, float(name_iteration))
-
-    if species == '':
-        all_species(particles_collect, gdf_file, hdf_file, max_cell_size)
-    else:
-        one_type_species(particles_collect, gdf_file, hdf_file, max_cell_size, species)
 
 
-def write_file(hdf_file, gdf_file, max_cell_size, species):
-   """ Write all iteration to hdf_file """
+def all_species(series, iteration, gdf_file, max_cell_size):
 
-   particles_name = get_particles_name(hdf_file)
-   iteration_collect = Iteration_Groups()
-   hdf_file.visititems(iteration_collect)
+    for name_group in iteration.particles:
+        if not (check_item_exist(iteration.particles[name_group], "momentum") and
+                check_item_exist(iteration.particles[name_group], "position")):
+            continue
+
+        write_ascii_name('var', len(name_group), gdf_file, name_group)
+        write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size)
+
 
    for i in range(0, len(iteration_collect.iteration_groups)):
        write_data(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size, species)
