@@ -225,12 +225,14 @@ def write_coord_values(series, name_dataset, position_axis, position_offset_axis
     gdf_file.write(struct.pack(type_size, *absolute_values))
 
 
-def get_absolute_momentum(hdf_file, axis_idx, path_dataset, unit_si_momentum, idx_start, idx_end):
+def get_absolute_momentum(series, momentum_values, idx_start, idx_end):
 
-    array_dataset = hdf_file[path_dataset][()][idx_start:idx_end]
+    array_dataset = momentum_values[idx_start:idx_end]
+    series.flush()
+    unit_si_momentum = momentum_values.unit_SI
     absolute_momentum = []
     for point in array_dataset:
-        absolute_momentum.append(point * unit_si_momentum[axis_idx])
+        absolute_momentum.append(point * unit_si_momentum)
 
     return absolute_momentum
 
