@@ -129,15 +129,19 @@ def write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, name_s
     write_double_dataset_values(gdf_file, name_scalar, size_dataset, value * mass_unit, max_cell_size)
 
 
-def all_species(particles_collect, gdf_file, hdf_file, max_cell_size):
+def write_particles_type(series, particle_species, gdf_file, max_cell_size):
 
-    for j in range(0, len(particles_collect.particles_groups)):
-        write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size)
+    position_offset = particle_species["positionOffset"]
+    position = particle_species["position"]
 
+    iterate_coords(series, gdf_file, position, position_offset, max_cell_size)
 
-def one_type_species(particles_collect, gdf_file, hdf_file, max_cell_size, species):
+    momentum_values = particle_species["momentum"]
+    iterate_momentum(series, gdf_file, momentum_values, max_cell_size)
+    size_dataset = 1000000
+    write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "mass")
+    write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "charge")
 
-    for j in range(0, len(particles_collect.particles_groups)):
 
         name_group = particles_collect.particles_names[j]
         if species == name_group:
