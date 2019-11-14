@@ -47,7 +47,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
     add_gdf_id(gdf_file)
     add_time_root_attribute(gdf_file, hdf_file)
     add_time_root_attribute(gdf_file, series_hdf)
-    add_dest_name_root_attribute(gdf_file, hdf_file)
+    add_creator_name_root_attribute(gdf_file, series_hdf)
     add_required_version_root_attribute(gdf_file, hdf_file)
     write_first_block(gdf_file)
     write_file(hdf_file, gdf_file, max_cell_size, species)
@@ -603,16 +603,15 @@ def add_time_root_attribute(gdf_file, series_hdf):
     gdf_file.write(time_created_byte)
 
 
-def add_creator_name_root_attribute(gdf_file, hdf_file):
+def add_creator_name_root_attribute(gdf_file, series_hdf):
     """ Add name of creator to root"""
 
-    if hdf_file.attrs.get('software') != None:
-        software = hdf_file.attrs.get('software')
+    software = series_hdf.software
         decode_software = software.decode('ascii', errors='ignore')
         write_string(decode_software, gdf_file)
     else:
         software = 'empty'
-        write_string(software, gdf_file)
+    write_string(software, gdf_file)
 
 
 def add_dest_name_root_attribute(gdf_file, hdf_file):
