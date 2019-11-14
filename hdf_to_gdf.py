@@ -143,14 +143,15 @@ def write_particles_type(series, particle_species, gdf_file, max_cell_size):
     write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "charge")
 
 
-        name_group = particles_collect.particles_names[j]
-        if species == name_group:
-            write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size)
+def check_item_exist(particle_species, name_item):
 
+    item_exist = False
 
-def write_data(iteration_collect, i, particles_name, gdf_file, hdf_file, max_cell_size, species):
+    for value in particle_species.items():
+        if value[0] == name_item:
+            item_exist = True
 
-    iteration = iteration_collect.iteration_groups[i]
+    return item_exist
     name_iteration = iteration_collect.iteration_names[i]
 
     particles_collect = Particles_Groups(particles_name)
