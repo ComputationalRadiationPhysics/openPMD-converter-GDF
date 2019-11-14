@@ -312,74 +312,7 @@ def write_dataset(gdf_file, absolute_values):
     gdf_file.write(struct.pack(type_size, *absolute_values))
 
 
-
-class DatasetReader():
-    """
-
-     Read datasets values from hdf file
-     name_dataset -- name of base group
-
-    """
-
-    def __init__(self, name_dataset):
-        self.vector_x = ''
-        self.vector_y = ''
-        self.vector_z = ''
-        self.unit_SI_x = 1.
-        self.unit_SI_y = 1.
-        self.unit_SI_z = 1.
-        self.name_dataset = name_dataset
-        self.size = 0
-
-    def __call__(self, name, node):
-
-        dataset_x = self.name_dataset + '/x'
-        dataset_y = self.name_dataset + '/y'
-        dataset_z = self.name_dataset + '/z'
-        if isinstance(node, h5py.Dataset):
-            if node.name.endswith(dataset_x) and node.shape != None:
-                self.vector_x = node.name
-                self.unit_SI_x = node.attrs["unitSI"]
-
-            if node.name.endswith(dataset_y) and node.shape != None:
-                self.vector_y = node.name
-                self.unit_SI_y = node.attrs["unitSI"]
-
-            if node.name.endswith(dataset_z) and node.shape != None:
-                self.vector_z = node.name
-                self.unit_SI_z = node.attrs["unitSI"]
-
-        return None
-
-    def get_unit_si_array(self):
-
-        array_unit_SI = []
-        if self.get_dimension() == 3:
-            array_unit_SI = [self.unit_SI_x, self.unit_SI_y, self.unit_SI_z]
-        elif self.get_dimension() == 2:
-            array_unit_SI = [self.unit_SI_x, self.unit_SI_y]
-
-        return array_unit_SI
-
-    def get_dimension(self):
-        """
-
-         get dimension of particles datasets
-
-        """
-
-        size = 0
-        if len(self.vector_x) > 0:
-            if len(self.vector_y) > 0:
-                if len(self.vector_z) > 0:
-                    size = 3
-                else:
-                    size = 2
-            else:
-                size = 1
-
-        return size
-
+def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position):
 
 class Particles_Functor():
     """
