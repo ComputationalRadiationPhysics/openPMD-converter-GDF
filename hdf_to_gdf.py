@@ -45,10 +45,10 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
     """ Convert from hdf file to gdf file """
 
     add_gdf_id(gdf_file)
-    add_time_root_attribute(gdf_file, hdf_file)
+
     add_time_root_attribute(gdf_file, series_hdf)
     add_creator_name_root_attribute(gdf_file, series_hdf)
-    add_required_version_root_attribute(gdf_file, hdf_file)
+    add_dest_name_root_attribute(gdf_file, series_hdf)
     write_first_block(gdf_file)
     write_file(hdf_file, gdf_file, max_cell_size, species)
 
@@ -607,23 +607,14 @@ def add_creator_name_root_attribute(gdf_file, series_hdf):
     """ Add name of creator to root"""
 
     software = series_hdf.software
-        decode_software = software.decode('ascii', errors='ignore')
-        write_string(decode_software, gdf_file)
-    else:
-        software = 'empty'
     write_string(software, gdf_file)
 
 
 def add_dest_name_root_attribute(gdf_file, hdf_file):
     """ Add dest name to root attribute """
 
-    if hdf_file.attrs.get('destination') != None:
-        destination = hdf_file.attrs.get('destination')
-        decode_destination = destination.decode('ascii', errors='ignore')
-        write_string(decode_destination, gdf_file)
-    else:
-        destination = 'empty'
-        write_string(destination, gdf_file)
+    destination = 'empty'
+    write_string(destination, gdf_file)
 
 
 def add_required_version_root_attribute(gdf_file, hdf_file):
