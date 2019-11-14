@@ -67,29 +67,6 @@ def write_first_block(gdf_file):
         gdf_file.write(s_pack)
 
 
-class Iteration_Groups():
-    """
-
-    Collect iteration groups from hdf file
-    particles_name -- name of main partcles group
-
-    """
-
-    def __init__(self):
-        self.iteration_groups = []
-        self.iteration_names = []
-
-    def __call__(self, name, node):
-        if isinstance(node, h5py.Group):
-            data_idx = node.name.find("data")
-            iteration_name = node.name[data_idx + 5:]
-            if iteration_name.find('/') == -1 and iteration_name != '' and RepresentsInt(iteration_name):
-                self.iteration_groups.append(node)
-                self.iteration_names.append(iteration_name)
-        return None
-
-
-
 def decode_name(attribute_name):
     """ Decode name from binary """
 
