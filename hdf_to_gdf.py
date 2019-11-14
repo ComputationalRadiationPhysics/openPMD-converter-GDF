@@ -67,26 +67,6 @@ def write_first_block(gdf_file):
         gdf_file.write(s_pack)
 
 
-class Collect_Datasets():
-    """ Collect values from datasets in hdf file """
-
-    list_values_group = ['charge', 'mass']
-
-    def __init__(self):
-        self.sets = []
-        self.grops_values = []
-
-    def __call__(self, name, node):
-        if isinstance(node, h5py.Dataset):
-            self.sets.append(node)
-        if isinstance(node, h5py.Group):
-            for value in self.list_values_group:
-                if value in node.name:
-
-                    self.grops_values.append(node)
-        return None
-
-
 class Particles_Groups():
     """
 
