@@ -188,24 +188,22 @@ def write_data(series,iteration, gdf_file, max_cell_size, species):
     return absolute_values
 
 
-def write_coord_values(axis_idx, vector_values, position_offset, name_dataset, gdf_file, hdf_file, unit_si_offset, unit_si_position, max_cell_size):
+def write_coord_values(series, name_dataset, position_axis, position_offset_axis, gdf_file, max_cell_size):
 
     write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
-    size = hdf_file[vector_values][()].size #size of dataset
-    size_bin = struct.pack('I', int(size * 8)) #size in bytes, has to be 4 bytes
+    size = position_axis.shape[0]
+    size_bin = struct.pack('I', int(size * 8))
     gdf_file.write(size_bin)
 
     number_cells = int(size / max_cell_size)
     for i in range(1, number_cells + 1):
         idx_start = (i - 1) * max_cell_size
         idx_end = i * max_cell_size
-        absolute_values = get_absolute_values(hdf_file, vector_values, position_offset, unit_si_offset, unit_si_position,axis_idx, idx_start, idx_end)
+        absolute_values = get_absolute_values(series, position_axis, position_offset_axis, idx_start, idx_end)
         type_size = str(max_cell_size) + 'd'
         gdf_file.write(struct.pack(type_size, *absolute_values))
 
-    absolute_values = get_absolute_values(hdf_file, vector_values, position_offset, unit_si_offset, unit_si_position,
-                                          axis_idx, number_cells * max_cell_size, size)
-
+    absolute_values = get_absolute_values(series, position_axis, position_offset_axis, number_cells * max_cell_size, size)
     last_cell_size = size - number_cells * max_cell_size
     type_size = str(last_cell_size) + 'd'
     gdf_file.write(struct.pack(type_size, *absolute_values))
