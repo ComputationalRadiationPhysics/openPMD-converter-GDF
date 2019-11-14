@@ -439,31 +439,10 @@ def add_required_version_root_attribute(gdf_file, series_hdf):
 def add_versions(name, gdf_file, hdf_file, major = 0, minor = 0):
     """Write version of file to gdf file"""
 
-    if hdf_file.attrs.get(name) != None:
-        version = hdf_file.attrs.get(name)
-        decode_version = version.decode('ascii', errors='ignore')
-        point_idx = decode_version.find('.')
-        if point_idx == -1:
-            major = decode_version
-            minor = 0
-        else:
-            if RepresentsInt(decode_version[0: point_idx - 1]):
-                major = decode_version[0: point_idx - 1]
-            else:
-                major = 0
-            if RepresentsInt(decode_version[point_idx - 1: len(decode_version) - 1]):
-                minor = decode_version[point_idx - 1: len(decode_version) - 1]
-            else:
-                minor = 0
-        major_bin = struct.pack('B', int(major))
-        minor_bin = struct.pack('B', int(minor))
-        gdf_file.write(major_bin)
-        gdf_file.write(minor_bin)
-    else:
-        major_bin = struct.pack('B', major)
-        minor_bin = struct.pack('B', minor)
-        gdf_file.write(major_bin)
-        gdf_file.write(minor_bin)
+    major_bin = struct.pack('B', int(major))
+    minor_bin = struct.pack('B', int(minor))
+    gdf_file.write(major_bin)
+    gdf_file.write(minor_bin)
 
 
 def RepresentsInt(s):
