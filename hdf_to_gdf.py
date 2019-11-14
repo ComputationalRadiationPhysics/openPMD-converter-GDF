@@ -183,24 +183,18 @@ def read_position_offset(hdf_datasets):
     return position_offset_values, offset_unit_si
 
 
-def write_particles_type(particles_collect, j, gdf_file, hdf_file, max_cell_size):
+def write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, name_scalar):
 
-        group = particles_collect.particles_groups[j]
-        hdf_datasets = Collect_Datasets()
-        group.visititems(hdf_datasets)
-        name_group = particles_collect.particles_names[j]
+    if not check_item_exist(particle_species, name_scalar):
+        return
 
-        position_values, momentum_values, weighting, unit_si_position, \
-        unit_si_momentum, position_offset, unit_si_offset = read_points_group(group)
+    SCALAR = openpmd_api.Mesh_Record_Component.SCALAR
+    mass = particle_species[name_scalar][SCALAR]
 
-        if position_values == None or momentum_values == None:
-            return
+    value = mass.get_attribute("value")
+    mass_unit = mass.get_attribute("unitSI")
 
-        write_ascii_name('var', len(name_group), gdf_file, name_group)
-        size_of_main_array = iterate_coords(gdf_file, hdf_file, position_values, position_offset, unit_si_offset,
-                                            unit_si_position, max_cell_size)
-        iterate_momentum(gdf_file, hdf_file, momentum_values, unit_si_momentum, max_cell_size)
-        add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size)
+    write_double_dataset_values(gdf_file, name_scalar, size_dataset, value * mass_unit, max_cell_size)
 
 
 def all_species(particles_collect, gdf_file, hdf_file, max_cell_size):
