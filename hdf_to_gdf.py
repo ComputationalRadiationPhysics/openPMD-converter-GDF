@@ -49,6 +49,7 @@ def hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species):
     add_time_root_attribute(gdf_file, series_hdf)
     add_creator_name_root_attribute(gdf_file, series_hdf)
     add_dest_name_root_attribute(gdf_file, series_hdf)
+    add_required_version_root_attribute(gdf_file, series_hdf)
     write_first_block(gdf_file)
     write_file(hdf_file, gdf_file, max_cell_size, species)
 
@@ -617,12 +618,12 @@ def add_dest_name_root_attribute(gdf_file, hdf_file):
     write_string(destination, gdf_file)
 
 
-def add_required_version_root_attribute(gdf_file, hdf_file):
+def add_required_version_root_attribute(gdf_file, series_hdf):
     """ Write one iteration to hdf_file """
 
-    add_versions('gdf_version', gdf_file, hdf_file, 1, 1)
-    add_versions('softwareVersion', gdf_file, hdf_file, 3, 0)
-    add_versions('destination_version', gdf_file, hdf_file)
+    add_versions('gdf_version', gdf_file, series_hdf, 1, 1)
+    add_versions('softwareVersion', gdf_file, series_hdf, 3, 0)
+    add_versions('destination_version', gdf_file, series_hdf)
 
 
 def add_versions(name, gdf_file, hdf_file, major = 0, minor = 0):
