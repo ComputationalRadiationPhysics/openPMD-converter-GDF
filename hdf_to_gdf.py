@@ -54,6 +54,7 @@ def hdf_file_to_gdf_file(gdf_file, series_hdf, max_cell_size, species):
     write_file(series_hdf, gdf_file, max_cell_size, species)
 
 
+
 def write_first_block(gdf_file):
     """ Write required empty first block """
 
@@ -188,7 +189,10 @@ def write_data(series,iteration, gdf_file, max_cell_size, species):
         one_type_species(series, iteration, gdf_file, max_cell_size, species)
 
 
-    absolute_values = get_absolute_coordinates(array_dataset, offset, unit_si_offset, unit_si_position, idx_axis)
+def write_file(series_hdf, gdf_file, max_cell_size, species):
+    for iteration in series_hdf.iterations:
+        write_data(series_hdf, series_hdf.iterations[iteration], gdf_file, max_cell_size, species)
+
     return absolute_values
 
 
