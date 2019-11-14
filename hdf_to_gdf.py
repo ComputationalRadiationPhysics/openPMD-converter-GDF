@@ -330,32 +330,26 @@ def iterate_momentum(gdf_file, hdf_file, group_values, unit_si_momentum, max_cel
         name_dataset = str(group_values.name_dataset + '/z')
         write_momentum_values(2, group_values.vector_z, name_dataset, gdf_file, hdf_file, unit_si_momentum, max_cell_size)
 
+def iterate_coords(series, gdf_file, position, position_offset, max_cell_size):
 
-def iterate_coords(gdf_file, hdf_file, group_values, position_offset, unit_si_offset, unit_si_position, max_cell_size):
+    dimension = len(position)
+    if dimension == 2:
+        name_dataset = str("position" + '/x')
+        write_coord_values(series, name_dataset, position["x"], position_offset["x"], gdf_file, max_cell_size)
 
-    size_of_main_array = 0
-    if len(group_values.vector_x) != 0:
-        size_of_main_array = max(hdf_file[group_values.vector_x][()].size, size_of_main_array)
-        name_dataset = str(group_values.name_dataset + '/x')
-        write_coord_values(0, group_values.vector_x, position_offset.vector_x, name_dataset, gdf_file, hdf_file, unit_si_offset,
-                           unit_si_position, max_cell_size)
+        name_dataset = str("position" + '/y')
+        write_coord_values(series, name_dataset, position["y"], position_offset["y"], gdf_file, max_cell_size)
 
+    if dimension == 3:
+        name_dataset = str("position" + '/x')
+        write_coord_values(series, name_dataset, position["x"], position_offset["x"], gdf_file, max_cell_size)
 
-    if len(group_values.vector_y) != 0:
-        size_of_main_array = max(hdf_file[group_values.vector_y][()].size, size_of_main_array)
-        name_dataset = str(group_values.name_dataset + '/y')
-        write_coord_values(1, group_values.vector_y, position_offset.vector_y, name_dataset, gdf_file, hdf_file,
-                           unit_si_offset,
-                           unit_si_position, max_cell_size)
+        name_dataset = str("position" + '/y')
+        write_coord_values(series, name_dataset, position["y"], position_offset["y"], gdf_file, max_cell_size)
 
-    if len(group_values.vector_z) != 0:
-        size_of_main_array = max(hdf_file[group_values.vector_z][()].size, size_of_main_array)
-        name_dataset = str(group_values.name_dataset + '/z')
-        write_coord_values(2, group_values.vector_z, position_offset.vector_z, name_dataset, gdf_file, hdf_file,
-                           unit_si_offset,
-                           unit_si_position, max_cell_size)
+        name_dataset = str("position" + '/z')
+        write_coord_values(series, name_dataset, position["z"], position_offset["z"], gdf_file, max_cell_size)
 
-    return size_of_main_array
 
 
 def write_dataset(gdf_file, absolute_values):
