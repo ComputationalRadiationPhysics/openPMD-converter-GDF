@@ -11,13 +11,13 @@ import time
 import re
 import argparse
 import numpy
+import openpmd_api
 
 
 def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species):
     """ Find hdf file in hdf_file_directory, find gdf_file_directory"""
 
     print('Converting .gdf to .hdf file')
-    print(gdf_file_directory)
 
     default_max_cell_size = 1000000
     if gdf_file_directory == None:
@@ -31,12 +31,13 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species):
 
     print('Destination .gdf directory not specified. Defaulting to ' + gdf_file_directory)
 
-    hdf_file = h5py.File(hdf_file_directory, 'a')
+    series_hdf = openpmd_api.Series(hdf_file_directory, openpmd_api.Access_Type.read_only)
+
     with open(gdf_file_directory, 'wb') as gdf_file:
-        hdf_file_to_gdf_file(gdf_file, hdf_file, max_cell_size, species)
+        hdf_file_to_gdf_file(gdf_file, series_hdf, max_cell_size, species)
+
 
     gdf_file.close()
-    hdf_file.close()
     print('Converting .hdf to .gdf file... Complete.')
 
 
