@@ -55,4 +55,11 @@ To run the script for the provided example, run the following from a project dir
 ```
 python3 hdf_to_gdf.py -hdf examples/example_3.h5 
 
+
 ```
+
+### Limitations
+
+
+Convertor does not work with datasets, which size is large then 268435455, because of hardware limitations.
+
