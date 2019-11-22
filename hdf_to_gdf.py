@@ -253,13 +253,15 @@ def get_field_sizes(iteration):
     return unit_grid_spacing
 def all_species(series, iteration, gdf_file, max_cell_size):
 
+    unit_grid_spacing = get_field_sizes(iteration)
+
     for name_group in iteration.particles:
         if not (check_item_exist(iteration.particles[name_group], "momentum") and
                 check_item_exist(iteration.particles[name_group], "position")):
             continue
 
         write_ascii_name('var', len(name_group), gdf_file, name_group)
-        write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size)
+        write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size, unit_grid_spacing)
 
 
 def one_type_species(series, iteration, gdf_file, max_cell_size, species):
