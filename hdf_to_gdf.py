@@ -165,17 +165,35 @@ def write_scalar_dataset(gdf_file, particle_species, size_dataset, max_cell_size
     write_double_dataset_values(gdf_file, name_scalar, size_dataset, value * mass_unit, max_cell_size)
 
 
-def write_particles_type(series, particle_species, gdf_file, max_cell_size):
+def write_weight(series, gdf_file, particle_species, max_cell_size):
 
-    position_offset = particle_species["positionOffset"]
-    position = particle_species["position"]
+    name = "nmacro"
+    write_dataset_header(name, gdf_file)
 
-    size_dataset = iterate_coords(series, gdf_file, position, position_offset, max_cell_size)
+    SCALAR = openpmd_api.Mesh_Record_Component.SCALAR
 
-    momentum_values = particle_species["momentum"]
-    iterate_momentum(series, gdf_file, momentum_values, max_cell_size)
-    write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "mass")
-    write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, "charge")
+    weights = particle_species["weighting"][SCALAR]
+    size = weights.shape[0]
+    size_bin = struct.pack('i', int(size * 8))
+    gdf_file.write(size_bin)
+    number_cells = int(size / max_cell_size)
+    for i in range(1, number_cells + 1):
+        idx_start = (i - 1) * max_cell_size
+        idx_end = i * max_cell_size
+        current_values = weights[idx_start:idx_end]
+        series.flush()
+        type_size = str(max_cell_size) + 'd'
+        gdf_file.write(struct.pack(type_size, *current_values))
+
+    idx_start = number_cells * max_cell_size
+    idx_end = size
+    current_values = weights[idx_start:idx_end]
+
+    series.flush()
+
+    last_cell_size = size - number_cells * max_cell_size
+    type_size = str(last_cell_size) + 'd'
+    gdf_file.write(struct.pack(type_size, *current_values))
 
 
 def check_item_exist(particle_species, name_item):
