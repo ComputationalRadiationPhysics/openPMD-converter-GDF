@@ -273,10 +273,10 @@ def one_type_species(series, iteration, gdf_file, max_cell_size, species):
                 continue
 
             write_ascii_name('var', len(name_group), gdf_file, name_group)
-            write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size)
+            write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size, unit_grid_spacing)
 
 
-def write_data(series,iteration, gdf_file, max_cell_size, species):
+def write_data(series, iteration, gdf_file, max_cell_size, species):
 
     time = iteration.time()
     write_float('time', gdf_file, float(time))
@@ -292,32 +292,31 @@ def write_file(series_hdf, gdf_file, max_cell_size, species):
         write_data(series_hdf, series_hdf.iterations[iteration], gdf_file, max_cell_size, species)
 
 
-def get_absolute_values(series, position_axis, position_offset_axis, idx_start, idx_end):
-
-    position_dataset = position_axis[idx_start:idx_end]
-    position_offset = position_offset_axis[idx_start:idx_end]
-    series.flush()
-    absolute_values = get_absolute_coordinates(position_dataset, position_offset, position_offset_axis.unit_SI, position_axis.unit_SI)
-
-    return absolute_values
-
-
-def write_coord_values(series, name_dataset, position_axis, position_offset_axis, gdf_file, max_cell_size):
-
-    write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
-    size = position_axis.shape[0]
-    size_bin = struct.pack('I', int(size * 8))
-    gdf_file.write(size_bin)
+def write_dataset_values(series, reading_absolute, geting_absolute_values, size, gdf_file, max_cell_size):
 
     number_cells = int(size / max_cell_size)
     for i in range(1, number_cells + 1):
         idx_start = (i - 1) * max_cell_size
         idx_end = i * max_cell_size
-        absolute_values = get_absolute_values(series, position_axis, position_offset_axis, idx_start, idx_end)
+        current_values = reading_absolute(idx_start, idx_end)
+
+        series.flush()
+        absolute_values = []
+        for value in current_values:
+            absolute_values.append(geting_absolute_values(value))
+
         type_size = str(max_cell_size) + 'd'
         gdf_file.write(struct.pack(type_size, *absolute_values))
 
-    absolute_values = get_absolute_values(series, position_axis, position_offset_axis, number_cells * max_cell_size, size)
+    idx_start = number_cells * max_cell_size
+    idx_end = size
+    current_values = reading_absolute(idx_start, idx_end)
+
+    series.flush()
+    absolute_values = []
+    for value in current_values:
+        absolute_values.append(geting_absolute_values(value))
+
     last_cell_size = size - number_cells * max_cell_size
     type_size = str(last_cell_size) + 'd'
     gdf_file.write(struct.pack(type_size, *absolute_values))
