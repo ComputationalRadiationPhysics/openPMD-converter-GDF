@@ -334,20 +334,17 @@ def write_block_header(value, name_vector, gdf_file):
     gdf_file.write(size_bin)
 
 
-    absolute_momentum = get_absolute_momentum(series, momentum_values, number_cells * max_cell_size, size)
-    last_cell_size = size - number_cells * max_cell_size
-    type_size = str(last_cell_size) + 'd'
-    gdf_file.write(struct.pack(type_size, *absolute_momentum))
-
-
-def iterate_momentum(series, gdf_file, momentum_values, max_cell_size):
+def iterate_momentum(series, particle_species, gdf_file, max_cell_size):
 
     name_vector = "momentum/"
+    momentum_values = particle_species["momentum"]
 
     for value in momentum_values.items():
-        name_value = value[0]
-        name_dataset = str(name_vector + name_value)
-        write_momentum_values(series, name_dataset, momentum_values[name_value], gdf_file, max_cell_size)
+        write_block_header(value, name_vector, gdf_file)
+        reading_momentum = Read_momentum(series, particle_species, value[0])
+        getiings_absolute_momentum = Getting_absolute_momentum(particle_species, value[0])
+        size = value[1].shape[0]
+        write_dataset_values(series, reading_momentum, getiings_absolute_momentum, size, gdf_file, max_cell_size)
 
 
 def iterate_coords(series, gdf_file, position, position_offset, max_cell_size):
