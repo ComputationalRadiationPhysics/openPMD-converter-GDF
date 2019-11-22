@@ -121,6 +121,21 @@ class Getting_absolute_momentum:
 
         return value * self.unit_si_momentum
 
+
+class Read_momentum:
+    def __init__(self, series, particle_spices, axis):
+        self.particle_spices = particle_spices
+        self.series = series
+        self.axis = axis
+
+    def __call__(self, idx_start, idx_end):
+
+        current_values = self.particle_spices["momentum"][self.axis][idx_start:idx_end]
+        self.series.flush()
+
+        return current_values
+
+
     if not check_item_exist(particle_species, name_scalar):
         return
 
