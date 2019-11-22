@@ -313,7 +313,6 @@ def write_double_dataset_values(gdf_file, name, size_dataset, value, max_cell_si
     """" Write dataset of double values """
 
     write_dataset_header(name, gdf_file)
-
     size_bin = struct.pack('i', int(size_dataset * 8))
     gdf_file.write(size_bin)
 
@@ -454,7 +453,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="conversion from gdf to hdf")
 
-    parser.add_argument("-hdf", metavar='hdf_file', type=str,
+    parser.add_argument("-openPMD_input", metavar='openPMD_input', type=str,
                         help="hdf file for conversion")
 
     parser.add_argument("-gdf", metavar='gdf_file', type=str,
@@ -468,5 +467,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    hdf_to_gdf(args.hdf, args.gdf, args.max_cell, args.species)
+    hdf_to_gdf(args.openPMD_input, args.gdf, args.max_cell, args.species)
 
