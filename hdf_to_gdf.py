@@ -372,17 +372,6 @@ def write_dataset(gdf_file, absolute_values):
     gdf_file.write(struct.pack(type_size, *absolute_values))
 
 
-
-def add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size):
-    """ Add values from groups with single value """
-
-    for key in hdf_datasets.grops_values:
-        if key.attrs.get('value') != None:
-            value = key.attrs['value']
-            name_attribute = key.name[key.name.rfind('/')+1:]
-            write_double_dataset_values(gdf_file, Name_of_arrays.dict_datasets.get(name_attribute), size_of_main_array, value, max_cell_size)
-
-
 def write_double_dataset_values(gdf_file, name, size_dataset, value, max_cell_size):
     """" Write dataset of double values """
 
