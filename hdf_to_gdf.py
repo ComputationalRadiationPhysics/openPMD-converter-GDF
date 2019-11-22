@@ -112,11 +112,14 @@ class Getting_absolute_coordinates:
         return absolute_coord
 
 
+class Getting_absolute_momentum:
 
-    return position_offset_values, offset_unit_si
+    def __init__(self, particle_spices, axis):
+        self.unit_si_momentum = particle_spices["momentum"][axis].unit_SI
 
+    def __call__(self, value):
 
-def write_scalar(gdf_file, particle_species, size_dataset, max_cell_size, name_scalar):
+        return value * self.unit_si_momentum
 
     if not check_item_exist(particle_species, name_scalar):
         return
