@@ -196,6 +196,15 @@ def write_weight(series, gdf_file, particle_species, max_cell_size):
     gdf_file.write(struct.pack(type_size, *current_values))
 
 
+def get_coordinates_size(particle_species):
+
+    momentum_values = particle_species["position"]
+    size = 0
+    for value in momentum_values.items():
+        size = value[1].shape[0]
+    return size
+
+
 def check_item_exist(particle_species, name_item):
 
     item_exist = False
