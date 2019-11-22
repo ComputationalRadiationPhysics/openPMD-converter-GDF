@@ -213,6 +213,20 @@ def compute_r_macro(particle_species, unit_grid_spacing):
     return r_macro
 
 
+def write_particles_type(series, particle_species, gdf_file, max_cell_size, unit_grid_spacing):
+
+    iterate_momentum(series, particle_species, gdf_file, max_cell_size)
+
+    iterate_coords(series, particle_species, gdf_file, max_cell_size)
+    size_dataset = get_coordinates_size(particle_species)
+    write_scalar_dataset(gdf_file, particle_species, size_dataset, max_cell_size, "mass")
+    write_scalar_dataset(gdf_file, particle_species, size_dataset, max_cell_size, "charge")
+    write_weight(series, gdf_file, particle_species, max_cell_size)
+    particle_species.get_attribute("particleShape")
+    r_macro = compute_r_macro(particle_species, unit_grid_spacing)
+    write_double_dataset_values(gdf_file, "rmacro", size_dataset, r_macro, max_cell_size)
+
+
 def check_item_exist(particle_species, name_item):
 
     item_exist = False
