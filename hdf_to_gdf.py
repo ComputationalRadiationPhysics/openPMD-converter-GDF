@@ -101,14 +101,17 @@ class Name_of_arrays:
                      'mass': 'm'}
 
 
-def read_position_offset(hdf_datasets):
+class Getting_absolute_coordinates:
+
+    def __init__(self, particle_spices, axis):
+        self.unit_si_offset = particle_spices["positionOffset"][axis].unit_SI
+        self.unit_si_position = particle_spices["position"][axis].unit_SI
+
+    def __call__(self, value):
+        absolute_coord = value[0] * self.unit_si_position + value[1] * self.unit_si_offset
+        return absolute_coord
 
 
-    position_offset_values = DatasetReader('positionOffset')
-    position_offset_group = hdf_datasets.position_offset[0]
-    position_offset_group.visititems(position_offset_values)
-
-    offset_unit_si = position_offset_values.get_unit_si_array()
 
     return position_offset_values, offset_unit_si
 
