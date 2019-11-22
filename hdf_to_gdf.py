@@ -271,6 +271,7 @@ def one_type_species(series, iteration, gdf_file, max_cell_size, species):
             if not (check_item_exist(iteration.particles[name_group], "momentum") and
                     check_item_exist(iteration.particles[name_group], "position")):
                 continue
+            unit_grid_spacing = get_field_sizes(iteration)
 
             write_ascii_name('var', len(name_group), gdf_file, name_group)
             write_particles_type(series, iteration.particles[name_group], gdf_file, max_cell_size, unit_grid_spacing)
@@ -322,32 +323,16 @@ def write_dataset_values(series, reading_absolute, geting_absolute_values, size,
     gdf_file.write(struct.pack(type_size, *absolute_values))
 
 
-def get_absolute_momentum(series, momentum_values, idx_start, idx_end):
-
-    array_dataset = momentum_values[idx_start:idx_end]
-    series.flush()
-    unit_si_momentum = momentum_values.unit_SI
-    absolute_momentum = []
-    for point in array_dataset:
-        absolute_momentum.append(point * unit_si_momentum)
-
-    return absolute_momentum
-
-
-def write_momentum_values(series, name_dataset, momentum_values, gdf_file, max_cell_size):
+def write_block_header(value, name_vector, gdf_file):
+    name_value = value[0]
+    size = value[1].shape[0]
+    name_dataset = str(name_vector + name_value)
 
     write_dataset_header(Name_of_arrays.dict_datasets.get(name_dataset), gdf_file)
-    size = momentum_values.shape[0]
+
     size_bin = struct.pack('i', int(size * 8))
     gdf_file.write(size_bin)
 
-    number_cells = int(size / max_cell_size)
-    for i in range(1, number_cells + 1):
-        idx_start = (i - 1) * max_cell_size
-        idx_end = i * max_cell_size
-        absolute_momentum = get_absolute_momentum(series, momentum_values, idx_start, idx_end)
-        type_size = str(max_cell_size) + 'd'
-        gdf_file.write(struct.pack(type_size, *absolute_momentum))
 
     absolute_momentum = get_absolute_momentum(series, momentum_values, number_cells * max_cell_size, size)
     last_cell_size = size - number_cells * max_cell_size
