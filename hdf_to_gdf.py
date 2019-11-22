@@ -136,6 +136,21 @@ class Read_momentum:
         return current_values
 
 
+class Read_coordinate:
+    def __init__(self, series, particle_spices, axis):
+        self.series = series
+        self.axis = axis
+        self.particle_spices = particle_spices
+
+    def __call__(self, idx_start, idx_end):
+
+        position = self.particle_spices["position"][self.axis][idx_start:idx_end]
+        offset = self.particle_spices["positionOffset"][self.axis][idx_start:idx_end]
+        self.series.flush()
+
+        result = list(zip(position, offset))
+        return result
+
     if not check_item_exist(particle_species, name_scalar):
         return
 
