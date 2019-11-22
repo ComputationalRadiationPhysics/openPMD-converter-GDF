@@ -347,17 +347,19 @@ def iterate_momentum(series, particle_species, gdf_file, max_cell_size):
         write_dataset_values(series, reading_momentum, getiings_absolute_momentum, size, gdf_file, max_cell_size)
 
 
-def iterate_coords(series, gdf_file, position, position_offset, max_cell_size):
+def iterate_coords(series, particle_species, gdf_file, max_cell_size):
 
-    dataset_size = 0
     name_vector = "position/"
-    for value in position.items():
-        name_value = value[0]
-        name_dataset = str(name_vector + name_value)
-        dataset_size = position[name_value].shape[0]
-        write_coord_values(series, name_dataset, position[name_value], position_offset[name_value], gdf_file, max_cell_size)
+    momentum_values = particle_species["position"]
 
-    return dataset_size
+    for value in momentum_values.items():
+        write_block_header(value, name_vector, gdf_file)
+        size = value[1].shape[0]
+        name_value = value[0]
+        reading_coordinate = Read_coordinate(series, particle_species, name_value)
+        getiings_absolute_momentum = Getting_absolute_coordinates(particle_species, name_value)
+        write_dataset_values(series, reading_coordinate, getiings_absolute_momentum, size, gdf_file, max_cell_size)
+
 
 
 def write_dataset(gdf_file, absolute_values):
