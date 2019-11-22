@@ -237,6 +237,20 @@ def check_item_exist(particle_species, name_item):
     return item_exist
 
 
+def get_field_sizes(iteration):
+
+    attrs = []
+    for attr in iteration.meshes:
+        attrs.append(attr)
+
+    first_mesh = iteration.meshes[attrs[0]]
+
+    unit_grid_spacing = []
+
+    for i in range(0, len(first_mesh.grid_spacing)):
+        unit_grid_spacing.append(first_mesh.grid_unit_SI * first_mesh.grid_spacing[i])
+
+    return unit_grid_spacing
 def all_species(series, iteration, gdf_file, max_cell_size):
 
     for name_group in iteration.particles:
