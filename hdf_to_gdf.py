@@ -151,12 +151,14 @@ class Read_coordinate:
         result = list(zip(position, offset))
         return result
 
+
+def write_scalar_dataset(gdf_file, particle_species, size_dataset, max_cell_size, name_scalar):
+
     if not check_item_exist(particle_species, name_scalar):
         return
 
     SCALAR = openpmd_api.Mesh_Record_Component.SCALAR
     mass = particle_species[name_scalar][SCALAR]
-
     value = mass.get_attribute("value")
     mass_unit = mass.get_attribute("unitSI")
 
