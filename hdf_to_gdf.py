@@ -372,18 +372,6 @@ def write_dataset(gdf_file, absolute_values):
     gdf_file.write(struct.pack(type_size, *absolute_values))
 
 
-def get_absolute_coordinates(values, offset, unit_si_offset, unit_si_position):
-
-    absolute_result = []
-
-    i = 0
-    for point in values:
-        i=+1
-        absolute_coord = point * unit_si_position + offset[i] * unit_si_offset
-        absolute_result.append(absolute_coord)
-
-    return absolute_result
-
 
 def add_group_values(hdf_datasets, size_of_main_array, gdf_file, max_cell_size):
     """ Add values from groups with single value """
