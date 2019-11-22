@@ -205,6 +205,14 @@ def get_coordinates_size(particle_species):
     return size
 
 
+def compute_r_macro(particle_species, unit_grid_spacing):
+
+    particle_shape = particle_species.get_attribute("particleShape")
+    species_grid_spacing = [i * particle_shape for i in unit_grid_spacing]
+    r_macro = min(species_grid_spacing)/2. #convert_diametr to radius
+    return r_macro
+
+
 def check_item_exist(particle_species, name_item):
 
     item_exist = False
