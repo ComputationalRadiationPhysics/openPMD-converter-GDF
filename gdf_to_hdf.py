@@ -54,12 +54,13 @@ def add_creation_time(gdf_file, series):
     series.set_date(format_time)
 
 
-def add_gdf_version(gdf_file, hdf_file):
+def add_gdf_version(gdf_file, series):
     """Add gdf version to root directory """
 
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
-    hdf_file.attrs.create('gdf_version', str(major) + '.' + str(minor), None, dtype='<S8')
+    result_version = str(major) + '.' + str(minor)
+    series.set_attribute('gdf_version', result_version)
 
 
 def add_software_version(gdf_file, hdf_file):
