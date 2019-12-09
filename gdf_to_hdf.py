@@ -81,7 +81,7 @@ def add_destination_version(gdf_file, series):
     series.set_attribute('gdf_version', result_destination)
 
 
-def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
+def add_root_attributes(series, gdf_file, size_gdf_name):
     """Add root attributes to result hdf_file
     Attributes:
         gdf_version, software version, destination_version, iterationEncoding,
@@ -89,21 +89,19 @@ def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
         base path
        """
 
-    add_creation_time(gdf_file, hdf_file)
-    add_creator_name(gdf_file, hdf_file, size_gdf_name)
-    add_dest_name(gdf_file, hdf_file, size_gdf_name)
-    add_gdf_version(gdf_file, hdf_file)
-    add_software_version(gdf_file, hdf_file)
-    add_destination_version(gdf_file, hdf_file)
+    add_creation_time(gdf_file, series)
+    add_creator_name(gdf_file, series, size_gdf_name)
+    add_dest_name(gdf_file, series, size_gdf_name)
+    add_gdf_version(gdf_file, series)
+    add_software_version(gdf_file, series)
+    add_destination_version(gdf_file, series)
 
-    hdf_file.attrs.create('iterationEncoding', 'fileBased', None, dtype='<S9')
-    hdf_file.attrs.create('iterationFormat', 'test_hierical_%T.h5', None, dtype='<S10')
-    hdf_file.attrs.create('particlesPath', 'particles/', None, dtype='<S10')
-
-    hdf_file.attrs.create('openPMD', '1.1.0', None, dtype='<S5')
-    hdf_file.attrs.create('iterationFormat', 'data%T.h5', None, dtype='<S9')
-    hdf_file.attrs.create('openPMDextension', 0, None, dtype=np.dtype('uint32'))
-    hdf_file.attrs.create('basePath', '/data/%T/', None, dtype='<S9')
+    series.set_iteration_encoding(openpmd_api.Iteration_Encoding.group_based)
+    series.set_iteration_format('test_hierical_%T.h5')
+    series.set_particles_path('particles/')
+    series.set_openPMD('1.1.2')
+    series.set_base_path('/data/%T/')
+    series.set_openPMD_extension(0)
 
 
 def find_one_symbol_attribute(name):
