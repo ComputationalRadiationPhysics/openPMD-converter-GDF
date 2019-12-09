@@ -43,7 +43,7 @@ def add_dest_name(gdf_file, series, size_gdf_name):
     series.set_attribute('destination', destination_name)
 
 
-def add_creation_time(gdf_file, hdf_file):
+def add_creation_time(gdf_file, series):
     """Add when the gdf file file was created to root directory
     of openPMD file.
     We use next time and data format: YYYY-MM-DD HH:mm:ss tz
@@ -51,7 +51,7 @@ def add_creation_time(gdf_file, hdf_file):
     time_created = struct.unpack('i', gdf_file.read(4))[0]
     format_time = datetime.datetime.fromtimestamp(time_created)
     format_time = format_time.strftime("%Y-%m-%d %H:%M:%S %Z")
-    hdf_file.attrs.create('date', format_time, None, dtype='<S25')
+    series.set_date(format_time)
 
 
 def add_gdf_version(gdf_file, hdf_file):
