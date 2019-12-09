@@ -168,35 +168,34 @@ class Elements:
     https://github.com/openPMD/openPMD-standard/blob/latest/STANDARD.md#required-for-each-record
         """
 
-    dict_dimensions = {'position': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),   # length = 1
-
-                       'mass': (0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),       # mass = 1
-                       'momentum': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),  # length = 1, time = -1
-                       'G': (-1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),         # length = -1, time = 1
-                       'charge': (0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0),     # time = 1, electric current = 1
-                       'fE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),       # length = 1, mass = 1,  time = -3, electric current = -1
-                       'fB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0),       # mass  = 1, time = -2, electric current = -1
-                       'std': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),        # length = 1
-                       'stdB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = 1, time = -1
-                       'stdt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),       # time = 1
-                       'stdG': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = -1, time = 1
-                       'time': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),       # time = 1
-                       'rmacro': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),     # length = 1
-                       'nmacro': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),     # length = 1
-                       'avg': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),        # length = 1
-                       'avgB': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = 1, time = -1
-                       'avgr': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),       # length = 1
-                       'avgG': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),      # length = -1, time = 1
-                       'avgt': (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),       # time = 1
-                       'avgFE': (1.0, 1.0, -3.0, -1.0, 0.0, 0.0, 0.0),    # length = 1, mass = 1,  time = -3, electric current = -1
-                       'avgFB': (0.0, 1.0, -2.0, -1.0, 0.0, 0.0, 0.0),    # mass  = 1, time = -2, electric current = -1
-                       'rxy': (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),        # length = 1
-                       'id': (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),         # 0
-                       'avgzrms': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),    # length = 1
-                       'avgzyms': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),    # length = 1, time = -1
-                       'nemiyrms': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),   # length = 1, time = -1
-                       'nemizrms': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0),   # length = 1, time = -1
-                       'nemixrms': (1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0)}   # length = 1, time = -1
+    dict_dimensions = {'position': {Unit_Dimension.L: 1},
+                       'mass': {Unit_Dimension.M: 1},
+                       'momentum': {Unit_Dimension.L: 1, Unit_Dimension.M: 1, Unit_Dimension.T: 1},
+                       'G': {Unit_Dimension.L: 0},
+                       'charge': {Unit_Dimension.T: 1, Unit_Dimension.I: 1},
+                       'fE': {Unit_Dimension.L: 1, Unit_Dimension.M: 1, Unit_Dimension.T: -3, Unit_Dimension.theta: -1},
+                       'fB': {Unit_Dimension.M: 1, Unit_Dimension.T: -2, Unit_Dimension.theta: -1},
+                       'std': {Unit_Dimension.L: 1},
+                       'stdB': {Unit_Dimension.L: 1, Unit_Dimension.T: 1},
+                       'stdt': {Unit_Dimension.T: 1},
+                       'stdG': {Unit_Dimension.L: 0},
+                       'time': {Unit_Dimension.T: 1},
+                       'rmacro': {Unit_Dimension.L: 1},
+                       'nmacro': {Unit_Dimension.L: 1},
+                       'avg': {Unit_Dimension.L: 1},
+                       'avgB': {Unit_Dimension.L: 1, Unit_Dimension.T: 1},
+                       'avgr': {Unit_Dimension.L: 1},
+                       'avgG': {Unit_Dimension.L: 0},
+                       'avgt': {Unit_Dimension.T: 1},
+                       'avgFE': {Unit_Dimension.L: 1, Unit_Dimension.M: 1, Unit_Dimension.T: -3, Unit_Dimension.theta: -1},
+                       'avgFB': {Unit_Dimension.M: 1, Unit_Dimension.T: -2, Unit_Dimension.theta: -1},
+                       'rxy': {Unit_Dimension.L: 1},
+                       'id': {Unit_Dimension.L: 0},
+                       'avgzrms': {Unit_Dimension.L: 1, Unit_Dimension.T: -1},
+                       'avgzyms': {Unit_Dimension.L: 1, Unit_Dimension.T: -1},
+                       'nemiyrms': {Unit_Dimension.L: 1, Unit_Dimension.T: -1},
+                       'nemizrms': {Unit_Dimension.L: 1, Unit_Dimension.T: -1},
+                       'nemixrms': {Unit_Dimension.L: 1, Unit_Dimension.T: -1}}
 
 
     dict_weightingPower = {'position': 0., 'mass': 1., 'charge': 1., 'momentum': 1.,
