@@ -219,13 +219,12 @@ def add_macroWeighted_attribute(name_atribute, record):
         record.set_attribute('macroWeighted', 0)
 
 
-def add_dataset_attributes(gdf_file, particles_group, name_atribute, size):
-    """  Add required attributes to dataset """
+def is_record_value(name):
 
-    value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-    particles_group.create_dataset(name_atribute[1], data=value)
-    attribute_dataset = particles_group.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8'))
-    attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
+    if find_attribute(name) != None:
+        name_atribute = find_attribute(name)
+        if name_atribute[0] != 'none':
+            return True
     attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
     attribute_dataset.attrs.create('unitDimension',
                                  Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
