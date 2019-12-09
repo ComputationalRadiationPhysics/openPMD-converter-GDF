@@ -13,21 +13,6 @@ import numpy as np
 
 
 
-class Particles_base_group_functor():
-    """
-    """
-
-    def __init__(self):
-        self.particles_groups = []
-
-    def __call__(self, name, node):
-
-        if isinstance(node, h5py.Group):
-            if node.name.endswith('particles'):
-                self.particles_groups.append(node)
-        return None
-
-
 class Datasets_functor():
     """
     """
