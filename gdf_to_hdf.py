@@ -13,19 +13,6 @@ import numpy as np
 
 
 
-class Datasets_functor():
-    """
-    """
-
-    def __init__(self):
-        self.datasets = []
-
-    def __call__(self, name, node):
-        if isinstance(node, h5py.Dataset):
-            self.datasets.append(node)
-        return None
-
-
 class Momentum_base_group_functor():
     """
     """
