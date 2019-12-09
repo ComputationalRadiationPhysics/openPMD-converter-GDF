@@ -106,7 +106,7 @@ def add_root_attributes(series, gdf_file, size_gdf_name):
 
 def find_one_symbol_attribute(name):
     dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
-                       'G': ['none', 'G'], 'q': ['charge', 'charge'], 'm': ['mass', 'mass']}
+                       'G': ['G', 'G'], 'q': ['charge', 'charge'], 'm': ['mass', 'mass']}
     return dict_one_symbol.get(name[0])
 
 
@@ -120,8 +120,8 @@ def find_two_symbols_attribute(name):
 
 
 def find_three_symbols_attribute(name):
-    dict_three_symbols = {'fBx': ['fB', 'x'], 'fBy': ['fB', 'y'], 'fBz': ['fB', 'z'],
-                          'fEx': ['fE', 'x'], 'fEy': ['fE', 'y'], 'fEz': ['fE', 'z'],
+    dict_three_symbols = {'fBx': ['B', 'x'], 'fBy': ['B', 'y'], 'fBz': ['B', 'z'],
+                          'fEx': ['E', 'x'], 'fEy': ['E', 'y'], 'fEz': ['E', 'z'],
                           'rxy': ['none', 'rxy']}
     if len(name) < 3:
         return None
