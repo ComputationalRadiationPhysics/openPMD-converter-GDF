@@ -13,22 +13,6 @@ import numpy as np
 
 
 
-class Particle_types_elements_functor():
-
-    def __init__(self):
-        self.mass = []
-        self.charge = []
-
-    def __call__(self, name, node):
-        if isinstance(node, h5py.Dataset):
-            if node.name.endswith('mass'):
-                self.mass = node.value
-
-            if node.name.endswith('charge'):
-                self.charge = node.value
-        return None
-
-
 def parse_name_array(gdf_file, size_gdf_name):
     """Parse ascii value"""
 
