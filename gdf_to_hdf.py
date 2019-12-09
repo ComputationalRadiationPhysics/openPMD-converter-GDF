@@ -225,28 +225,19 @@ def is_record_value(name):
         name_atribute = find_attribute(name)
         if name_atribute[0] != 'none':
             return True
-    attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
-    attribute_dataset.attrs.create('unitDimension',
-                                 Elements.dict_dimensions.get(name_atribute[1]), None, dtype=np.dtype('float'))
-    add_weightingPower_attribute(name_atribute, attribute_dataset)
-    add_macroWeighted_attribute(name_atribute, attribute_dataset)
+    return False
 
 
-def add_group_attributes(gdf_file, particles_group, name_atribute, size):
-    """  Add required attributes to dataset """
+def is_field_value(name):
 
-    sub_group = particles_group.require_group(name_atribute[0])
-    sub_group.attrs.create('unitDimension', Elements.dict_dimensions.get(name_atribute[0]), None, dtype=np.dtype('float'))
-    sub_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
-    add_weightingPower_attribute(name_atribute, sub_group)
-    add_macroWeighted_attribute(name_atribute, sub_group)
-    value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-    sub_group.create_dataset(name_atribute[1], data=value)
-    sub_group.require_dataset(name_atribute[1], value.shape, dtype=dtype('f8')).attrs.create\
-        ('unitSI', 1.0, None, dtype=np.dtype('float'))
+    name_array = find_attribute(name)
+    if name_array == None:
+        return False
 
+    fields_values = ['B', 'E']
 
-def name_to_group(name, particles, size, gdf_file):
+    return name_array[0] in fields_values
+
     """Add dataset to correct group in particles group
         Args:
             particles - particles group
