@@ -10,6 +10,8 @@ import sys
 import datetime
 import re
 import numpy as np
+from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, \
+    Unit_Dimension
 
 
 
@@ -27,11 +29,11 @@ def parse_name_array(gdf_file, size_gdf_name):
     return parsing_name
 
 
-def add_creator_name(gdf_file, hdf_file, size_gdf_name):
+def add_creator_name(gdf_file, series, size_gdf_name):
     """ Add name of creator to root structure"""
 
     software_name = parse_name_array(gdf_file, size_gdf_name)
-    hdf_file.attrs.create('software', software_name, None, dtype='<S10')
+    series.set_software(software_name)
 
 
 def add_dest_name(gdf_file, hdf_file, size_gdf_name):
