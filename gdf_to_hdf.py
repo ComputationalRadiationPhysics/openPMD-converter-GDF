@@ -72,12 +72,13 @@ def add_software_version(gdf_file, series):
     series.set_software_version(result_version)
 
 
-def add_destination_version(gdf_file, hdf_file):
+def add_destination_version(gdf_file, series):
     """Add destination version to root directory """
 
     major = struct.unpack('B', gdf_file.read(1))[0]
     minor = struct.unpack('B', gdf_file.read(1))[0]
-    hdf_file.attrs.create('destination_version', str(major) + '.' + str(minor), None, dtype='<S8')
+    result_destination = str(major) + '.' + str(minor)
+    series.set_attribute('gdf_version', result_destination)
 
 
 def add_root_attributes(hdf_file, gdf_file, size_gdf_name):
