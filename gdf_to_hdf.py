@@ -13,21 +13,6 @@ import numpy as np
 
 
 
-class Momentum_base_group_functor():
-    """
-    """
-
-    def __init__(self):
-        self.momentum = []
-
-    def __call__(self, name, node):
-
-        if isinstance(node, h5py.Group):
-            if node.name.endswith('momentum'):
-                self.momentum.append(node)
-        return None
-
-
 class Particle_types_elements_functor():
 
     def __init__(self):
