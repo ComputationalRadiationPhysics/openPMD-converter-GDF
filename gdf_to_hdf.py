@@ -212,10 +212,11 @@ def add_weightingPower_attribute(name_atribute, record):
         record.set_attribute('weightingPower', 0)
 
 
-def add_macroWeighted_attribute(name_atribute, attribute_dataset):
+def add_macroWeighted_attribute(name_atribute, record):
     if Elements.dict_macroWeighted.get(name_atribute[1]) != None:
-        attribute_dataset.attrs.create \
-            ('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]), None, dtype=np.dtype('uint32'))
+        record.set_attribute('macroWeighted', Elements.dict_macroWeighted.get(name_atribute[1]))
+    else:
+        record.set_attribute('macroWeighted', 0)
 
 
 def add_dataset_attributes(gdf_file, particles_group, name_atribute, size):
