@@ -205,10 +205,11 @@ class Elements:
                            'G': 1, 'rmacro': 0, 'nmacro': 0, 'fE': 1, 'fB': 1}
 
 
-def add_weightingPower_attribute(name_atribute, attribute_dataset):
+def add_weightingPower_attribute(name_atribute, record):
     if Elements.dict_weightingPower.get(name_atribute[1]) != None:
-        attribute_dataset.attrs.create \
-            ('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]), None, dtype=np.dtype('float'))
+        record.set_attribute('weightingPower', Elements.dict_weightingPower.get(name_atribute[1]))
+    else:
+        record.set_attribute('weightingPower', 0)
 
 
 def add_macroWeighted_attribute(name_atribute, attribute_dataset):
