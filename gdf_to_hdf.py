@@ -417,7 +417,8 @@ def read_single_value_type(gdf_file, data_type, primitive_type, size, name, seri
 
     return is_ascii_name,  time
 
-def create_iteration_sub_groups(iteration_number, data_group):
+
+def create_iteration_sub_groups(iteration_number, series):
     """Function create subgroup according iteration
         Args:
          iteration_number - number of current iteration
@@ -429,10 +430,12 @@ def create_iteration_sub_groups(iteration_number, data_group):
         """
 
     iteration_number += 1
-    iteration_number_group = data_group.create_group(str(iteration_number))
-    particles_group = iteration_number_group.create_group('particles')
+    first_iteration = series.iterations[iteration_number] \
+        .set_time(42.0) \
+        .set_dt(1.0) \
+        .set_time_unit_SI(1.39e-16)
 
-    return iteration_number_group, particles_group, iteration_number
+    return first_iteration, iteration_number
 
 
 def add_positionOffset_attributes(axis_positionOffset_group, shape):
