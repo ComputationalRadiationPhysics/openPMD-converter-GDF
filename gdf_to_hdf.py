@@ -621,14 +621,12 @@ def need_new_iteration_group(is_last_data_array, is_current_data_array, is_curre
            and data_type != Block_types.no_data
 
 
-    if check_name_particles_exist(first_group):
-        base_group_moving = Collect_moving_groups(first_group)
-        first_group.visititems(base_group_moving)
+def is_spicies_group_needed(current_iteration):
 
-        if len(electrons_indexes) != 0:
-            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, electrons_indexes, 'electrons')
-            mass_spices = collect_particle_type.mass[electrons_indexes[0]]
-            add_unit_SI_momentum(mass_spices, particle_type_group)
+    if len(current_iteration.particles) == 0:
+        return True
+    else:
+        return False
 
         if len(protons_indexes) != 0:
             particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, protons_indexes, 'protons')
