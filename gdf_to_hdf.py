@@ -274,6 +274,7 @@ def add_field_values(name, dataset_format, values, current_fields, series):
     series.flush()
 
 
+def name_to_group(series, name, size, gdf_file, current_spicies, current_fields):
     """Add dataset to correct group in particles group
         Args:
             particles - particles group
@@ -282,23 +283,15 @@ def add_field_values(name, dataset_format, values, current_fields, series):
             gdf_file - input file GPT
 
            """
+    values = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
 
-    if find_attribute(name) != None:
-        name_atribute = find_attribute(name)
-        if name_atribute[0] == 'none':
-            add_dataset_attributes(gdf_file, particles, name_atribute, size)
-        else:
-            add_group_attributes(gdf_file, particles, name_atribute, size)
-    else:
-        value = fromfile(gdf_file, dtype=dtype('f8'), count=int(size / 8))
-        particles.create_dataset(name, data=value)
-        attribute_dataset = particles.require_dataset(name, value.shape, dtype=dtype('f8'))
-        attribute_dataset.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
-        attribute_dataset.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
-        attribute_dataset.attrs.create('unitDimension',
-                                       Elements.dict_dimensions.get(name), None, dtype=np.dtype('float'))
-        print_warning_unknown_type(name, Block_types.arr, size)
+    dataset_format = Dataset(values.dtype, [int(size / 8)])
 
+    if is_field_value(name):
+        add_field_values(name, dataset_format, values, current_fields, series)
+
+    if is_particles_value(name):
+        add_spices_values(name, dataset_format, values, current_spicies, series)
 
 class Block_types:
     """ Block types for each type in GDF file"""
