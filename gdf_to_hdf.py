@@ -727,12 +727,12 @@ def read_double_value(name, gdf_file, iteration_number_group, last_iteration_tim
     """Read double from gdf file """
 
     time = 0
-    value = struct.unpack('d', gdf_file.read(8))[0]
+    new_iteration_time = struct.unpack('d', gdf_file.read(8))[0]
     decoding_name = decode_name(name)
     if decoding_name == 'time':
-        add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value)
+        #add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, new_iteration_time)
         time = 1
-    return time
+    return time, new_iteration_time
 
 
 def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
