@@ -637,14 +637,13 @@ def is_fields_group_needed(current_iteration):
         return False
 
 
-        if len(uncategorised_indexes) != 0:
-            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, uncategorised_indexes, 'uncategorised')
-            mass_spices = collect_particle_type.mass[uncategorised_indexes[0]]
-            add_unit_SI_momentum(mass_spices, particle_type_group)
+def create_new_spices_group(current_iteration):
 
-        delete_old_groups(hdf_file, base_group_moving)
-        delete_old_datasets(hdf_file, base_group_moving)
+    spicies = current_iteration.particles["spicies"]
+    spicies.set_attribute('particleShape', 3.0)
+    spicies.set_attribute('particleSmoothing', 'none')
 
+    return spicies
 
 def gdf_file_to_hdf_file(gdf_file, hdf_file):
 
