@@ -371,7 +371,7 @@ def decode_name(attribute_name):
     return decoding_name
 
 
-def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, size):
+def read_array_type(series, gdf_file, dattype, name, primitive_type, size, current_spicies, current_fields):
     """Function read array type from GDF file
         Args:
            gdf_file - input file
@@ -383,7 +383,7 @@ def read_array_type(gdf_file, dattype, particles_group, name, primitive_type, si
 
     if dattype == Block_types.double_type:
         decoding_name = decode_name(name)
-        name_to_group(decoding_name, particles_group, size, gdf_file)
+        name_to_group(series, decoding_name, size, gdf_file, current_spicies, current_fields)
     else:
         print_warning_unknown_type(name, primitive_type, size)
 
@@ -395,29 +395,27 @@ def add_time_attributes(iteration_number_group, last_iteration_time, decoding_na
     iteration_number_group.attrs.create('timeUnitSI', 1E-3)
     dt = value - last_iteration_time
     iteration_number_group.attrs.create('dt', dt)
-    last_iteration_time.__add__(value)
+    return value
 
 
-def read_single_value_type(gdf_file, data_type, primitive_type, size, name,
-                           particles_group, subparticles_group, iteration_number_group, last_iteration_time):
+def read_single_value_type(gdf_file, data_type, primitive_type, size, name, series, last_iteration_time):
     """Read single value from gdf file """
 
     time = 0
-    var = 0
+    is_ascii_name = False
     if data_type == Block_types.no_data:
         pass
     elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
     elif data_type == Block_types.ascii_character:
-        var, subparticles_group = \
-            read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name)
+        is_ascii_name = read_ascii_character(data_type, gdf_file, size, name)
 
     elif data_type == Block_types.double_type:
-        time = read_double_value(name, gdf_file, iteration_number_group, last_iteration_time)
+        time = read_double_value(name, gdf_file, series, last_iteration_time)
     else:
         print_warning_unknown_type(name, primitive_type, size)
-    return var, subparticles_group, time
 
+    return is_ascii_name,  time
 
 def create_iteration_sub_groups(iteration_number, data_group):
     """Function create subgroup according iteration
