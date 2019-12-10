@@ -710,20 +710,17 @@ def gdf_file_to_hdf_file(gdf_file, series):
 
 
 def read_ascii_character(data_type, gdf_file, size, name):
-
-def read_ascii_character(data_type, particles_group, subparticles_group, gdf_file, var, size, name):
     """Read ascii characters from gdf file """
 
+    is_name = False
     if data_type == Block_types.ascii_character:
         value = gdf_file.read(size)
         decoding_value = decode_name(value)
         decoding_name = decode_name(name)
         if (decoding_name == 'var'):
             particles_name = decoding_value
-            var = 1
-            subparticles_group = particles_group.require_group(particles_name)
-
-    return var, subparticles_group
+            is_name = True
+    return is_name
 
 
 def read_double_value(name, gdf_file, iteration_number_group, last_iteration_time):
