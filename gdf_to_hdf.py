@@ -249,6 +249,21 @@ def is_particles_value(name):
 
     return name_array[0] in particles_values
 
+
+def add_spices_values(name, dataset_format, values, current_spicies, series):
+
+    name_atribute = find_attribute(name)
+    dataset_address = current_spicies[name_atribute[0]][name_atribute[1]]
+    record_component = current_spicies[name_atribute[0]]
+    record_component.set_unit_dimension(Elements.dict_dimensions.get(name_atribute[0]))
+    add_weightingPower_attribute(name_atribute, record_component)
+    add_macroWeighted_attribute(name_atribute, record_component)
+    record_component.set_time_offset(0.0)
+    dataset_address.reset_dataset(dataset_format)
+    dataset_address[()] = values
+    series.flush()
+
+
     """Add dataset to correct group in particles group
         Args:
             particles - particles group
