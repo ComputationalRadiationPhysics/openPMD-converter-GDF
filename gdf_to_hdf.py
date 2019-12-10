@@ -653,21 +653,23 @@ def create_new_fields_group(current_iteration):
     return fields
 
 
+def gdf_file_to_hdf_file(gdf_file, series):
+
     check_gdf_file(gdf_file)
-    add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
+    add_root_attributes(series, gdf_file, Constants.GDFNAMELEN)
 
     gdf_file.seek(2, 1)
 
     iteration_number = -1
-    data_group = hdf_file.create_group('data')
 
-    iteration_number_group, particles_group, iteration_number\
-        = create_iteration_sub_groups(iteration_number, data_group)
     last_iteration_time = 0
     last_arr = False
-    subparticles_group = particles_group
+
     last_time = False
-    last_iteration = False
+    first_iteration = True
+
+    current_iteration = None
+    current_spicies = None
 
     while True:
         if gdf_file.read(1) == '':
@@ -685,37 +687,29 @@ def create_new_fields_group(current_iteration):
         time = 0
 
         if sval:
-            var, subparticles_group, time = read_single_value_type(gdf_file, data_type, primitive_type, size, name,
-                                   particles_group, subparticles_group, iteration_number_group, last_iteration_time)
+            var, time = read_single_value_type(gdf_file, data_type,
+                        primitive_type, size, name, series, last_iteration_time)
 
-        if time and not last_iteration:
+        is_new_iteration_nessesary = need_new_iteration_group(last_arr, arr, var, first_iteration, data_type)
 
-            iteration_number, particles_group, subparticles_group =\
-                create_time_subroup(iteration_number, data_group, particles_group, subparticles_group)
-
-        if last_arr and not arr and (not var and not last_time):
-            iteration_number_group, subparticles_group, iteration_number \
-                = create_iteration_sub_groups(iteration_number, data_group)
-
+        if is_new_iteration_nessesary:
+            current_iteration, iteration_number \
+                = create_iteration_sub_groups(iteration_number, series)
         if arr:
+            if is_spicies_group_needed(current_iteration):
+                current_spicies = create_new_spices_group(current_iteration)
 
-            read_array_type(gdf_file, data_type, subparticles_group, name, primitive_type, size)
-            add_positionOffset(subparticles_group, size)
+            if is_fields_group_needed(current_iteration):
+                current_fields = create_new_fields_group(current_iteration)
+
+            read_array_type(series, gdf_file, data_type, name, primitive_type, size, current_spicies, current_fields)
 
         last_time = time
-        last_iteration = last_arr and not arr and (not var and not time)
         last_arr = arr
-
-    if subparticles_group != None:
-        if subparticles_group.keys().__len__() == 0:
-            data_group.__delitem__(str(iteration_number_group.name))
-
-    if iteration_number_group.attrs.get('time') == None:
-        add_empty_time(iteration_number_group)
-
-    add_base_partilces_types(data_group, hdf_file)
+        first_iteration = False
 
 
+def read_ascii_character(data_type, gdf_file, size, name):
 def create_time_subroup(iteration_number, data_group, particles_group, subparticles_group):
     """Create new iteration if find new time  """
 
