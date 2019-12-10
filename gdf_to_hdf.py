@@ -628,15 +628,14 @@ def is_spicies_group_needed(current_iteration):
     else:
         return False
 
-        if len(protons_indexes) != 0:
-            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, protons_indexes, 'protons')
-            mass_spices = collect_particle_type.mass[protons_indexes[0]]
-            add_unit_SI_momentum(mass_spices, particle_type_group)
 
-        if len(positrons_indexes) != 0:
-            particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, positrons_indexes, 'positrons')
-            mass_spices = collect_particle_type.mass[positrons_indexes[0]]
-            add_unit_SI_momentum(mass_spices, particle_type_group)
+def is_fields_group_needed(current_iteration):
+
+    if len(current_iteration.meshes) == 0:
+        return True
+    else:
+        return False
+
 
         if len(uncategorised_indexes) != 0:
             particle_type_group = create_particles_group_by_type(hdf_file, base_group_moving, first_group, uncategorised_indexes, 'uncategorised')
