@@ -645,7 +645,13 @@ def create_new_spices_group(current_iteration):
 
     return spicies
 
-def gdf_file_to_hdf_file(gdf_file, hdf_file):
+
+def create_new_fields_group(current_iteration):
+
+    fields = current_iteration.particles["fields"]
+
+    return fields
+
 
     check_gdf_file(gdf_file)
     add_root_attributes(hdf_file, gdf_file, Constants.GDFNAMELEN)
