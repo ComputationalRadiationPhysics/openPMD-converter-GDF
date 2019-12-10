@@ -438,14 +438,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def add_positionOffset_attributes(axis_positionOffset_group, shape):
-    """Add default position offset group attributes"""
-
-    axis_positionOffset_group.attrs.create('value', 0.0, None, dtype=np.dtype('float'))
-    axis_positionOffset_group.attrs.create('unitSI', 1.0, None, dtype=np.dtype('float'))
-    axis_positionOffset_group.attrs.create('shape', shape, None, dtype=np.dtype('uint'))
-
-
 def add_empty_time(iteration_number_group):
     """Add default time attributes """
 
