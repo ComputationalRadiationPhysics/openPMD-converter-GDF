@@ -613,15 +613,13 @@ def create_particles_group_by_type(hdf_file, base_group_moving, group, elements_
     return new_particles_group
 
 
-def add_base_partilces_types(data_group, hdf_file):
-    collect_particles = Particles_base_group_functor()
-    data_group.visititems(collect_particles)
-    first_group = collect_particles.particles_groups[0]
-    collect_particle_type = Particle_types_elements_functor()
-    first_group.visititems(collect_particle_type)
+def need_new_iteration_group(is_last_data_array, is_current_data_array, is_current_data_particles_name,
+                             is_first_iteration, data_type) :
+    if is_first_iteration:
+        return is_first_iteration
+    return is_last_data_array and not is_current_data_array and not is_current_data_particles_name \
+           and data_type != Block_types.no_data
 
-    electrons_indexes, protons_indexes, positrons_indexes, uncategorised_indexes =\
-        get_particle_types(collect_particle_type.mass, collect_particle_type.charge)
 
     if check_name_particles_exist(first_group):
         base_group_moving = Collect_moving_groups(first_group)
