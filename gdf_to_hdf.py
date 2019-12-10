@@ -10,6 +10,7 @@ import sys
 import datetime
 import re
 import numpy as np
+import argparse
 from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, \
     Unit_Dimension
 
@@ -747,42 +748,28 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     print('Converting .gdf to .hdf file')
     if os.path.exists(hdf_file_directory):
         os.remove(hdf_file_directory)
-    hdf_file = h5py.File(hdf_file_directory, 'a')
+
+    openPMD_series = Series(hdf_file_directory, Access_Type.create)
     with open(gdf_file_directory, 'rb') as gdf_file:
-        gdf_file_to_hdf_file(gdf_file, hdf_file)
+        gdf_file_to_hdf_file(gdf_file, openPMD_series)
 
     gdf_file.close()
-    hdf_file.close()
+   # hdf_file.close()
     print('Converting .gdf to .hdf file... Complete.')
 
 
-def files_from_args(file_names):
-    gdf_file = ''
-    hdf_file = ''
-    if len(file_names) >= 2:
-        gdf_file = file_names[1]
-    if len(file_names) >= 3:
-        hdf_file = file_names[2]
-    return gdf_file, hdf_file
-
-
-def converter(gdf_file, hdf_file):
-    if gdf_file != '':
-        if os.path.exists(gdf_file):
-            if hdf_file == '':
-                hdf_file = gdf_file[:-4] + '.hdf'
-                print('Destination .hdf directory not specified. Defaulting to ' + hdf_file)
-
-            gdf_to_hdf(gdf_file, hdf_file)
-        else:
-            print('The .gdf file does not exist to convert to .hdf')
-
-
-def main(file_names):
-    gdf_path, hdf_path = files_from_args(file_names)
-    converter(gdf_path, hdf_path)
-
-
 if __name__ == "__main__":
-    file_names = sys.argv
-    main(file_names)
+
+    """ Parse arguments from command line """
+
+    parser = argparse.ArgumentParser(description="conversion from gdf to hdf")
+
+    parser.add_argument("-openPMD_output", metavar='openPMD_output', type=str,
+                        help="file in openPMD format for output")
+
+    parser.add_argument("-gdf", metavar='gdf_file', type=str,
+                        help="input gdf file")
+
+    args = parser.parse_args()
+    gdf_to_hdf(args.gdf, args.openPMD_output)
+
