@@ -238,6 +238,17 @@ def is_field_value(name):
 
     return name_array[0] in fields_values
 
+
+def is_particles_value(name):
+
+    name_array = find_attribute(name)
+    if name_array == None:
+        return False
+
+    particles_values = ['position', 'G', 'charge', 'mass', 'id', 'momentum']
+
+    return name_array[0] in particles_values
+
     """Add dataset to correct group in particles group
         Args:
             particles - particles group
