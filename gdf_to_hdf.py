@@ -264,6 +264,16 @@ def add_spices_values(name, dataset_format, values, current_spicies, series):
     series.flush()
 
 
+def add_field_values(name, dataset_format, values, current_fields, series):
+    name_atribute = find_attribute(name)
+    record_component = current_fields[name_atribute[0]]
+    record_component.set_time_offset(0.0)
+    dataset_address = current_fields[name_atribute[0]][name_atribute[1]]
+    dataset_address.reset_dataset(dataset_format)
+    dataset_address[()] = values
+    series.flush()
+
+
     """Add dataset to correct group in particles group
         Args:
             particles - particles group
