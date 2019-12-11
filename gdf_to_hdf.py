@@ -249,6 +249,7 @@ def add_spices_values(name, dataset_format, values, current_spicies, series):
     add_macroWeighted_attribute(name_atribute, record_component)
     record_component.set_time_offset(0.0)
     dataset_address.reset_dataset(dataset_format)
+    dataset_address.set_unit_SI(1.0)
     dataset_address[()] = values
     series.flush()
 
@@ -391,13 +392,14 @@ def read_array_type(series, gdf_file, dattype, name, primitive_type, size, curre
         print_warning_unknown_type(name, primitive_type, size)
 
 
-def add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, value):
+def add_time_attributes(current_iteration, last_iteration_time,  value):
     """ Add time attributes to each iteration """
 
-    iteration_number_group.attrs.create(decoding_name, value)
-    iteration_number_group.attrs.create('timeUnitSI', 1E-3)
+    current_iteration.set_time(value)
+    current_iteration.set_time_unit_SI(1E-3)
     dt = value - last_iteration_time
-    iteration_number_group.attrs.create('dt', dt)
+    current_iteration.set_dt(dt)
+
     return value
 
 
@@ -434,9 +436,9 @@ def create_iteration_sub_groups(iteration_number, series):
 
     iteration_number += 1
     first_iteration = series.iterations[iteration_number] \
-        .set_time(42.0) \
-        .set_dt(1.0) \
-        .set_time_unit_SI(1.39e-16)
+        .set_time(0.0) \
+        .set_dt(100) \
+        .set_time_unit_SI(1e-3)
 
     return first_iteration, iteration_number
 
