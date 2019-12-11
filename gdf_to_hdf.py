@@ -11,8 +11,6 @@ import argparse
 from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, Iteration_Encoding, \
     Unit_Dimension
 
-
-
 def parse_name_array(gdf_file, size_gdf_name):
     """Parse ascii value"""
 
@@ -297,6 +295,7 @@ def name_to_group(series, name, size, gdf_file, current_spicies, current_fields)
     else:
         add_other_types(name, dataset_format, values, current_spicies, series)
 
+
 class Block_types:
     """ Block types for each type in GDF file"""
 
@@ -442,24 +441,6 @@ def create_iteration_sub_groups(iteration_number, series):
         .set_time_unit_SI(1e-3)
 
     return first_iteration, iteration_number
-
-
-
-def add_positionOffset(particles_group, size):
-    """Add default position offset group """
-
-    positionOffset_group = particles_group.require_group('positionOffset')
-    positionOffset_group.attrs.create('unitDimension', (1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), None,
-                           dtype=np.dtype('float'))
-    positionOffset_group.attrs.create('timeOffset', 0.0, None, dtype=np.dtype('float'))
-
-    shape = [int(size / 8)]
-    x_positionOffset_group = positionOffset_group.require_group('x')
-    add_positionOffset_attributes(x_positionOffset_group, shape)
-    y_positionOffset_group = positionOffset_group.require_group('y')
-    add_positionOffset_attributes(y_positionOffset_group, shape)
-    z_positionOffset_group = positionOffset_group.require_group('z')
-    add_positionOffset_attributes(z_positionOffset_group, shape)
 
 
 class Collect_moving_groups():
