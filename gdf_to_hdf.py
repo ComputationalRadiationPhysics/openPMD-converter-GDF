@@ -8,7 +8,7 @@ import os
 import datetime
 import re
 import argparse
-from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, \
+from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, Iteration_Encoding, \
     Unit_Dimension
 
 
@@ -94,7 +94,7 @@ def add_root_attributes(series, gdf_file, size_gdf_name):
     add_software_version(gdf_file, series)
     add_destination_version(gdf_file, series)
 
-    series.set_iteration_encoding(openpmd_api.Iteration_Encoding.group_based)
+    series.set_iteration_encoding(Iteration_Encoding.group_based)
     series.set_iteration_format('test_hierical_%T.h5')
     series.set_particles_path('particles/')
     series.set_openPMD('1.1.2')
