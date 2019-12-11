@@ -443,16 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-
-    datasets_names = []
-
-    for group in base_group_moving.datasets_for_moving:
-        datasets_names.append(group.name)
-
-    for name in datasets_names:
-        del hdf_file[name]
-
-
 def add_unit_SI_momentum(mass_spices, new_particles_group):
 
     collect_momentum = Momentum_base_group_functor()
