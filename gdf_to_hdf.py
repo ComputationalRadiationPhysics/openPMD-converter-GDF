@@ -443,18 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def delete_old_groups(hdf_file, base_group_moving):
-
-    group_names = []
-
-    for group in base_group_moving.group_for_moving:
-        group_names.append(group.name)
-
-    for name in group_names:
-        del hdf_file[name]
-
-
-def delete_old_datasets(hdf_file, base_group_moving):
 
     datasets_names = []
 
