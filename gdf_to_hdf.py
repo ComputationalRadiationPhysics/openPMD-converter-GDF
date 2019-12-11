@@ -263,6 +263,17 @@ def add_field_values(name, dataset_format, values, current_fields, series):
     series.flush()
 
 
+def add_other_types(name, dataset_format, values, current_spicies, series):
+
+    name_atribute = find_attribute(name)
+    dataset_address = current_spicies[name_atribute[0]][name_atribute[1]]
+
+    dataset_address.reset_dataset(dataset_format)
+    dataset_address.set_unit_SI(1.0)
+    dataset_address[()] = values
+    series.flush()
+
+
 def name_to_group(series, name, size, gdf_file, current_spicies, current_fields):
     """Add dataset to correct group in particles group
         Args:
@@ -279,8 +290,11 @@ def name_to_group(series, name, size, gdf_file, current_spicies, current_fields)
     if is_field_value(name):
         add_field_values(name, dataset_format, values, current_fields, series)
 
-    if is_particles_value(name):
+    elif is_particles_value(name):
         add_spices_values(name, dataset_format, values, current_spicies, series)
+
+    else:
+        add_other_types(name, dataset_format, values, current_spicies, series)
 
 class Block_types:
     """ Block types for each type in GDF file"""
