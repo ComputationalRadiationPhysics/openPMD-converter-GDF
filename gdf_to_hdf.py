@@ -443,27 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def move_dataset(base_group_moving, new_particles_group, indexes):
-
-    dataset_names = []
-
-    for dataset_name in base_group_moving.datasets_name:
-        dataset_names.append(dataset_name)
-
-    for i in range(0, len(base_group_moving.datasets_name)):
-        name_dataset = base_group_moving.datasets_name[i]
-
-        name_of_particles_idx = name_dataset.rfind("/")
-        name_of_dataset = name_dataset[name_of_particles_idx + 1: len(name_dataset)]
-        current_attrs = base_group_moving.datasets_for_moving[i].attrs
-        current_dataset_value = base_group_moving.datasets_for_moving[i].value[indexes]
-        new_particles_group.create_dataset(name_of_dataset, data=current_dataset_value)
-        current_dataset = new_particles_group.require_dataset(name_of_dataset,
-                                                              base_group_moving.datasets_for_moving[i].shape, dtype=dtype('f8'))
-        for name, value in current_attrs.items():
-            current_dataset.attrs.create(name, value)
-
-
 def move_group(hdf_file, base_group_moving, new_particles_group, indexes):
 
     for group in base_group_moving.group_for_moving:
