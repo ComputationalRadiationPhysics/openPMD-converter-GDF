@@ -443,26 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-class Collect_moving_groups():
-    def __init__(self, old_base_group):
-
-        self.old_base_group = old_base_group
-        self.group_for_moving =[]
-        self.datasets_for_moving = []
-        self.datasets_name = []
-
-    def __call__(self, name, node):
-
-        if isinstance(node, h5py.Group) and not node.name.endswith('electrons')\
-                and not node.name.endswith('/x') and not node.name.endswith('/y') \
-                and not node.name.endswith('/z'):
-            self.group_for_moving.append(node)
-
-        elif isinstance(node, h5py.Dataset) and node.parent == self.old_base_group:
-            self.datasets_for_moving.append(node)
-            self.datasets_name.append(node.name)
-
-
 def check_name_particles_exist(group):
 
     base_particles_name = False
