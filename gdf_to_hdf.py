@@ -110,7 +110,7 @@ def find_one_symbol_attribute(name):
 
 def find_two_symbols_attribute(name):
     dict_two_symbols = {'Bx': ['momentum', 'x'], 'By': ['momentum', 'y'], 'Bz': ['momentum', 'z'],
-                        'ID': ['none', 'id']}
+                        'ID': ['id', 'id']}
     if len(name) < 2:
         return None
     current_name = name[0:2]
@@ -120,7 +120,7 @@ def find_two_symbols_attribute(name):
 def find_three_symbols_attribute(name):
     dict_three_symbols = {'fBx': ['B', 'x'], 'fBy': ['B', 'y'], 'fBz': ['B', 'z'],
                           'fEx': ['E', 'x'], 'fEy': ['E', 'y'], 'fEz': ['E', 'z'],
-                          'rxy': ['none', 'rxy']}
+                          'rxy': ['rxy', 'rxy']}
     if len(name) < 3:
         return None
     current_name = name[0:3]
@@ -133,13 +133,13 @@ def find_multiple_symbols_attribute(name):
                           'avgBx': ['avgB', 'x'], 'avgBy': ['avgB', 'y'], 'avgBz': ['avgB', 'z'],
                           'avgFEx': ['avgFE', 'x'], 'avgFEy': ['avgFE', 'y'], 'avgFEz': ['avgFE', 'z'],
                           'avgFBx': ['avgFB', 'x'], 'avgFBy': ['avgFB', 'y'], 'avgFBz': ['avgFB', 'z'],
-                          'avgr': ['none', 'avgr'], 'avgG': ['none', 'avgG'],
-                          'stdt': ['none', 'stdt'], 'stdG': ['none', 'stdG'],
+                          'avgr': ['avgr', 'avgr'], 'avgG': ['avgG', 'avgG'],
+                          'stdt': ['stdt', 'stdt'], 'stdG': ['stdG', 'stdG'],
                           'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
-                          'rmacro': ['none', 'rmacro'], 'nmacro': ['none', 'nmacro'], 'avgt': ['none', 'avgt'],
-                          'nemixrms': ['none', 'nemixrms'], 'nemiyrms': ['none', 'nemiyrms'],
-                          'nemizrms': ['none', 'nemizrms'], 'avgzrms': ['none', 'avgzrms'],
-                          'time': ['none', 'time'], 'positionOffset_x': ['positionOffset', 'x'],
+                          'rmacro': ['rmacro', 'rmacro'], 'nmacro': ['nmacro', 'nmacro'], 'avgt': ['avgt', 'avgt'],
+                          'nemixrms': ['nemixrms', 'nemixrms'], 'nemiyrms': ['nemiyrms', 'nemiyrms'],
+                          'nemizrms': ['nemizrms', 'nemizrms'], 'avgzrms': ['avgzrms', 'avgzrms'],
+                          'time': ['time', 'time'], 'positionOffset_x': ['positionOffset', 'x'],
                           'positionOffset_y': ['positionOffset', 'y'], 'positionOffset_z': ['positionOffset', 'z']}
 
     return dict_multiple_symbols.get(name)
