@@ -443,25 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def move_group(hdf_file, base_group_moving, new_particles_group, indexes):
-
-    for group in base_group_moving.group_for_moving:
-        datasets_reader = Datasets_functor()
-        group.visititems(datasets_reader)
-        hdf_file.copy(group, new_particles_group)
-
-        for dataset in datasets_reader.datasets:
-            type_of_dataset = str(dataset.dtype)
-
-            current_dataset = new_particles_group.require_dataset(dataset.name, dataset.shape, dtype=type_of_dataset)
-            current_dataset_name = dataset.name
-
-            current_dataset_value = dataset.value
-            del hdf_file[current_dataset.name]
-            new_datset_values = current_dataset_value[indexes]
-            new_particles_group.create_dataset(current_dataset_name, new_datset_values.shape, dtype=type_of_dataset)
-
-
 def get_particles_idxes_by_types(mass_array, charge_array, mass_value, charge_value):
 
     indexes_array_mass = [i for i in range(len(mass_array)) if math.isclose(mass_array[i], mass_value, rel_tol=1e-5)]
