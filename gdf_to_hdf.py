@@ -443,16 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def check_name_particles_exist(group):
-
-    base_particles_name = False
-    for key in group.keys():
-        if key == 'position' or key == 'momentum' or key == 'G':
-            base_particles_name = True
-
-    return base_particles_name
-
-
 def move_dataset(base_group_moving, new_particles_group, indexes):
 
     dataset_names = []
