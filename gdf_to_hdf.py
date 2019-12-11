@@ -443,19 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def add_unit_SI_momentum(mass_spices, new_particles_group):
-
-    collect_momentum = Momentum_base_group_functor()
-    new_particles_group.visititems(collect_momentum)
-
-    datasets_reader = Datasets_functor()
-    collect_momentum.momentum[0].visititems(datasets_reader)
-
-    c = 299792458
-    for dataset in datasets_reader.datasets:
-        dataset.attrs['unitSI'] = mass_spices * c
-
-
 def create_particles_group_by_type(hdf_file, base_group_moving, group, elements_indexes, name_of_group):
 
     new_particles_group = group.create_group(name_of_group)
