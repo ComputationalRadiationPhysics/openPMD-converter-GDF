@@ -217,15 +217,6 @@ def add_macroWeighted_attribute(name_atribute, record):
         record.set_attribute('macroWeighted', 0)
 
 
-def is_record_value(name):
-
-    if find_attribute(name) != None:
-        name_atribute = find_attribute(name)
-        if name_atribute[0] != 'none':
-            return True
-    return False
-
-
 def is_field_value(name):
 
     name_array = find_attribute(name)
