@@ -296,6 +296,7 @@ def name_to_group(series, name, size, gdf_file, current_spicies, current_fields)
         add_other_types(name, dataset_format, values, current_spicies, series)
 
 
+
 class Block_types:
     """ Block types for each type in GDF file"""
 
@@ -441,15 +442,6 @@ def create_iteration_sub_groups(iteration_number, series):
         .set_time_unit_SI(1e-3)
 
     return first_iteration, iteration_number
-
-
-def create_particles_group_by_type(hdf_file, base_group_moving, group, elements_indexes, name_of_group):
-
-    new_particles_group = group.create_group(name_of_group)
-
-    move_group(hdf_file, base_group_moving, new_particles_group, elements_indexes)
-    move_dataset(base_group_moving, new_particles_group, elements_indexes)
-    return new_particles_group
 
 
 def need_new_iteration_group(is_last_data_array, is_current_data_array, is_current_data_particles_name,
