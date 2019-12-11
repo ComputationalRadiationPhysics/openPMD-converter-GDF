@@ -444,13 +444,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def add_empty_time(iteration_number_group):
-    """Add default time attributes """
-
-    iteration_number_group.attrs.create('time', 0.0)
-    iteration_number_group.attrs.create('timeUnitSI', 1E-3)
-    iteration_number_group.attrs.create('dt', 0.0)
-
 
 def add_positionOffset(particles_group, size):
     """Add default position offset group """
