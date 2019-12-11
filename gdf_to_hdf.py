@@ -403,24 +403,25 @@ def add_time_attributes(current_iteration, last_iteration_time,  value):
     return value
 
 
-def read_single_value_type(gdf_file, data_type, primitive_type, size, name, series, last_iteration_time):
+def read_single_value_type(gdf_file, data_type, primitive_type, size, name, current_iteration, last_iteration_time):
     """Read single value from gdf file """
 
     time = 0
     is_ascii_name = False
+    particles_name = ''
     if data_type == Block_types.no_data:
         pass
     elif data_type == Block_types.signed_long:
         value = struct.unpack('i', gdf_file.read(4))[0]
     elif data_type == Block_types.ascii_character:
-        is_ascii_name = read_ascii_character(data_type, gdf_file, size, name)
+        is_ascii_name, particles_name = read_ascii_character(data_type, gdf_file, size, name)
 
     elif data_type == Block_types.double_type:
-        time = read_double_value(name, gdf_file, series, last_iteration_time)
+        time = read_double_value(name, gdf_file, current_iteration, last_iteration_time)
     else:
         print_warning_unknown_type(name, primitive_type, size)
 
-    return is_ascii_name,  time
+    return is_ascii_name,  time, particles_name
 
 
 def create_iteration_sub_groups(iteration_number, series):
@@ -642,7 +643,13 @@ def is_fields_group_needed(current_iteration):
         return False
 
 
-def create_new_spices_group(current_iteration):
+def create_new_spices_group(current_iteration, particles_name):
+
+    spicies = None
+    if particles_name == '':
+        spicies = current_iteration.particles["spicies"]
+    else:
+        spicies = current_iteration.particles[particles_name]
 
     spicies = current_iteration.particles["spicies"]
     spicies.set_attribute('particleShape', 3.0)
@@ -670,11 +677,12 @@ def gdf_file_to_hdf_file(gdf_file, series):
     last_iteration_time = 0
     last_arr = False
 
-    last_time = False
     first_iteration = True
 
     current_iteration = None
     current_spicies = None
+
+    particles_name = ''
 
     while True:
         if gdf_file.read(1) == '':
@@ -689,11 +697,9 @@ def gdf_file_to_hdf_file(gdf_file, series):
         data_type = primitive_type & 255
 
         var = 0
-        time = 0
-
         if sval:
-            var, time = read_single_value_type(gdf_file, data_type,
-                        primitive_type, size, name, series, last_iteration_time)
+            var, time, particles_name = read_single_value_type(gdf_file, data_type,
+                        primitive_type, size, name, current_iteration, last_iteration_time)
 
         is_new_iteration_nessesary = need_new_iteration_group(last_arr, arr, var, first_iteration, data_type)
 
@@ -702,14 +708,13 @@ def gdf_file_to_hdf_file(gdf_file, series):
                 = create_iteration_sub_groups(iteration_number, series)
         if arr:
             if is_spicies_group_needed(current_iteration):
-                current_spicies = create_new_spices_group(current_iteration)
+                current_spicies = create_new_spices_group(current_iteration, particles_name)
 
             if is_fields_group_needed(current_iteration):
                 current_fields = create_new_fields_group(current_iteration)
 
             read_array_type(series, gdf_file, data_type, name, primitive_type, size, current_spicies, current_fields)
 
-        last_time = time
         last_arr = arr
         first_iteration = False
 
@@ -718,6 +723,7 @@ def read_ascii_character(data_type, gdf_file, size, name):
     """Read ascii characters from gdf file """
 
     is_name = False
+    particles_name = ''
     if data_type == Block_types.ascii_character:
         value = gdf_file.read(size)
         decoding_value = decode_name(value)
@@ -725,17 +731,17 @@ def read_ascii_character(data_type, gdf_file, size, name):
         if (decoding_name == 'var'):
             particles_name = decoding_value
             is_name = True
-    return is_name
+    return is_name, particles_name
 
 
-def read_double_value(name, gdf_file, iteration_number_group, last_iteration_time):
+def read_double_value(name, gdf_file, current_iteration, last_iteration_time):
     """Read double from gdf file """
 
     time = 0
     new_iteration_time = struct.unpack('d', gdf_file.read(8))[0]
     decoding_name = decode_name(name)
     if decoding_name == 'time':
-        #add_time_attributes(iteration_number_group, last_iteration_time, decoding_name, new_iteration_time)
+        add_time_attributes(current_iteration, last_iteration_time, new_iteration_time)
         time = 1
     return time, new_iteration_time
 
@@ -758,7 +764,6 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
         gdf_file_to_hdf_file(gdf_file, openPMD_series)
 
     gdf_file.close()
-   # hdf_file.close()
     print('Converting .gdf to .hdf file... Complete.')
 
 
