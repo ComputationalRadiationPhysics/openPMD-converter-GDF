@@ -7,7 +7,6 @@ from datetime import datetime
 import time
 import re
 import argparse
-import numpy
 import openpmd_api
 
 
@@ -49,7 +48,6 @@ def hdf_file_to_gdf_file(gdf_file, series_hdf, max_cell_size, species):
     add_required_version_root_attribute(gdf_file, series_hdf)
     write_first_block(gdf_file)
     write_file(series_hdf, gdf_file, max_cell_size, species)
-
 
 
 def write_first_block(gdf_file):
@@ -251,6 +249,10 @@ def get_field_sizes(iteration):
         unit_grid_spacing.append(first_mesh.grid_unit_SI * first_mesh.grid_spacing[i])
 
     return unit_grid_spacing
+
+
+
+
 def all_species(series, iteration, gdf_file, max_cell_size):
 
     unit_grid_spacing = get_field_sizes(iteration)
