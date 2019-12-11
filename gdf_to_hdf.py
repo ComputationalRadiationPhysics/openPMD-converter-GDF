@@ -443,22 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def get_particle_types(mass_array, charge_array):
-
-    particle_mass = [9.10953E-31, 1.672621898E-27, 9.10953E-31]
-    particle_charge = [-1.60217662E-19, 1.60217662E-19,1.60217662E-19]
-
-    start_indexes = list(range(0, len(mass_array)))
-
-    electrons_indexes = get_particles_idxes_by_types(mass_array, charge_array, particle_mass[0], particle_charge[0])
-    protons_indexes = get_particles_idxes_by_types(mass_array, charge_array, particle_mass[1], particle_charge[1])
-    positrons_indexes = get_particles_idxes_by_types(mass_array, charge_array, particle_mass[2], particle_charge[2])
-
-    uncategoriased_indexes = get_other_indexes(start_indexes, electrons_indexes, protons_indexes, positrons_indexes)
-
-    return electrons_indexes, protons_indexes, positrons_indexes, uncategoriased_indexes
-
-
 def delete_old_groups(hdf_file, base_group_moving):
 
     group_names = []
