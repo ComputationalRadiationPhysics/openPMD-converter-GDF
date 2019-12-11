@@ -443,15 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def get_particles_idxes_by_types(mass_array, charge_array, mass_value, charge_value):
-
-    indexes_array_mass = [i for i in range(len(mass_array)) if math.isclose(mass_array[i], mass_value, rel_tol=1e-5)]
-    indexes_array_second = [i for i in range(len(charge_array)) if math.isclose(charge_array[i], charge_value, rel_tol=1e-5)]
-    compare_values = [i for i, j in zip(indexes_array_mass, indexes_array_second) if i == j]
-
-    return compare_values
-
-
 def get_other_indexes(start_indexes, electrons_indexes, protons_indexes, positrons_indexes):
 
     electrons_indexes.sort()
