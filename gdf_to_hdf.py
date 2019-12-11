@@ -443,17 +443,6 @@ def create_iteration_sub_groups(iteration_number, series):
     return first_iteration, iteration_number
 
 
-def get_other_indexes(start_indexes, electrons_indexes, protons_indexes, positrons_indexes):
-
-    electrons_indexes.sort()
-    protons_indexes.sort()
-    positrons_indexes.sort()
-    categoriased_indexes = electrons_indexes + protons_indexes + positrons_indexes
-    uncategoriased_indexes = list(set(start_indexes) - set(categoriased_indexes))
-
-    return uncategoriased_indexes
-
-
 def get_particle_types(mass_array, charge_array):
 
     particle_mass = [9.10953E-31, 1.672621898E-27, 9.10953E-31]
