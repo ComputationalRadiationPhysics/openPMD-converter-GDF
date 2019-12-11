@@ -38,7 +38,7 @@ def add_dest_name(gdf_file, series, size_gdf_name):
     """Add destination name to root directory """
 
     destination_name = parse_name_array(gdf_file, size_gdf_name)
-    series.set_attribute('destination', destination_name)
+   # series.set_attribute('destination', destination_name)
 
 
 def add_creation_time(gdf_file, series):
