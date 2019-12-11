@@ -3,13 +3,10 @@
 
 from __future__ import division
 from pylab import *
-import h5py
 import struct
 import os
-import sys
 import datetime
 import re
-import numpy as np
 import argparse
 from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, \
     Unit_Dimension
