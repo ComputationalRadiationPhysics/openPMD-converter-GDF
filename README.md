@@ -2,7 +2,7 @@
 
 ## About
 
-This software provides conversion between [hdf5 files](https://www.hdfgroup.org/HDF5/) marked up in [openPMD](https://github.com/openPMD/openPMD-standard)-conforming way and the [GDF file format](http://www.pulsar.nl/gpt/).
+This software provides conversion between [openPMD-format file](https://github.com/openPMD/openPMD-standard)  and the [GDF file format](http://www.pulsar.nl/gpt/).
 
 The software is written in python 3, python 2 is not supported. For the rest of the document by ```python``` we assume some python3 binary.
 
@@ -14,46 +14,50 @@ git clone https://github.com/ComputationalRadiationPhysics/openPMD-converter-GDF
 ```
 or download an archive from the [github page](https://github.com/ComputationalRadiationPhysics/openPMD-converter-GDF) and unpack it.
 
-The only dependency is [h5py](https://www.h5py.org/), which can be installed e.g., by
+The only dependency is [openpmd_api](https://github.com/openPMD/openPMD-api), which can be installed e.g., by
 ```
-pip install h5py
+python -m pip install openpmd-api
 ```
 
 ## Converting from GDF to openPMD
 
-To convert a GDF file into an openPMD-conforming hdf5 file run the ```gdf_to_hdf.py``` module as follows:
+To convert a GDF file into an openPMD-format file run the ```gdf_to_openPMD.py``` module as follows:
 ```
-python gdf_to_hdf gdf_file [hdf5_file]
+python gdf_to_openPMD -gdf_file gdf_file -openPMD_output
 ```
 where 
 * ```gdf_file``` is the path to an input GDF file;
-* ```hdf5_file``` is the path to an output openPMD-conforming hdf5 file, by default ```result.h5```.
+* ```file in openPMD-format``` is the path to an output openPMD-format file.
+
+The format is selected according to the file extension: current supported: .h5 (HDF5) .bp (ADIOS1) or .json (JSON).
 
 ### Example
 
 To run the script for the provided examples, run the following from a project directory:
 ```
-python3 gdf_to_hdf.py -gdf examples/example_1.gdf -hdf examples/example_1.h5
-python3 gdf_to_hdf.py -hdf examples/example_2.gdf -gdf examples/example_2.h5
+python3 gdf_to_openPMD.py -gdf examples/example_1.gdf -openPMD_output examples/example_1.h5
+python3 gdf_to_hdf.py -gdf examples/example_1.gdf -gdf examples/example_1.bp
 ```
 
 ## Converting from openPMD to GDF
 
-To convert an openPMD-conforming hdf5 file into a GDF file run the ```hdf_to_gdf.py``` module as follows:
+To convert an openPMD-format file into a GDF file run the ```openPMD_to_gdf.py``` module as follows:
 ```
-python3 hdf_to_gdf.py -hdf hdf5_file -gdf [gdf_file] -species (optional)
+python3 openPMD_to_gdf.py -openPMD_input openPMD-format_file -gdf gdf_file -species (optional)
 ```
 where parameters
-* ```-hdf``` is the path to an input openPMD-conforming hdf5 file; 
-* ```-gdf``` is the path to an output GDF file, by default ```hdf path + .cgf```
+* ```-openPMD_input``` is the path to an input openPMD format file; 
+* ```-gdf``` is the path to an output GDF file, by default ```openPMD_input path + .cgf```
 * ```-species``` chosen particle species.
+
+The format is selected according to the file extension: current supported: .h5 (HDF5) .bp (ADIOS1) or .json (JSON).
 
 
 ### Example
 
 To run the script for the provided example, run the following from a project directory:
 ```
-python3 hdf_to_gdf.py -hdf examples/example_3.h5 
+python3 openPMD_to_gdf.py -openPMD_input examples/example_3.h5 -gdf examples/result4.gdf
 
 
 ```
@@ -61,5 +65,6 @@ python3 hdf_to_gdf.py -hdf examples/example_3.h5
 ### Limitations
 
 
-Convertor does not work with datasets, which size is large then 268435455, because of hardware limitations.
+Convertor does not work with datasets larger than 268435455, because of GDF standart limitations.
+
 
