@@ -23,7 +23,7 @@ python -m pip install openpmd-api
 
 To convert a GDF file into an openPMD-format file run the ```gdf_to_openPMD.py``` module as follows:
 ```
-python gdf_to_openPMD -gdf_file gdf_file -openPMD_output
+python gdf_to_openPMD -gdf_file gdf_file -openPMD_output file in openPMD-format
 ```
 where 
 * ```gdf_file``` is the path to an input GDF file;
