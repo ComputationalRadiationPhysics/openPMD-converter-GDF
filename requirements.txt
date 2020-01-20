@@ -1,0 +1,7 @@
+# openPMD_to_gdf.py, gdf_to_openPMD.py
+openpmd-api>=0.10.3
+# gdf_to_openPMD.py
+matplotlib>=3.0.0
+# OpenPMD_add_patches.py
+h5py>=2.8.0
+numpy>=1.16.0
