@@ -101,8 +101,9 @@ def add_root_attributes(series, gdf_file, size_gdf_name):
 
 
 def find_one_symbol_attribute(name):
+    SCALAR = Mesh_Record_Component.SCALAR
     dict_one_symbol = {'x': ['position', 'x'], 'y': ['position', 'y'], 'z': ['position', 'z'],
-                       'G': ['G', 'G'], 'q': ['charge', 'charge'], 'm': ['mass', 'mass']}
+                       'G': ['G', 'G'], 'q': ['charge', SCALAR], 'm': ['mass', SCALAR]}
     return dict_one_symbol.get(name[0])
 
 
@@ -126,6 +127,7 @@ def find_three_symbols_attribute(name):
 
 
 def find_multiple_symbols_attribute(name):
+    SCALAR = Mesh_Record_Component.SCALAR
     dict_multiple_symbols = {'stdx': ['std', 'x'], 'stdy': ['std', 'y'], 'stdz': ['std', 'z'],
                           'avgx': ['avg', 'x'], 'avgy': ['avg', 'y'], 'avgz': ['avg', 'z'],
                           'avgBx': ['avgB', 'x'], 'avgBy': ['avgB', 'y'], 'avgBz': ['avgB', 'z'],
@@ -134,7 +136,7 @@ def find_multiple_symbols_attribute(name):
                           'avgr': ['avgr', 'avgr'], 'avgG': ['avgG', 'avgG'],
                           'stdt': ['stdt', 'stdt'], 'stdG': ['stdG', 'stdG'],
                           'stdBx': ['stdB', 'x'], 'stdBy': ['stdB', 'y'], 'stdBz': ['stdB', 'z'],
-                          'rmacro': ['rmacro', 'rmacro'], 'nmacro': ['nmacro', 'nmacro'], 'avgt': ['avgt', 'avgt'],
+                          'rmacro': ['rmacro', 'rmacro'], 'nmacro': ['weighting', SCALAR], 'avgt': ['avgt', 'avgt'],
                           'nemixrms': ['nemixrms', 'nemixrms'], 'nemiyrms': ['nemiyrms', 'nemiyrms'],
                           'nemizrms': ['nemizrms', 'nemizrms'], 'avgzrms': ['avgzrms', 'avgzrms'],
                           'time': ['time', 'time'], 'positionOffset_x': ['positionOffset', 'x'],
@@ -409,6 +411,8 @@ def read_single_value_type(gdf_file, data_type, primitive_type, size, name, curr
     time = 0
     is_ascii_name = False
     particles_name = ''
+    time = 0
+    new_iteration_time = last_iteration_time
     if data_type == Block_types.no_data:
         pass
     elif data_type == Block_types.signed_long:
@@ -417,11 +421,11 @@ def read_single_value_type(gdf_file, data_type, primitive_type, size, name, curr
         is_ascii_name, particles_name = read_ascii_character(data_type, gdf_file, size, name)
 
     elif data_type == Block_types.double_type:
-        time = read_double_value(name, gdf_file, current_iteration, last_iteration_time)
+        time, new_iteration_time = read_double_value(name, gdf_file, current_iteration, last_iteration_time)
     else:
         print_warning_unknown_type(name, primitive_type, size)
 
-    return is_ascii_name,  time, particles_name
+    return is_ascii_name,  time, particles_name, new_iteration_time
 
 
 def create_iteration_sub_groups(iteration_number, series):
@@ -476,7 +480,6 @@ def create_new_spices_group(current_iteration, particles_name):
     else:
         spicies = current_iteration.particles[particles_name]
 
-    spicies = current_iteration.particles["spicies"]
     spicies.set_attribute('particleShape', 3.0)
     spicies.set_attribute('particleSmoothing', 'none')
 
@@ -514,23 +517,28 @@ def gdf_file_to_hdf_file(gdf_file, series):
             break
         gdf_file.seek(-1, 1)
         name, primitive_type, size = read_gdf_block_header(gdf_file)
-        print(name)
 
         if size == '':
             break
         dir, edir, sval, arr = get_block_type(primitive_type)
         data_type = primitive_type & 255
+        time = 0
+        last_iteration_time = 0
 
-        var = 0
         if sval:
-            var, time, particles_name = read_single_value_type(gdf_file, data_type,
+            var, time, particles_name, new_iteration_time = read_single_value_type(gdf_file, data_type,
                         primitive_type, size, name, current_iteration, last_iteration_time)
 
+        var = 0
         is_new_iteration_nessesary = need_new_iteration_group(last_arr, arr, var, first_iteration, data_type)
 
         if is_new_iteration_nessesary:
             current_iteration, iteration_number \
                 = create_iteration_sub_groups(iteration_number, series)
+        if time:
+            add_time_attributes(current_iteration, last_iteration_time, new_iteration_time)
+
+
         if arr:
             if is_spicies_group_needed(current_iteration):
                 current_spicies = create_new_spices_group(current_iteration, particles_name)
@@ -566,7 +574,6 @@ def read_double_value(name, gdf_file, current_iteration, last_iteration_time):
     new_iteration_time = struct.unpack('d', gdf_file.read(8))[0]
     decoding_name = decode_name(name)
     if decoding_name == 'time':
-        add_time_attributes(current_iteration, last_iteration_time, new_iteration_time)
         time = 1
     return time, new_iteration_time
 
