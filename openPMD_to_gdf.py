@@ -26,6 +26,7 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species, g
         species = ''
 
     series_hdf = openpmd_api.Series(hdf_file_directory, openpmd_api.Access_Type.read_only)
+    print('Destination .gdf directory not specified. Defaulting to ' + gdf_file_directory)
 
     with open(gdf_file_directory, 'wb') as gdf_file:
         hdf_file_to_gdf_file(gdf_file, series_hdf, max_cell_size, species, grid_size)
