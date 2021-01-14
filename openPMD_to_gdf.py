@@ -282,7 +282,7 @@ def one_type_species(series, iteration, gdf_file, max_cell_size, species, grid_s
 
 def write_data(series, iteration, gdf_file, max_cell_size, species, grid_size):
 
-    time = iteration.time()
+    time = iteration.time
     write_float('time', gdf_file, float(time))
 
     if species == '':
