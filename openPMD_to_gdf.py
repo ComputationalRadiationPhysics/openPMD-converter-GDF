@@ -25,7 +25,7 @@ def hdf_to_gdf(hdf_file_directory, gdf_file_directory, max_cell_size, species, g
     if species == None:
         species = ''
 
-    series_hdf = openpmd_api.Series(hdf_file_directory, openpmd_api.Access_Type.read_only)
+    series_hdf = openpmd_api.Series(hdf_file_directory, openpmd_api.Access.read_only)
     print('Destination .gdf directory not specified. Defaulting to ' + gdf_file_directory)
 
     with open(gdf_file_directory, 'wb') as gdf_file:
@@ -320,7 +320,6 @@ def write_dataset_values(series, reading_absolute, geting_absolute_values, size,
     absolute_values = []
     for value in current_values:
         absolute_values.append(geting_absolute_values(value))
-
     last_cell_size = size - number_cells * max_cell_size
     type_size = str(last_cell_size) + 'd'
     gdf_file.write(struct.pack(type_size, *absolute_values))

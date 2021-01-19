@@ -8,7 +8,7 @@ import os
 import datetime
 import re
 import argparse
-from openpmd_api import Series, Access_Type, Dataset, Mesh_Record_Component, Iteration_Encoding, \
+from openpmd_api import Series, Access, Dataset, Mesh_Record_Component, Iteration_Encoding, \
     Unit_Dimension
 
 def parse_name_array(gdf_file, size_gdf_name):
@@ -591,7 +591,7 @@ def gdf_to_hdf(gdf_file_directory, hdf_file_directory):
     if os.path.exists(hdf_file_directory):
         os.remove(hdf_file_directory)
 
-    openPMD_series = Series(hdf_file_directory, Access_Type.create)
+    openPMD_series = Series(hdf_file_directory, Access.create)
     with open(gdf_file_directory, 'rb') as gdf_file:
         gdf_file_to_hdf_file(gdf_file, openPMD_series)
 
